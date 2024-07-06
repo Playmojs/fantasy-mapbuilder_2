@@ -8,7 +8,7 @@
 	];
 
 	let selectedMapId: string | null = null;
-	let informaticText = 'Click a marker to see information.';
+	let informaticText = 'Test-informatic';
 	let editable = false;
 
 	function handleMarkerClick(event: CustomEvent) {
@@ -39,11 +39,4 @@
 	on:markerClick={handleMarkerClick}
 />
 
-{#if selectedMapId}
-	<Informatic
-		text={informaticText}
-		{editable}
-		on:toggleEditable={toggleEditable}
-		on:requestChangeMap={requestChangeMap}
-	/>
-{/if}
+<Informatic />

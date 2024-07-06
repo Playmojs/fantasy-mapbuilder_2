@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import showdown from 'showdown';
 
 	export let text: string = '';
 	export let editable: boolean = false;
@@ -8,6 +9,8 @@
 	let informatic: HTMLDivElement;
 	let editButton: HTMLImageElement;
 	let resizer: HTMLDivElement;
+
+	// $: editable, update_informatic();
 
 	onMount(() => {
 		if (editButton) {
@@ -56,40 +59,53 @@
 	});
 
 	function toggleEditable() {
+		if (editable) {
+			text = informatic.innerText;
+		}
 		editable = !editable;
-		drawText();
+		update_informatic();
 	}
 
-	function drawText() {
+	function update_informatic() {
 		if (editable) {
 			informatic.innerHTML = text;
-			informatic.contentEditable = 'true';
-			informaticWindow.classList.add('edit_mode');
+			informatic.style.backgroundColor = 'white';
+			informatic.style.color = 'black';
+			informatic.style.margin = '20px';
+			informatic.style.whiteSpace = 'pre-wrap';
 		} else {
-			informatic.innerHTML = text;
-			informatic.contentEditable = 'false';
-			informaticWindow.classList.remove('edit_mode');
+			let converter = new showdown.Converter();
+			informatic.innerHTML = converter.makeHtml(text);
+			informatic.style.backgroundColor = 'rgb(47, 47, 47)';
+			informatic.style.color = 'white';
+			informatic.style.margin = '0px';
+			informatic.style.whiteSpace = 'normal';
 		}
 	}
 
-	$: drawText();
+	// update_informatic();
 </script>
 
-<div id="informatic_window" bind:this={informaticWindow}>
+<div id="informaticWindow" bind:this={informaticWindow}>
 	<div id="resizer" bind:this={resizer}></div>
 	<div id="toolbar">
 		<img
 			id="edit_content_button"
+			class:edit_mode={editable}
 			src="/assets/edit-icon.png"
 			alt="Edit Content"
 			bind:this={editButton}
 		/>
 	</div>
-	<div id="informatic" bind:this={informatic}></div>
+	<div id="informatic" class:edit_mode={editable} bind:this={informatic} contenteditable={editable}>
+		{text}
+	</div>
 </div>
 
+<span class="informatic" class:edit_mode={'edit_mode'}> {editable}</span>
+
 <style>
-	#informatic_window {
+	#informaticWindow {
 		position: fixed;
 		background-color: rgb(47, 47, 47);
 		top: 25%;
@@ -105,20 +121,11 @@
 		left: 0;
 		right: 0;
 		background-color: inherit;
-		color: white;
-		font-size: large;
+		font-size: 100px;
 		text-align: justify;
 		overflow-y: scroll;
 		padding: 10px;
 		margin-bottom: 10px;
-		white-space: normal;
-	}
-
-	.edit_mode #informatic {
-		background-color: white;
-		color: black;
-		margin: 10px;
-		white-space: pre-wrap;
 	}
 
 	.edit_mode #informatic::-webkit-scrollbar-track {
@@ -177,8 +184,8 @@
 		top: 0;
 		left: 0;
 		cursor: nwse-resize;
-		width: 30px;
-		height: 30px;
+		width: 100px;
+		height: 100px;
 		z-index: 10;
 	}
 </style>

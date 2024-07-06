@@ -26,12 +26,19 @@
 			}
 		};
 
-		panzoom(mapContainer, {
+		var map_zoom = panzoom(mapContainer, {
 			bounds: true,
 			boundsPadding: 0,
 			initialZoom: 1,
 			maxZoom: 3,
 			minZoom: 0.7
+		});
+		mapContainer.addEventListener('mouseenter', () => {
+			map_zoom.resume();
+		});
+
+		mapContainer.addEventListener('mouseleave', () => {
+			map_zoom.pause();
 		});
 	});
 
