@@ -83,7 +83,6 @@
 		}
 	}
 
-	// update_informatic();
 </script>
 
 <div id="informaticWindow" bind:this={informaticWindow}>
@@ -102,8 +101,6 @@
 	</div>
 </div>
 
-<span class="informatic" class:edit_mode={'edit_mode'}> {editable}</span>
-
 <style>
 	#informaticWindow {
 		position: fixed;
@@ -121,7 +118,7 @@
 		left: 0;
 		right: 0;
 		background-color: inherit;
-		font-size: 100px;
+		font-size: large;
 		text-align: justify;
 		overflow-y: scroll;
 		padding: 10px;
@@ -184,8 +181,8 @@
 		top: 0;
 		left: 0;
 		cursor: nwse-resize;
-		width: 100px;
-		height: 100px;
+		width: 10%;
+		height: 10%;
 		z-index: 10;
 	}
 </style>

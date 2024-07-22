@@ -12,14 +12,14 @@
 </script>
 
 <button class="marker" style="top: {position.y}%; left: {position.x}%" on:click={handleClick}>
-	<div class="marker-image" style="background-image: url({image})"></div>
+	<img class="marker-image" src={image} alt="Marker">
 </button>
 
 <style>
 	.marker {
 		position: absolute;
-		width: 100px;
-		height: 100px;
+		width: 3%;
+		height: 3%;
 		border-radius: 50%;
 		cursor: pointer;
 		transform: translate(-50%, -50%);
@@ -27,12 +27,12 @@
 
 	.marker-image {
 		position: relative;
-		bottom: 200%;
+		bottom: 100%;
 		background-size: contain;
 		background-repeat: no-repeat;
 		pointer-events: none;
-		width: 200px;
-		height: 200px;
+		width: 200%;
+		height: auto;
 		background-origin: initial;
 	}
 </style>
