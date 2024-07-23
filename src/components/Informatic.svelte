@@ -1,16 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import edit_mode from '../store'
 	import showdown from 'showdown';
 
-	export let text: string = '';
-	export let editable: boolean = false;
+	let editable: boolean;
+	$: editable = $edit_mode;
 
 	let informaticWindow: HTMLDivElement;
 	let informatic: HTMLDivElement;
 	let editButton: HTMLImageElement;
 	let resizer: HTMLDivElement;
+	let text: string = '';
 
-	// $: editable, update_informatic();
 
 	onMount(() => {
 		if (editButton) {
@@ -55,25 +56,21 @@
 		if (editable) {
 			text = informatic.innerText;
 		}
-		editable = !editable;
-		update_informatic();
+		edit_mode.update(editable => !editable);
 	}
 
-	function update_informatic() {
+
+	$: update_informatic(editable);
+
+	function update_informatic(editable: boolean) {
 		if (editable) {
-			informatic.innerHTML = text;
-			informatic.style.backgroundColor = 'white';
-			informatic.style.color = 'black';
-			informatic.style.margin = '20px';
-			informatic.style.whiteSpace = 'pre-wrap';
+			informatic.innerText = text;
+
 		} else {
-			let converter = new showdown.Converter();
-			informatic.innerHTML = converter.makeHtml(text);
-			informatic.style.backgroundColor = 'rgb(47, 47, 47)';
-			informatic.style.color = 'white';
-			informatic.style.margin = '0px';
-			informatic.style.whiteSpace = 'normal';
-		}
+			if(text){
+				let converter = new showdown.Converter();
+				informatic.innerHTML = converter.makeHtml(text);
+		}}
 	}
 
 </script>
@@ -83,13 +80,13 @@
 	<div id="toolbar">
 		<img
 			id="edit_content_button"
-			class:edit_mode={editable}
+			class:editable={editable}
 			src="/assets/edit-icon.png"
 			alt="Edit Content"
 			bind:this={editButton}
 		/>
 	</div>
-	<div id="informatic" class:edit_mode={editable} bind:this={informatic} contenteditable={editable}>
+	<div id="informatic" class='{editable? 'editable' : 'non-editable'}' bind:this={informatic} contenteditable={editable}>
 		{text}
 	</div>
 </div>
@@ -119,7 +116,23 @@
 		margin-bottom: 10px;
 	}
 
-	.edit_mode #informatic::-webkit-scrollbar-track {
+	#informatic.non-editable
+	{
+		background-color: rgb(47, 47, 47);
+		color: white;
+		margin: 0px;
+		white-space: normal;
+	}
+
+	#informatic.editable
+	{
+		background-color: white;
+		color: black;
+		margin: 20px;
+		white-space: pre-wrap;
+	}
+
+	#informatic::-webkit-scrollbar-track.editable {
 		background: white;
 	}
 
@@ -127,7 +140,7 @@
 		width: 12px;
 	}
 
-	#informatic::-webkit-scrollbar-track {
+	#informatic::-webkit-scrollbar-track.non-editable {
 		background: rgb(47, 47, 47);
 		border-radius: 10px;
 	}
@@ -167,7 +180,7 @@
 		background-color: #888;
 	}
 
-	.edit_mode #edit_content_button {
+	#edit_content_button.editable {
 		background-color: #111;
 	}
 

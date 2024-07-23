@@ -33,11 +33,11 @@
 			maxZoom: 3,
 			minZoom: 0.7
 		});
-		mapContainer.addEventListener('mouseenter', () => {
+		map.addEventListener('mouseenter', () => {
 			map_zoom.resume();
 		});
 
-		mapContainer.addEventListener('mouseleave', () => {
+		map.addEventListener('mouseleave', () => {
 			map_zoom.pause();
 		});
 	});
@@ -55,10 +55,16 @@
 		});
 	});
 
-	function handleMarkerClick(event: any) {
-		const { mapId } = event.detail;
-		dispatch('markerClick', mapId);
+	function get_relative_movement(x: number, y: number)
+	{
+		let rect = map.getBoundingClientRect();
+		let rel_x = Math.max(0, Math.min((x - rect.x)/rect.width * 100, 100));
+		let rel_y = Math.max(0, Math.min((y - rect.y)/rect.height * 100, 100));
+		let position: {x: number, y: number} = {x: rel_x, y: rel_y};
+		return position;
+		
 	}
+
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
@@ -68,7 +74,7 @@
 			position={marker.position}
 			image={marker.image}
 			mapId={marker.map_id}
-			on:click={handleMarkerClick}
+			get_relative_movement={get_relative_movement}
 		/>
 	{/each}
 </div>

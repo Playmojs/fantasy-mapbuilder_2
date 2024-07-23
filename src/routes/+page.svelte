@@ -11,12 +11,6 @@
 	let informaticText = 'Test-informatic';
 	let editable = false;
 
-	function handleMarkerClick(event: CustomEvent) {
-		selectedMapId = event.detail.mapId;
-		informaticText = `Information for map ID: ${selectedMapId}`; // Fetch and update the text based on the clicked marker
-		editable = false; // Disable editing mode after clicking
-	}
-
 	function setInformaticText(newText: string) {
 		informaticText = newText;
 	}
@@ -36,7 +30,6 @@
 	image="/assets/magil.png"
 	parentImage="/assets/map.jpg"
 	parentId={selectedMapId}
-	on:markerClick={handleMarkerClick}
 />
 
 <Informatic />
