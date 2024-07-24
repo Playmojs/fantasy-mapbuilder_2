@@ -70,12 +70,13 @@
 			if(text){
 				let converter = new showdown.Converter();
 				informatic.innerHTML = converter.makeHtml(text);
+
 		}}
 	}
 
 </script>
 
-<div id="informaticWindow" bind:this={informaticWindow}>
+<div id="informaticWindow" bind:this={informaticWindow} class:edit_mode={editable}>
 	<div id="resizer" bind:this={resizer}></div>
 	<div id="toolbar">
 		<img
@@ -93,13 +94,18 @@
 
 <style>
 	#informaticWindow {
-		position: fixed;
+		position: absolute;
 		background-color: rgb(47, 47, 47);
 		top: 0%;
 		left: 66%;
 		height: 100%;
 		width: 34%;
 		z-index: 10;
+	}
+	#informaticWindow.edit_mode{
+		top: 7%;
+		height: 93%;
+
 	}
 
 	#informatic {

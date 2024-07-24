@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Map from '../components/Map.svelte';
 	import Informatic from '../components/Informatic.svelte';
+	import Toolbar from '../components/Toolbar.svelte';
 
 	let markers = [
 		{ position: { x: 30, y: 50 }, image: '/assets/marker.png', map_id: 'map1' },
@@ -33,3 +34,4 @@
 />
 
 <Informatic />
+<Toolbar />

@@ -12,6 +12,10 @@
 	let map: HTMLImageElement;
 	let parentMap: HTMLImageElement;
 
+	import edit_mode from '../store'
+	let editable: boolean;
+	$: editable = $edit_mode;
+
 	const dispatch = createEventDispatcher();
 
 	onMount(() => {
@@ -78,7 +82,7 @@
 		/>
 	{/each}
 </div>
-<img id="parent_map" class="hidden" bind:this={parentMap} alt="Parent Map" />
+<img id="parent_map" class:edit_mode ={editable} bind:this={parentMap} alt="Parent Map" />
 
 <style>
 	#map-container {
@@ -96,15 +100,14 @@
 
 	#parent_map {
 		position: fixed;
-		top: 0;
+		top: 0%;
 		right: 80%;
 		width: 20%;
 		height: auto;
 		z-index: 10;
 		cursor: pointer;
 	}
-
-	.hidden {
-		display: none;
+	#parent_map.edit_mode {
+		top: 7%;
 	}
 </style>

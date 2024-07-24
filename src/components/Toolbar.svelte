@@ -1,4 +1,9 @@
-<script>
+<script lang="ts">
+
+import edit_mode from '../store'
+let editable: boolean;
+$: editable = $edit_mode;
+
     function showAlert() {
         alert('Button clicked!');
     }
@@ -18,19 +23,21 @@
         top: 0;
         left: 0;
         width: 100%;
-        background-color: #333;
+        height: 7%;
+        background-color: #4b4343;
         color: white;
         display: flex;
         justify-content: 500px; /* Ensures buttons are at the right end */
         align-items: center;
-        padding: 10px 20px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        z-index: 1000;
+        z-index: 5;
     }
-
+    .toolbar.visible{
+        display: none;
+    }
     .toolbar button {
-        width: 50px; /* Adjust the size as needed */
-        height: 50px; /* Adjust the size as needed */
+        width: 80%; /* Adjust the size as needed */
+        height: 80%; /* Adjust the size as needed */
         border: none;
         padding: 0;
         cursor: pointer;
@@ -63,7 +70,7 @@
     }
 </style>
 
-<div class="toolbar">
+<div class="toolbar" class:visible ={!editable}>
     <button class="button1" on:click={showAlert}></button>
     <button class="button2" on:click={showSecondAlert}></button>
     <button class="button3" on:click={showThirdAlert}></button>
