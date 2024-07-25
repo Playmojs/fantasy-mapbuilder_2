@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import edit_mode from '../store'
 
 	export let position: { x: number; y: number };
 	export let image: string;
-	export let mapId: string;
+	export let map_id: string;
 	export let get_relative_movement: Function;
 
 	let marker: HTMLButtonElement;
@@ -14,10 +15,9 @@
 	$: editable = $edit_mode;
 
 	import { createEventDispatcher } from 'svelte';
-	const dispatch = createEventDispatcher();
 
 	function handleClick() {
-		dispatch('click', { mapId });
+		location.href = `/${map_id}`;
 	}
 
 	function toggle_movement()
