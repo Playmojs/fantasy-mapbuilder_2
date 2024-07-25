@@ -21,7 +21,7 @@
 	}
 
 	const markers:  {[id: number]: marker} = {
-		0: {id: 0, image: "/assets/marker.png", position: { x: 30, y: 50 }, map_id: 0}
+		0: {id: 0, image: "/assets/marker.png", position: { x: 42, y: 56 }, map_id: 0}
 	}
 </script>
 
