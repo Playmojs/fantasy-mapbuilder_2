@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import panzoom from 'panzoom';
 	import Marker from './Marker.svelte';
 

@@ -1,7 +1,4 @@
 <script lang="ts">
-	import Map from '../components/Map.svelte';
-	import Informatic from '../components/Informatic.svelte';
-	import Toolbar from '../components/Toolbar.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	

@@ -33,12 +33,10 @@
 	import ParentMap from '../../components/ParentMap.svelte';
 
 	import { page } from '$app/stores';
-
 	
+	let map_id: number = +$page.params.map_id
 	
-	let id: number = +$page.params.slug
-	
-	let current_map: map = maps[id];
+	let current_map: map = maps[map_id];
 	const current_markers = current_map.marker_ids.map(id => markers[id]);
 	
 </script>
