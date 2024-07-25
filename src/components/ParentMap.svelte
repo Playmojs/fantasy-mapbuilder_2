@@ -12,15 +12,14 @@
     export let parent_id: number | null;
     
     onMount(() => {
-        parentMap.onload = () => {
-            if(parent_id !== null){parentMap.addEventListener('mouseup', () => parent_func(parent_id));}
-        }
+        parentMap.addEventListener('mouseup', () => parent_func(parent_id));
     });
 
-    function parent_func(parent_id: number)
+    function parent_func(parent_id: number | null)
     {
+        if(parent_id !== null){
         location.href = `/${parent_id}`;
-    }
+    }}
 </script>
 
 <img src={parent_image} id="parent_map" class:edit_mode ={editable} class:hidden = {!parent_image} bind:this={parentMap} alt="Parent Map"/>
