@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import edit_mode from '../store'
+	import edit_mode, { set_informatic } from '../store'
 	import showdown from 'showdown';
 
 	let editable: boolean;
@@ -52,22 +52,30 @@
 		}
 	});
 
+	const set_informatic_text = (new_text: string) => {
+		if (!editable){
+			text = new_text;
+			update_informatic(editable)
+		}
+	}
+	set_informatic.set(set_informatic_text)
+
 	function toggleEditable() {
 		if (editable) {
 			text = informatic.innerText;
 		}
-		edit_mode.update(editable => !editable);
+		edit_mode.update(edit_mode => !edit_mode);
+
+		update_informatic(!editable)
 	}
-
-
-	$: update_informatic(editable);
 
 	function update_informatic(editable: boolean) {
 		if (editable) {
 			informatic.innerText = text;
 
 		} else {
-			if(text){
+			if(informatic){
+				console.log('Update text')
 				let converter = new showdown.Converter();
 				informatic.innerHTML = converter.makeHtml(text);
 

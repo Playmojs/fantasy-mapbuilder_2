@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import edit_mode from '../store'
+	import edit_mode, {toggle_informatic} from '../store'
 
 	export let position: { x: number; y: number };
 	export let image: string;
-	export let map_id: string;
+	export let query_id: number;
 	export let get_relative_movement: Function;
+	export let informatic: boolean;
 
 	let marker: HTMLButtonElement;
 	
@@ -14,11 +15,18 @@
 	let editable;
 	$: editable = $edit_mode;
 
+	let toggle_informatic_text: any;
+	$: toggle_informatic_text = $toggle_informatic;
+
 	import { createEventDispatcher } from 'svelte';
 
 	function handleClick() {
-		location.href = `/${map_id}`;
-	}
+		if(informatic)
+		{
+			toggle_informatic_text(query_id)
+		} else {
+		location.href = `/${query_id}`;
+	}}
 
 	function toggle_movement()
 	{

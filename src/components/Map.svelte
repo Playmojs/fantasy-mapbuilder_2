@@ -41,12 +41,13 @@
 
 <div id="map-container" bind:this={mapContainer}>
 	<img id="map" alt="Map" bind:this={map_} />
-	{#each markers as marker (marker.map_id)}
+	{#each markers as marker (marker.id)}
 		<Marker
 			position={marker.position}
 			image={marker.image}
-			map_id={marker.map_id}
+			query_id={marker.query_id}
 			get_relative_movement={get_relative_movement}
+			informatic={marker.informatic}
 		/>
 	{/each}
 </div>

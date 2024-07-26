@@ -12,7 +12,7 @@
     export let parent_id: number | null;
     
     onMount(() => {
-        parentMap.addEventListener('mouseup', () => parent_func(parent_id));
+        parentMap.addEventListener('click', () => parent_func(parent_id));
     });
 
     function parent_func(parent_id: number | null)
