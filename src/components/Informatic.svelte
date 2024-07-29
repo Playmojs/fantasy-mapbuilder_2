@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import edit_mode, { set_informatic } from '../store'
+	import edit_mode, { set_informatic } from '../store';
 	import showdown from 'showdown';
 
 	let editable: boolean;
@@ -8,23 +8,29 @@
 
 	let informaticWindow: HTMLDivElement;
 	let informatic: HTMLDivElement;
-	let editButton: HTMLImageElement;
+	let editButton: HTMLButtonElement;
+	let minimizeButton: HTMLButtonElement;
+	let maximizeButton: HTMLButtonElement;
 	let resizer: HTMLDivElement;
 	let text: string = '';
 
+	let minimized: boolean = false;
 
 	onMount(() => {
-		if (editButton) {
-			editButton.addEventListener('click', toggleEditable);
+		// if (editButton) {
+		// 	editButton.addEventListener('click', toggleEditable);
+		// }
+		if (minimizeButton) {
+			minimizeButton.addEventListener('click', toggleMinimize);
+		}
+		if (maximizeButton) {
+			maximizeButton.addEventListener('click', toggleMinimize);
 		}
 
 		if (resizer) {
 			let originalX: number;
-			let originalY: number;
 			let originalMouseX: number;
-			let originalMouseY: number;
 			let windowWidth: number;
-			let windowHeight: number;
 
 			resizer.addEventListener('mousedown', (e) => {
 				e.preventDefault();
@@ -39,7 +45,7 @@
 			function resize(e: MouseEvent) {
 				let newX = originalX + (e.pageX - originalMouseX) / windowWidth;
 
-				newX = newX < 92 ? newX : 92;
+				newX = newX < 92 ? (newX < 0 ? 0 : newX) : 92;
 
 				informaticWindow.style.left = `${newX}%`;
 				informaticWindow.style.width = `${100 - newX}%`;
@@ -53,52 +59,67 @@
 	});
 
 	const set_informatic_text = (new_text: string) => {
-		if (!editable){
+		if (!editable) {
 			text = new_text;
-			update_informatic(editable)
+			update_informatic(editable);
 		}
+	};
+	set_informatic.set(set_informatic_text);
+
+	function toggleMinimize() {
+		minimized = !minimized;
 	}
-	set_informatic.set(set_informatic_text)
 
 	function toggleEditable() {
 		if (editable) {
 			text = informatic.innerText;
 		}
-		edit_mode.update(edit_mode => !edit_mode);
+		edit_mode.update((edit_mode) => !edit_mode);
 
-		update_informatic(!editable)
+		update_informatic(!editable);
 	}
 
 	function update_informatic(editable: boolean) {
 		if (editable) {
 			informatic.innerText = text;
-
 		} else {
-			if(informatic){
-				console.log('Update text')
+			if (informatic) {
+				console.log('Update text');
 				let converter = new showdown.Converter();
 				informatic.innerHTML = converter.makeHtml(text);
-
-		}}
+			}
+		}
 	}
-
 </script>
 
-<div id="informaticWindow" bind:this={informaticWindow} class:edit_mode={editable}>
+<div id="informaticWindow" bind:this={informaticWindow} class:edit_mode={editable} class:minimized>
 	<div id="resizer" bind:this={resizer}></div>
 	<div id="toolbar">
-		<img
+		<button id="minimize_button" bind:this={minimizeButton} on:click={toggleMinimize} />
+
+		<button
 			id="edit_content_button"
-			class:editable={editable}
-			src="/assets/edit-icon.png"
-			alt="Edit Content"
+			class:editable
 			bind:this={editButton}
+			on:click={toggleEditable}
 		/>
 	</div>
-	<div id="informatic" class='{editable? 'editable' : 'non-editable'}' bind:this={informatic} contenteditable={editable}>
+	<div
+		id="informatic"
+		class={editable ? 'editable' : 'non-editable'}
+		bind:this={informatic}
+		contenteditable={editable}
+	>
 		{text}
 	</div>
 </div>
+
+<button
+	id="maximize_button"
+	bind:this={maximizeButton}
+	class:hidden={!minimized}
+	on:click={toggleMinimize}
+/>
 
 <style>
 	#informaticWindow {
@@ -110,10 +131,9 @@
 		width: 34%;
 		z-index: 10;
 	}
-	#informaticWindow.edit_mode{
-		top: 7%;
-		height: 93%;
 
+	#informaticWindow.minimized {
+		display: none;
 	}
 
 	#informatic {
@@ -130,16 +150,14 @@
 		margin-bottom: 10px;
 	}
 
-	#informatic.non-editable
-	{
+	#informatic.non-editable {
 		background-color: rgb(47, 47, 47);
 		color: white;
 		margin: 0px;
 		white-space: normal;
 	}
 
-	#informatic.editable
-	{
+	#informatic.editable {
 		background-color: white;
 		color: black;
 		margin: 20px;
@@ -180,18 +198,29 @@
 		justify-content: flex-end;
 	}
 
-	#edit_content_button {
+	#toolbar button {
 		position: relative;
 		background-color: #555;
 		height: 100%;
-		margin-right: 10px;
-		margin-top: 10px;
+		aspect-ratio: 1.5;
+		margin-right: 20px;
+		margin-top: 20px;
 		shape-outside: circle();
-		border-radius: 7%;
+		border-radius: 15%;
+		background-size: contain;
+		border-color: transparent;
 	}
 
-	#edit_content_button:hover {
+	#toolbar button:hover {
 		background-color: #888;
+	}
+
+	#edit_content_button {
+		background: url('/assets/edit-icon.png') no-repeat center center;
+	}
+
+	#minimize_button {
+		background: url('/assets/minus.png') no-repeat center center;
 	}
 
 	#edit_content_button.editable {
@@ -206,5 +235,29 @@
 		width: 10px;
 		height: 100%;
 		z-index: 10;
+	}
+
+	#maximize_button {
+		position: absolute;
+		height: 5%;
+		aspect-ratio: 1.5;
+		top: 0%;
+		left: 94%;
+		margin-right: 2%;
+		margin-top: 2%;
+		shape-outside: circle();
+		border-radius: 15%;
+		background: url('/assets/plus.png') no-repeat center center;
+		background-size: contain;
+		background-color: #555;
+		border-color: transparent;
+	}
+
+	#maximize_button:hover {
+		background-color: #888;
+	}
+
+	#maximize_button.hidden {
+		display: none;
 	}
 </style>

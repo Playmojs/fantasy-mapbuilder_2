@@ -1,15 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import edit_mode, {toggle_informatic} from '../store'
+	import edit_mode, { toggle_informatic } from '../store';
 
 	export let position: { x: number; y: number };
-	export let image: string;
+	export let image: string | null;
 	export let query_id: number;
 	export let get_relative_movement: Function;
 	export let informatic: boolean;
 
 	let marker: HTMLButtonElement;
-	
+
 	let in_movement: boolean = false;
 
 	let editable;
@@ -21,38 +21,42 @@
 	import { createEventDispatcher } from 'svelte';
 
 	function handleClick() {
-		if(informatic)
-		{
-			toggle_informatic_text(query_id)
+		if (informatic) {
+			toggle_informatic_text(query_id);
 		} else {
-		location.href = `/${query_id}`;
-	}}
-
-	function toggle_movement()
-	{
-		if (!in_movement){
-			window.addEventListener('mousemove', move_marker);
-			window.addEventListener('mouseup', stop_movement);
-			in_movement = true
+			location.href = `/${query_id}`;
 		}
 	}
 
-	function stop_movement()
-	{
+	function toggle_movement() {
+		if (!in_movement) {
+			window.addEventListener('mousemove', move_marker);
+			window.addEventListener('mouseup', stop_movement);
+			in_movement = true;
+		}
+	}
+
+	function stop_movement() {
 		window.removeEventListener('mousemove', move_marker);
 		window.removeEventListener('mouseup', stop_movement);
 		in_movement = false;
 	}
 
 	function move_marker(e: MouseEvent) {
-		let rel_pos: {x: number, y: number} = get_relative_movement(e.x, e.y);
-		marker.style.left = rel_pos.x + '%';		
+		let rel_pos: { x: number; y: number } = get_relative_movement(e.x, e.y);
+		marker.style.left = rel_pos.x + '%';
 		marker.style.top = rel_pos.y + '%';
 	}
 </script>
 
-<button class="marker" bind:this={marker} style="top: {position.y}%; left: {position.x}%" on:mousedown={editable? toggle_movement: handleClick} class:edit_mode={editable}>
-	<img class="marker-image" src={image} alt="Marker">
+<button
+	class="marker"
+	bind:this={marker}
+	style="top: {position.y}%; left: {position.x}%"
+	on:mousedown={editable ? toggle_movement : handleClick}
+	class:edit_mode={editable}
+>
+	<img class="marker-image" src={image} alt="Marker" class:hidden={image === null} />
 </button>
 
 <style>
@@ -60,9 +64,21 @@
 		position: absolute;
 		width: 3%;
 		height: 3%;
+		background-color: transparent;
+		border: none;
+		outline: none;
+		width: 50px;
+		height: 50px;
 		border-radius: 50%;
 		cursor: pointer;
 		transform: translate(-50%, -50%);
+	}
+	.marker:hover {
+		box-shadow: inset 0 0 0 10em rgba(255, 255, 255, 0.4);
+	}
+
+	.marker.edit_mode {
+		box-shadow: inset 0 0 0 10em rgba(255, 255, 255, 0.8);
 	}
 
 	.marker-image {
@@ -74,5 +90,8 @@
 		width: 200%;
 		height: auto;
 		background-origin: initial;
+	}
+	.marker-image.hidden {
+		display: none;
 	}
 </style>
