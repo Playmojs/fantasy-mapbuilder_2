@@ -1,30 +1,22 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import edit_mode, { toggle_informatic } from '../store';
+	import { gotoMap } from '$lib/goto_map';
+	import { MarkerType, type MarkerData } from '$lib/types';
+	import { store } from '../store.svelte';
 
-	export let position: { x: number; y: number };
-	export let image: string | null;
-	export let query_id: number;
-	export let get_relative_movement: Function;
-	export let informatic: boolean;
+	export let marker_data: MarkerData;
+	export let get_relative_movement: (x: number, y: number) => { x: number; y: number };
 
 	let marker: HTMLButtonElement;
-
 	let in_movement: boolean = false;
 
-	let editable;
-	$: editable = $edit_mode;
-
-	let toggle_informatic_text: any;
-	$: toggle_informatic_text = $toggle_informatic;
-
-	import { createEventDispatcher } from 'svelte';
-
 	function handleClick() {
-		if (informatic) {
-			toggle_informatic_text(query_id);
-		} else {
-			location.href = `/${query_id}`;
+		switch (marker_data.type) {
+			case MarkerType.Informatic:
+				store.non_map_informatic_id = marker_data.query_id;
+				break;
+			case MarkerType.Map:
+				gotoMap(marker_data.query_id);
+				break;
 		}
 	}
 
@@ -52,11 +44,16 @@
 <button
 	class="marker"
 	bind:this={marker}
-	style="top: {position.y}%; left: {position.x}%"
-	on:mousedown={editable ? toggle_movement : handleClick}
-	class:edit_mode={editable}
+	style="top: {marker_data.position.y}%; left: {marker_data.position.x}%"
+	on:mousedown={store.edit_mode ? toggle_movement : handleClick}
+	class:edit_mode={store.edit_mode}
 >
-	<img class="marker-image" src={image} alt="Marker" class:hidden={image === null} />
+	<img
+		class="marker-image"
+		src={marker_data.image}
+		alt="Marker"
+		class:hidden={marker_data.image === null}
+	/>
 </button>
 
 <style>
