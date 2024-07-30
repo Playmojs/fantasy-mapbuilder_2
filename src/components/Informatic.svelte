@@ -11,8 +11,12 @@
 	let editButton: HTMLButtonElement;
 	let minimizeButton: HTMLButtonElement;
 	let maximizeButton: HTMLButtonElement;
+	let image: HTMLImageElement;
 	let resizer: HTMLDivElement;
 	let text: string = '';
+
+	let article_image_: string | null;
+	$: article_image_;
 
 	let minimized: boolean = false;
 
@@ -58,10 +62,11 @@
 		}
 	});
 
-	const set_informatic_text = (new_text: string) => {
+	const set_informatic_text = (new_text: string, article_image: string | null) => {
 		if (!editable) {
 			text = new_text;
 			update_informatic(editable);
+			article_image_ = article_image;
 		}
 	};
 	set_informatic.set(set_informatic_text);
@@ -84,7 +89,6 @@
 			informatic.innerText = text;
 		} else {
 			if (informatic) {
-				console.log('Update text');
 				let converter = new showdown.Converter();
 				informatic.innerHTML = converter.makeHtml(text);
 			}
@@ -104,6 +108,7 @@
 			on:click={toggleEditable}
 		/>
 	</div>
+	<img id="article_image" src={article_image_} alt="Article image" class:hidden={article_image_===null}>
 	<div
 		id="informatic"
 		class={editable ? 'editable' : 'non-editable'}
@@ -130,6 +135,8 @@
 		height: 100%;
 		width: 34%;
 		z-index: 10;
+		display: flex;
+		flex-direction: column;
 	}
 
 	#informaticWindow.minimized {
@@ -138,8 +145,7 @@
 
 	#informatic {
 		position: relative;
-		top: 30%;
-		height: 60%;
+		height: inherit;
 		left: 0;
 		right: 0;
 		background-color: inherit;
@@ -191,20 +197,20 @@
 
 	#toolbar {
 		position: relative;
-		height: 5%;
+		height: 10%;
 		width: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
+		flex-shrink: 0;
 	}
 
 	#toolbar button {
 		position: relative;
 		background-color: #555;
-		height: 100%;
+		height: 60%;
 		aspect-ratio: 1.5;
-		margin-right: 20px;
-		margin-top: 20px;
+		margin-right: 10px;
 		shape-outside: circle();
 		border-radius: 15%;
 		background-size: contain;
@@ -258,6 +264,21 @@
 	}
 
 	#maximize_button.hidden {
+		display: none;
+	}
+
+	#article_image
+	{
+		position:relative;
+		height: 30%;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		flex-shrink: 0;
+	}
+
+	#article_image.hidden
+	{
 		display: none;
 	}
 </style>

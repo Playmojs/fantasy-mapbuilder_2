@@ -16,9 +16,10 @@
 		informatic_id: number;
 	}
 
-	interface information {
+	interface article {
 		id: number;
 		text: string;
+		article_image: string | null;
 	}
 
 	let maps: { [id: number]: map } = {
@@ -57,10 +58,10 @@
 		}
 	};
 
-	const informations: { [id: number]: information } = {
-		0: { id: 0, text: '#Magil \n This is Magil' },
-		1: { id: 1, text: '#Second Realm \n This is the second Realm' },
-		2: { id: 2, text: 'This is a portal :)' }
+	const articles: { [id: number]: article } = {
+		0: { id: 0, text: '#Magil \n This is Magil', article_image: "/assets/magil_image.jpg" },
+		1: { id: 1, text: '#Second Realm \n This is the second Realm', article_image: null },
+		2: { id: 2, text: 'This is a portal :)', article_image: null }
 	};
 </script>
 
@@ -86,10 +87,10 @@
 	onMount(() => {
 		function toggle_informatic_by_id(id: number) {
 			if (id !== current_informatic_id) {
-				set_informatic_text(informations[id].text);
+				set_informatic_text(articles[id].text, articles[id].article_image);
 				current_informatic_id = id;
 			} else {
-				set_informatic_text(informations[current_map.informatic_id].text);
+				set_informatic_text(articles[current_map.informatic_id].text, articles[id].article_image);
 				current_informatic_id = current_map.informatic_id;
 			}
 		}
