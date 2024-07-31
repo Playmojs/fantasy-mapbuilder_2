@@ -34,7 +34,7 @@
 	bind:this={parentMap}
 	alt="Parent Map"
 />
-<button id="edit_map" on:click={choose_map} class:hidden={!editable}> </button>
+<button id="edit_map" on:click={choose_map} class:hidden={!editable || !parent_image}> </button>
 
 <style>
 	#parent_map {
