@@ -1,6 +1,7 @@
 
 class Store {
     edit_mode = $state(false);
+    minimized = $state(false);
     non_map_informatic_id = $state<number | null>(null)
 }
 

@@ -23,7 +23,6 @@
 <img
 	src={parent_image}
 	id="parent_map"
-	class:edit_mode={store.edit_mode}
 	class:hidden={!parent_image}
 	bind:this={parentMap}
 	alt="Parent Map"
@@ -32,15 +31,12 @@
 <style>
 	#parent_map {
 		position: fixed;
-		top: 0%;
+		top: 50px; /* TODO: Define once */
 		right: 80%;
 		width: 20%;
 		height: auto;
 		z-index: 10;
 		cursor: pointer;
-	}
-	#parent_map.edit_mode {
-		top: 7%;
 	}
 
 	#parent_map.hidden {
