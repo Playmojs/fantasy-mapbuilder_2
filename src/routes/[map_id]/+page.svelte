@@ -227,7 +227,6 @@
 	let map_id: number = +$page.params.map_id;
 
 	let current_map: map = maps[map_id];
-	const current_markers = current_map.marker_ids.map((id) => markers[id]);
 
 	let set_informatic_text: any;
 	$: set_informatic_text = $set_informatic;
@@ -263,8 +262,9 @@
 	};
 </script>
 
-<Map markers={current_markers} image={current_map.image} />
+<Map markers={current_map.marker_ids.map((id) => markers[id])} image={current_map.image} />
 <ParentMap parent_id={current_map.parent_id} parent_image={current_map.parent_image} {choose_map} />
+
 <Modal visible={show_modal} close={() => (show_modal = false)}>
 	<MapGrid entities={Object.values(maps)} selectMap={handle_map_select} />
 </Modal>
