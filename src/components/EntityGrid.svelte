@@ -1,18 +1,30 @@
 <script lang="ts">
+	import { type SpecialEntity } from '$lib/types';
+	import { bind_components } from '$lib/bind_component';
+
+	export let special_entities_: SpecialEntity[] = [];
 	export let entities: any = [];
-	export let selectMap;
 
 	const handleMapClick = (entity: any) => {
-		selectMap(entity.id);
+		bind_components(entity.id);
 	};
 </script>
 
 <div id="grid-container">
 	<div id="grid">
-		{#each entities as entity}
-			<div class="map-item" on:click={() => handleMapClick(entity)}>
+		{#each special_entities_ as special_entity}
+			<div class="entity-item" on:click={special_entity.func}>
 				<div class="image-container">
-					<img class="map-image" src={entity.image} alt={entity.title} />
+					<img class="entity-image" src={special_entity.image} alt={special_entity.title} />
+				</div>
+				<p>{special_entity.title}</p>
+			</div>
+		{/each}
+
+		{#each entities as entity}
+			<div class="entity-item" on:click={() => handleMapClick(entity)}>
+				<div class="image-container">
+					<img class="entity-image" src={entity.image} alt={entity.title} />
 				</div>
 				<p>{entity.title}</p>
 			</div>
@@ -33,7 +45,7 @@
 		gap: 20px;
 	}
 
-	.map-item {
+	.entity-item {
 		cursor: pointer;
 		text-align: center;
 	}
@@ -45,7 +57,7 @@
 		overflow: hidden;
 	}
 
-	.map-image {
+	.entity-image {
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -54,7 +66,7 @@
 		max-height: 100%;
 	}
 
-	.map-item p {
+	.entity-item p {
 		color: white;
 	}
 

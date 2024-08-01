@@ -3,11 +3,14 @@
 
 	let parentMap: HTMLImageElement;
 
-	import { store } from '../store.svelte';
+	import { store, add_map } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
+	import { TargetType, type SpecialEntity } from '$lib/types';
+	import { bind_components } from '$lib/bind_component';
 
 	export let parent_image: string | null;
 	export let parent_id: number | null;
+	export let change_parent_map: any;
 
 	onMount(() => {
 		parentMap.addEventListener('click', () => parent_func(parent_id));
@@ -15,12 +18,20 @@
 
 	function parent_func(parent_id: number | null) {
 		if (parent_id === null && store.edit_mode) {
-			store.show_modal = true;
+			change_parent_map(TargetType.ParentMap, null, [add_map]);
 		}
 		if (parent_id !== null && !store.edit_mode) {
 			gotoMap(parent_id);
 		}
 	}
+
+	let remove_map: SpecialEntity = {
+		image: '/assets/minus.png',
+		title: 'Remove Map',
+		func: () => {
+			bind_components(null);
+		}
+	};
 </script>
 
 <img
@@ -33,9 +44,7 @@
 />
 <button
 	id="edit_map"
-	onclick={() => {
-		store.show_modal = true;
-	}}
+	onclick={change_parent_map(TargetType.ParentMap, null, [remove_map, add_map])}
 	class:hidden={!store.edit_mode || !parent_image}
 >
 </button>

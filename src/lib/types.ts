@@ -8,6 +8,13 @@ export enum MarkerType {
 	Map,
 }
 
+export enum TargetType {
+	Marker,
+	Map,
+	Informatic,
+	ParentMap
+}
+
 export type MarkerData = {
 	id: number;
 	type: MarkerType;
@@ -31,3 +38,9 @@ export type Article = {
 	text: string;
 	article_image: string | null;
 };
+
+export type SpecialEntity = {
+	image: string | null;
+	title: string;
+	func: () => void;
+}
