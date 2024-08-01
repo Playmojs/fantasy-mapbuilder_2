@@ -8,7 +8,7 @@
 	import {
 		MarkerType,
 		SearchParam,
-		type Information,
+		type Article,
 		type MapData,
 		type MarkerData
 	} from '$lib/types';
@@ -49,18 +49,18 @@
 		}
 	};
 
-	const informations: { [id: number]: Information } = {
-		0: { id: 0, text: '#Magil \n This is Magil' },
-		1: { id: 1, text: '#Second Realm \n This is the second Realm' },
-		2: { id: 2, text: 'This is a portal :)' }
+	const articles: { [id: number]: Article } = {
+		0: { id: 0, text: '#Magil \n This is Magil', article_image: "/assets/magil_image.jpg" },
+		1: { id: 1, text: '#Second Realm \n This is the second Realm', article_image: null },
+		2: { id: 2, text: 'This is a portal :)', article_image: null }
 	};
 
 	let current_map = $derived(maps[+$page.params.map_id]);
-	let current_markers = $derived(current_map.marker_ids.map((id) => markers[id]));
-	let text = $derived(informations[store.non_map_informatic_id ?? current_map.informatic_id].text);
+	let current_markers = $derived(current_map.marker_ids.map((id: number) => markers[id]));
+	let current_article = $derived(articles[store.non_map_informatic_id ?? current_map.informatic_id]);
 </script>
 
 <Map markers={current_markers} image={current_map.image} />
 <ParentMap parent_id={current_map.parent_id} parent_image={current_map.parent_image} />
-<Informatic {text} />
+<Informatic text={current_article.text} article_image={current_article.article_image} />
 <Toolbar />

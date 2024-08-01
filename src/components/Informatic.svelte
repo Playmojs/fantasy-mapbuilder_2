@@ -4,10 +4,9 @@
 	import Editor from './Editor.svelte';
 
 	let informaticWindow: HTMLDivElement;
-	let { text } = $props<{ text: string }>();
+	let { text, article_image } = $props<{ text: string,  article_image:string | null }>();
 
-	let minimized: boolean = false;
-
+	let minimized: boolean = $state<boolean>(false)
 	let originalX: number;
 	let originalMouseX: number;
 	let windowWidth: number;
@@ -36,6 +35,7 @@
 
 	function toggleMinimize() {
 		minimized = !minimized;
+		console.log('minimize')
 	}
 
 	function toggleEditable() {
@@ -47,14 +47,17 @@
 	id="informaticWindow"
 	bind:this={informaticWindow}
 	class:edit_mode={store.edit_mode}
-	class:minimized
+	class:minimized={minimized}
 >
-	<div id="resizer" on:mousedown={resizerOnMouseDown}></div>
+	<div id="resizer" onmousedown={resizerOnMouseDown}></div>
 	<div id="toolbar">
-		<button id="minimize_button" on:click={toggleMinimize} />
+		<button id="minimize_button" onclick={toggleMinimize}></button>
 
-		<button id="edit_content_button" class:edit_mode={store.edit_mode} on:click={toggleEditable} />
+		<button id="edit_content_button" class:edit_mode={store.edit_mode} onclick={toggleEditable}></button>
 	</div>
+	
+	<img id="article_image" src={article_image} alt="Article image" class:hidden={article_image===null}>
+
 	<div id="informatic" class={store.edit_mode ? 'editable' : 'non-editable'}>
 		{#if store.edit_mode}
 			<Editor />
@@ -64,7 +67,7 @@
 	</div>
 </div>
 
-<button id="maximize_button" on:click={toggleMinimize} />
+<button id="maximize_button" onclick={toggleMinimize}></button>
 
 <style>
 	#informaticWindow {
@@ -75,6 +78,8 @@
 		height: 100%;
 		width: 34%;
 		z-index: 10;
+		display: flex;
+		flex-direction: column;
 	}
 
 	#informaticWindow.minimized {
@@ -83,8 +88,7 @@
 
 	#informatic {
 		position: relative;
-		top: 30%;
-		height: 60%;
+		height: inherit;
 		left: 0;
 		right: 0;
 		background-color: inherit;
@@ -135,20 +139,20 @@
 
 	#toolbar {
 		position: relative;
-		height: 5%;
+		height: 10%;
 		width: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
+		flex-shrink: 0;
 	}
 
 	#toolbar button {
 		position: relative;
 		background-color: #555;
-		height: 100%;
+		height: 60%;
 		aspect-ratio: 1.5;
-		margin-right: 20px;
-		margin-top: 20px;
+		margin-right: 10px;
 		shape-outside: circle();
 		border-radius: 15%;
 		background-size: contain;
@@ -202,6 +206,21 @@
 	}
 
 	#maximize_button.hidden {
+		display: none;
+	}
+
+	#article_image
+	{
+		position:relative;
+		height: 30%;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		flex-shrink: 0;
+	}
+
+	#article_image.hidden
+	{
 		display: none;
 	}
 </style>

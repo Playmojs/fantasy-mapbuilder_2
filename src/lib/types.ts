@@ -25,7 +25,8 @@ export type MapData = {
 	informatic_id: number;
 };
 
-export type Information = {
+export type Article = {
 	id: number;
 	text: string;
+	article_image: string | null;
 };
