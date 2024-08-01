@@ -1,130 +1,79 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import edit_mode, { set_informatic } from '../store';
-	import showdown from 'showdown';
-
-	let editable: boolean;
-	$: editable = $edit_mode;
+	import SvelteMarkdown from 'svelte-markdown';
+	import { store } from '../store.svelte';
+	import Editor from './Editor.svelte';
 
 	let informaticWindow: HTMLDivElement;
-	let informatic: HTMLDivElement;
-	let editButton: HTMLButtonElement;
-	let minimizeButton: HTMLButtonElement;
-	let maximizeButton: HTMLButtonElement;
-	let image: HTMLImageElement;
-	let resizer: HTMLDivElement;
-	let text: string = '';
+	let { text, article_image } = $props<{ text: string; article_image: string | null }>();
 
-	let article_image_: string | null;
-	$: article_image_;
-
-	let minimized: boolean = false;
-
-	onMount(() => {
-		// if (editButton) {
-		// 	editButton.addEventListener('click', toggleEditable);
-		// }
-		if (minimizeButton) {
-			minimizeButton.addEventListener('click', toggleMinimize);
-		}
-		if (maximizeButton) {
-			maximizeButton.addEventListener('click', toggleMinimize);
-		}
-
-		if (resizer) {
-			let originalX: number;
-			let originalMouseX: number;
-			let windowWidth: number;
-
-			resizer.addEventListener('mousedown', (e) => {
-				e.preventDefault();
-				windowWidth = window.innerWidth / 100;
-
-				originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
-				originalMouseX = e.pageX;
-				window.addEventListener('mousemove', resize);
-				window.addEventListener('mouseup', stopResize);
-			});
-
-			function resize(e: MouseEvent) {
-				let newX = originalX + (e.pageX - originalMouseX) / windowWidth;
-
-				newX = newX < 92 ? (newX < 0 ? 0 : newX) : 92;
-
-				informaticWindow.style.left = `${newX}%`;
-				informaticWindow.style.width = `${100 - newX}%`;
-			}
-
-			function stopResize() {
-				window.removeEventListener('mousemove', resize);
-				window.removeEventListener('mouseup', stopResize);
-			}
-		}
-	});
-
-	const set_informatic_text = (new_text: string, article_image: string | null) => {
-		if (!editable) {
-			text = new_text;
-			update_informatic(editable);
-			article_image_ = article_image;
-		}
+	let minimized: boolean = $state<boolean>(false);
+	let originalX: number;
+	let originalMouseX: number;
+	let windowWidth: number;
+	const resizerOnMouseDown = (e: MouseEvent) => {
+		e.preventDefault();
+		windowWidth = window.innerWidth / 100;
+		originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
+		originalMouseX = e.pageX;
+		window.addEventListener('mousemove', resize);
+		window.addEventListener('mouseup', stopResize);
 	};
-	set_informatic.set(set_informatic_text);
+
+	function resize(e: MouseEvent) {
+		let newX = originalX + (e.pageX - originalMouseX) / windowWidth;
+
+		newX = newX < 92 ? (newX < 0 ? 0 : newX) : 92;
+
+		informaticWindow.style.left = `${newX}%`;
+		informaticWindow.style.width = `${100 - newX}%`;
+	}
+
+	function stopResize() {
+		window.removeEventListener('mousemove', resize);
+		window.removeEventListener('mouseup', stopResize);
+	}
 
 	function toggleMinimize() {
 		minimized = !minimized;
+		console.log('minimize');
 	}
 
 	function toggleEditable() {
-		if (editable) {
-			text = informatic.innerText;
-		}
-		edit_mode.update((edit_mode) => !edit_mode);
-
-		update_informatic(!editable);
-	}
-
-	function update_informatic(editable: boolean) {
-		if (editable) {
-			informatic.innerText = text;
-		} else {
-			if (informatic) {
-				let converter = new showdown.Converter();
-				informatic.innerHTML = converter.makeHtml(text);
-			}
-		}
+		store.edit_mode = !store.edit_mode;
 	}
 </script>
 
-<div id="informaticWindow" bind:this={informaticWindow} class:edit_mode={editable} class:minimized>
-	<div id="resizer" bind:this={resizer}></div>
+<div
+	id="informaticWindow"
+	bind:this={informaticWindow}
+	class:edit_mode={store.edit_mode}
+	class:minimized
+>
+	<div id="resizer" onmousedown={resizerOnMouseDown}></div>
 	<div id="toolbar">
-		<button id="minimize_button" bind:this={minimizeButton} on:click={toggleMinimize} />
+		<button id="minimize_button" onclick={toggleMinimize}></button>
 
-		<button
-			id="edit_content_button"
-			class:editable
-			bind:this={editButton}
-			on:click={toggleEditable}
-		/>
+		<button id="edit_content_button" class:edit_mode={store.edit_mode} onclick={toggleEditable}
+		></button>
 	</div>
-	<img id="article_image" src={article_image_} alt="Article image" class:hidden={article_image_===null}>
-	<div
-		id="informatic"
-		class={editable ? 'editable' : 'non-editable'}
-		bind:this={informatic}
-		contenteditable={editable}
-	>
-		{text}
+
+	<img
+		id="article_image"
+		src={article_image}
+		alt="Article image"
+		class:hidden={article_image === null}
+	/>
+
+	<div id="informatic" class={store.edit_mode ? 'editable' : 'non-editable'}>
+		{#if store.edit_mode}
+			<Editor />
+		{:else}
+			<SvelteMarkdown source={text} />
+		{/if}
 	</div>
 </div>
 
-<button
-	id="maximize_button"
-	bind:this={maximizeButton}
-	class:hidden={!minimized}
-	on:click={toggleMinimize}
-/>
+<button id="maximize_button" onclick={toggleMinimize}></button>
 
 <style>
 	#informaticWindow {
@@ -152,7 +101,6 @@
 		font-size: large;
 		text-align: justify;
 		overflow-y: scroll;
-		padding: 10px;
 		margin-bottom: 10px;
 	}
 
@@ -267,9 +215,8 @@
 		display: none;
 	}
 
-	#article_image
-	{
-		position:relative;
+	#article_image {
+		position: relative;
 		height: 30%;
 		display: block;
 		margin-left: auto;
@@ -277,8 +224,7 @@
 		flex-shrink: 0;
 	}
 
-	#article_image.hidden
-	{
+	#article_image.hidden {
 		display: none;
 	}
 </style>

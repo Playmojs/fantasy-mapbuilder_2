@@ -1,27 +1,24 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
 
 	let parentMap: HTMLImageElement;
 
-	import edit_mode from '../store';
-	let editable: boolean;
-	$: editable = $edit_mode;
+	import { store } from '../store.svelte';
+	import { gotoMap } from '$lib/goto_map';
 
 	export let parent_image: string | null;
 	export let parent_id: number | null;
-	export let choose_map: any;
 
 	onMount(() => {
 		parentMap.addEventListener('click', () => parent_func(parent_id));
 	});
 
 	function parent_func(parent_id: number | null) {
-		if (parent_id === null && editable) {
-			choose_map();
+		if (parent_id === null && store.edit_mode) {
+			store.show_modal = true;
 		}
-		if (parent_id !== null && !editable) {
-			location.href = `/${parent_id}`;
+		if (parent_id !== null && !store.edit_mode) {
+			gotoMap(parent_id);
 		}
 	}
 </script>
@@ -29,12 +26,19 @@
 <img
 	src={parent_image ? parent_image : '/assets/parent_plus.png'}
 	id="parent_map"
-	class:edit_mode={editable}
-	class:hidden={!parent_image && !editable}
+	class:edit_mode={store.edit_mode}
+	class:hidden={!parent_image && !store.edit_mode}
 	bind:this={parentMap}
 	alt="Parent Map"
 />
-<button id="edit_map" on:click={choose_map} class:hidden={!editable || !parent_image}> </button>
+<button
+	id="edit_map"
+	onclick={() => {
+		store.show_modal = true;
+	}}
+	class:hidden={!store.edit_mode || !parent_image}
+>
+</button>
 
 <style>
 	#parent_map {
