@@ -6,40 +6,55 @@
 	let informaticWindow: HTMLDivElement;
 	let { text, article_image } = $props<{ text: string; article_image: string | null }>();
 
-	let minimized: boolean = $state<boolean>(false);
 	let originalX: number;
 	let originalMouseX: number;
 	let windowWidth: number;
+
 	const resizerOnMouseDown = (e: MouseEvent) => {
 		e.preventDefault();
 		windowWidth = window.innerWidth / 100;
 		originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
 		originalMouseX = e.pageX;
-		window.addEventListener('mousemove', resize);
+		window.addEventListener('mousemove', resizeMouse);
 		window.addEventListener('mouseup', stopResize);
 	};
 
-	function resize(e: MouseEvent) {
-		let newX = originalX + (e.pageX - originalMouseX) / windowWidth;
+	const resizerOnTouchDown = (e: TouchEvent) => {
+		e.preventDefault();
+		windowWidth = window.innerWidth / 100;
+		originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
+		originalMouseX = e.touches[0].pageX
+		window.addEventListener('touchmove', resizeTouch);
+		window.addEventListener('touchend', stopResize);
+	}
+
+	function resizeMouse(e: MouseEvent) 
+	{
+		resize(e.pageX);
+	}
+
+	function resizeTouch(e: TouchEvent) {
+		e.stopPropagation;
+		if(e.touches.length !==1){return}
+		resize(e.touches[0].pageX);
+	}
+
+	function resize(page_x: number) {
+		let newX = originalX + (page_x - originalMouseX) / windowWidth;
 
 		newX = newX < 92 ? (newX < 0 ? 0 : newX) : 92;
+
+		store.informatic_width = newX;
 
 		informaticWindow.style.left = `${newX}%`;
 		informaticWindow.style.width = `${100 - newX}%`;
 	}
 
 	function stopResize() {
-		window.removeEventListener('mousemove', resize);
+		window.removeEventListener('mousemove', resizeMouse);
 		window.removeEventListener('mouseup', stopResize);
-	}
-
-	function toggleMinimize() {
-		minimized = !minimized;
-		console.log('minimize');
-	}
-
-	function toggleEditable() {
-		store.edit_mode = !store.edit_mode;
+		window.removeEventListener('touchmove', resizeTouch);
+		window.removeEventListener('touchend', stopResize);
 	}
 </script>
 
@@ -47,15 +62,9 @@
 	id="informaticWindow"
 	bind:this={informaticWindow}
 	class:edit_mode={store.edit_mode}
-	class:minimized
+	class:hidden={store.minimized}
 >
-	<div id="resizer" onmousedown={resizerOnMouseDown}></div>
-	<div id="toolbar">
-		<button id="minimize_button" onclick={toggleMinimize}></button>
-
-		<button id="edit_content_button" class:edit_mode={store.edit_mode} onclick={toggleEditable}
-		></button>
-	</div>
+	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 
 	<img
 		id="article_image"
@@ -73,48 +82,45 @@
 	</div>
 </div>
 
-<button id="maximize_button" onclick={toggleMinimize}></button>
-
 <style>
 	#informaticWindow {
 		position: absolute;
 		background-color: rgb(47, 47, 47);
-		top: 0%;
+		top: 50px; /* TODO: Define once */
+		bottom: 0;
 		left: 66%;
-		height: 100%;
 		width: 34%;
 		z-index: 10;
 		display: flex;
 		flex-direction: column;
+		gap: 10px;
+		padding: 10px;
 	}
 
-	#informaticWindow.minimized {
+	#informaticWindow.hidden {
 		display: none;
 	}
 
 	#informatic {
 		position: relative;
-		height: inherit;
+		height: 100%;
 		left: 0;
 		right: 0;
 		background-color: inherit;
 		font-size: large;
 		text-align: justify;
 		overflow-y: scroll;
-		margin-bottom: 10px;
 	}
 
 	#informatic.non-editable {
 		background-color: rgb(47, 47, 47);
 		color: white;
-		margin: 0px;
 		white-space: normal;
 	}
 
 	#informatic.editable {
 		background-color: white;
 		color: black;
-		margin: 20px;
 		white-space: pre-wrap;
 	}
 
@@ -143,44 +149,6 @@
 		background-color: #888;
 	}
 
-	#toolbar {
-		position: relative;
-		height: 10%;
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-		flex-shrink: 0;
-	}
-
-	#toolbar button {
-		position: relative;
-		background-color: #555;
-		height: 60%;
-		aspect-ratio: 1.5;
-		margin-right: 10px;
-		shape-outside: circle();
-		border-radius: 15%;
-		background-size: contain;
-		border-color: transparent;
-	}
-
-	#toolbar button:hover {
-		background-color: #888;
-	}
-
-	#edit_content_button {
-		background: url('/assets/edit-icon.png') no-repeat center center;
-	}
-
-	#minimize_button {
-		background: url('/assets/minus.png') no-repeat center center;
-	}
-
-	#edit_content_button.editable {
-		background-color: #111;
-	}
-
 	#resizer {
 		position: absolute;
 		top: 0;
@@ -189,30 +157,6 @@
 		width: 10px;
 		height: 100%;
 		z-index: 10;
-	}
-
-	#maximize_button {
-		position: absolute;
-		height: 5%;
-		aspect-ratio: 1.5;
-		top: 0%;
-		left: 94%;
-		margin-right: 2%;
-		margin-top: 2%;
-		shape-outside: circle();
-		border-radius: 15%;
-		background: url('/assets/plus.png') no-repeat center center;
-		background-size: contain;
-		background-color: #555;
-		border-color: transparent;
-	}
-
-	#maximize_button:hover {
-		background-color: #888;
-	}
-
-	#maximize_button.hidden {
-		display: none;
 	}
 
 	#article_image {

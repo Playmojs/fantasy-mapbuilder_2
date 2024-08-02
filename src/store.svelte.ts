@@ -6,6 +6,8 @@ class Store {
     edit_mode = $state(false);
     non_map_informatic_id = writable<number | null>(null)
     show_modal = $state(false);
+    minimized = $state(false);
+    informatic_width = $state(66);
 }
 
 export let add_map: SpecialEntity =

@@ -1,31 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import panzoom from 'panzoom';
 	import Marker from './Marker.svelte';
 	import type { MarkerData } from '$lib/types';
+	import ZoomPan from './ZoomPan.svelte';
 
 	export let markers: MarkerData[];
 	export let image: string;
 
 	let mapContainer: HTMLDivElement;
 	let map_: HTMLImageElement;
-
-	onMount(() => {
-		var map_zoom = panzoom(mapContainer, {
-			bounds: true,
-			boundsPadding: 0,
-			initialZoom: 1,
-			maxZoom: 3,
-			minZoom: 0.7
-		});
-		map_.addEventListener('mouseenter', () => {
-			map_zoom.resume();
-		});
-
-		map_.addEventListener('mouseleave', () => {
-			map_zoom.pause();
-		});
-	});
 
 	function get_relative_movement(x: number, y: number) {
 		let rect = map_.getBoundingClientRect();
@@ -37,6 +20,7 @@
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
+	<ZoomPan parent_selector="#map-container" />
 	<img id="map" alt="Map" bind:this={map_} src={image} />
 	{#each markers as marker (marker.id)}
 		<Marker marker_data={marker} {get_relative_movement} />

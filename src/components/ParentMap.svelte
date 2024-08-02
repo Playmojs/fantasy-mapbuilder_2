@@ -52,15 +52,12 @@
 <style>
 	#parent_map {
 		position: fixed;
-		top: 0%;
+		top: 50px;
 		right: 85%;
 		width: 15%;
 		height: auto;
 		z-index: 10;
 		cursor: pointer;
-	}
-	#parent_map.edit_mode {
-		top: 7%;
 	}
 
 	.hidden {

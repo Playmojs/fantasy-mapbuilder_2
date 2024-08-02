@@ -12,59 +12,70 @@
 	function showThirdAlert() {
 		alert('Third button clicked!');
 	}
+
+	function toggleMinimize() {
+		store.minimized = !store.minimized;
+	}
+
+	function toggleEditable() {
+		store.edit_mode = !store.edit_mode;
+	}
 </script>
 
-<div class="toolbar" class:visible={!store.edit_mode}>
-	<button class="button1" on:click={showAlert}></button>
-	<button class="button2" on:click={showSecondAlert}></button>
-	<button class="button3" on:click={showThirdAlert}></button>
+<div id="toolbar">
+	<button onclick={showAlert} style="background-image: url('/assets/a_town.png');"></button>
+	<button onclick={showSecondAlert} style="background-image: url('/assets/magil.png');"></button>
+	<button onclick={showThirdAlert} style="background-image: url('/assets/a_town.png');"></button>
+
+	<button
+		id="minimize_button"
+		onclick={toggleMinimize}
+		style="background-image: url('/assets/{store.minimized ? 'plus' : 'minus'}.png');"
+	></button>
+	<button id="edit_content_button" class:edit_mode={store.edit_mode} onclick={toggleEditable}
+	></button>
 </div>
 
 <style>
-	.toolbar {
+	#toolbar {
 		position: fixed;
 		top: 0;
 		left: 0;
 		width: 100%;
-		height: 7%;
+		height: 50px; /* TODO: Define once */
 		background-color: #4b4343;
 		color: white;
 		display: flex;
-		justify-content: 500px; /* Ensures buttons are at the right end */
+		justify-content: flex-end; /* Ensures buttons are at the right end */
 		align-items: center;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-		z-index: 5;
+		z-index: 11;
 	}
-	.toolbar.visible {
-		display: none;
-	}
-	.toolbar button {
-		width: 80%; /* Adjust the size as needed */
+	#toolbar button {
+		aspect-ratio: 4/3; /* Adjust the size as needed */
 		height: 80%; /* Adjust the size as needed */
 		border: none;
 		padding: 0;
 		cursor: pointer;
 		background-size: contain;
-		margin-left: 100px; /* Adjust margin for the third button */
+		background-position: center center;
+		background-color: #4b4343;
+		background-repeat: no-repeat;
 	}
 
-	.button1 {
-		background: url('/assets/a_town.png') no-repeat center center;
-	}
-
-	.button2 {
-		background: url('/assets/magil.png') no-repeat center center;
-	}
-
-	.button3 {
-		background: url('/assets/a_town.png') no-repeat center center;
-	}
-
-	.toolbar button:first-child {
-		margin-left: 500px; /* How far to the right the buttons are */
-	}
-
-	.toolbar button:hover {
+	#toolbar button:hover {
 		opacity: 0.8; /* Slight hover effect */
+	}
+
+	#edit_content_button {
+		background: url('/assets/edit-icon.png');
+	}
+
+	#edit_content_button.edit_mode {
+		background-color: #111;
+	}
+
+	#minimize_button {
+		margin-left: 50%;
 	}
 </style>
