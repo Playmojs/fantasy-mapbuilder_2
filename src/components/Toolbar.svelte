@@ -30,9 +30,7 @@
 	<button
 		id="minimize_button"
 		onclick={toggleMinimize}
-		style={store.minimized
-			? "background-image: url('/assets/plus.png');"
-			: "background-image: url('/assets/minus.png');"}
+		style="background-image: url('/assets/{store.minimized ? 'plus' : 'minus'}.png');"
 	></button>
 	<button id="edit_content_button" class:edit_mode={store.edit_mode} onclick={toggleEditable}
 	></button>

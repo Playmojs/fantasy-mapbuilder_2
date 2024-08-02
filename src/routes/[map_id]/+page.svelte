@@ -5,13 +5,7 @@
 	import Toolbar from '../../components/Toolbar.svelte';
 	import ParentMap from '../../components/ParentMap.svelte';
 	import { page } from '$app/stores';
-	import {
-		MarkerType,
-		SearchParam,
-		type Article,
-		type MapData,
-		type MarkerData
-	} from '$lib/types';
+	import { MarkerType, SearchParam, type Article, type MapData, type MarkerData } from '$lib/types';
 
 	let maps: { [id: number]: MapData } = {
 		0: {
@@ -50,14 +44,16 @@
 	};
 
 	const articles: { [id: number]: Article } = {
-		0: { id: 0, text: '#Magil \n This is Magil', article_image: "/assets/magil_image.jpg" },
+		0: { id: 0, text: '#Magil \n This is Magil', article_image: '/assets/magil_image.jpg' },
 		1: { id: 1, text: '#Second Realm \n This is the second Realm', article_image: null },
 		2: { id: 2, text: 'This is a portal :)', article_image: null }
 	};
 
 	let current_map = $derived(maps[+$page.params.map_id]);
 	let current_markers = $derived(current_map.marker_ids.map((id: number) => markers[id]));
-	let current_article = $derived(articles[store.non_map_informatic_id ?? current_map.informatic_id]);
+	let current_article = $derived(
+		articles[store.non_map_informatic_id ?? current_map.informatic_id]
+	);
 </script>
 
 <Map markers={current_markers} image={current_map.image} />

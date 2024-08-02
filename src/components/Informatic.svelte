@@ -23,6 +23,8 @@
 
 		newX = newX < 92 ? (newX < 0 ? 0 : newX) : 92;
 
+		store.informatic_width = newX;
+
 		informaticWindow.style.left = `${newX}%`;
 		informaticWindow.style.width = `${100 - newX}%`;
 	}
