@@ -2,9 +2,9 @@
 	import SvelteMarkdown from 'svelte-markdown';
 	import { store } from '../store.svelte';
 	import Editor from './Editor.svelte';
+	import { current_article } from '$lib/data';
 
 	let informaticWindow: HTMLDivElement;
-	let { text, article_image } = $props<{ text: string; article_image: string | null }>();
 
 	let originalX: number;
 	let originalMouseX: number;
@@ -68,16 +68,16 @@
 
 	<img
 		id="article_image"
-		src={article_image}
+		src={$current_article.article_image}
 		alt="Article image"
-		class:hidden={article_image === null}
+		class:hidden={$current_article.article_image === null}
 	/>
 
 	<div id="informatic" class={store.edit_mode ? 'editable' : 'non-editable'}>
 		{#if store.edit_mode}
 			<Editor />
 		{:else}
-			<SvelteMarkdown source={text} />
+			<SvelteMarkdown source={$current_article.text} />
 		{/if}
 	</div>
 </div>

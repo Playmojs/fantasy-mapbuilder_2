@@ -3,9 +3,7 @@
 	import Marker from './Marker.svelte';
 	import type { MarkerData } from '$lib/types';
 	import ZoomPan from './ZoomPan.svelte';
-
-	export let markers: MarkerData[];
-	export let image: string;
+	import { current_map, current_markers } from '$lib/data';
 
 	let mapContainer: HTMLDivElement;
 	let map_: HTMLImageElement;
@@ -21,8 +19,8 @@
 
 <div id="map-container" bind:this={mapContainer}>
 	<ZoomPan parent_selector="#map-container" />
-	<img id="map" alt="Map" bind:this={map_} src={image} />
-	{#each markers as marker (marker.id)}
+	<img id="map" alt="Map" bind:this={map_} src={$current_map.image} />
+	{#each $current_markers as marker (marker.id)}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}
 </div>

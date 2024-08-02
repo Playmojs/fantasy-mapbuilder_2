@@ -7,10 +7,13 @@
 	import { gotoMap } from '$lib/goto_map';
 	import { TargetType, type SpecialEntity } from '$lib/types';
 	import { bind_components } from '$lib/bind_component';
+	import { current_map } from '$lib/data';
 
-	export let parent_image: string | null;
-	export let parent_id: number | null;
 	export let change_parent_map: any;
+	let parent_image: string | null;
+	$: parent_image = $current_map.parent_image;
+	let parent_id: number | null;
+	$: parent_id = $current_map.parent_id;
 
 	onMount(() => {
 		parentMap.addEventListener('click', () => parent_func(parent_id));

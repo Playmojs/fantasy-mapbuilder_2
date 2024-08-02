@@ -1,5 +1,6 @@
 <script lang="ts">
-	export let visible = false;
+	import { store } from "../store.svelte";
+
 	export let close;
 
 	const handleClose = (e: Event) => {
@@ -8,7 +9,7 @@
 	};
 </script>
 
-<div class="modal" on:click={handleClose} class:hidden={!visible}>
+<div class="modal" on:click={handleClose} class:hidden={!store.show_modal}>
 	<div class="modal-content" on:click|stopPropagation>
 		<span class="close" on:click={handleClose}>&times;</span>
 		<slot></slot>

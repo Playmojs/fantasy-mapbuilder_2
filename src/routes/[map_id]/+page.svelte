@@ -22,14 +22,12 @@
 	};
 </script>
 
-<Map markers={$current_markers} image={$current_map.image} />
+<Map />
 <ParentMap
-	parent_id={$current_map.parent_id}
-	parent_image={$current_map.parent_image}
 	change_parent_map={open_modal}
 />
-<Informatic text={$current_article.text} article_image={$current_article.article_image} />
+<Informatic />
 <Toolbar />
-<Modal visible={store.show_modal} close={() => (store.show_modal = false)}>
+<Modal close={() => (store.show_modal = false)}>
 	<EntityGrid {special_entities_} entities={Object.values($maps)} />
 </Modal>
