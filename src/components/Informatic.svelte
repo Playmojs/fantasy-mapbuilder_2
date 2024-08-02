@@ -9,17 +9,38 @@
 	let originalX: number;
 	let originalMouseX: number;
 	let windowWidth: number;
+
 	const resizerOnMouseDown = (e: MouseEvent) => {
 		e.preventDefault();
 		windowWidth = window.innerWidth / 100;
 		originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
 		originalMouseX = e.pageX;
-		window.addEventListener('mousemove', resize);
+		window.addEventListener('mousemove', resizeMouse);
 		window.addEventListener('mouseup', stopResize);
 	};
 
-	function resize(e: MouseEvent) {
-		let newX = originalX + (e.pageX - originalMouseX) / windowWidth;
+	const resizerOnTouchDown = (e: TouchEvent) => {
+		e.preventDefault();
+		windowWidth = window.innerWidth / 100;
+		originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
+		originalMouseX = e.touches[0].pageX
+		window.addEventListener('touchmove', resizeTouch);
+		window.addEventListener('touchend', stopResize);
+	}
+
+	function resizeMouse(e: MouseEvent) 
+	{
+		resize(e.pageX);
+	}
+
+	function resizeTouch(e: TouchEvent) {
+		e.stopPropagation;
+		if(e.touches.length !==1){return}
+		resize(e.touches[0].pageX);
+	}
+
+	function resize(page_x: number) {
+		let newX = originalX + (page_x - originalMouseX) / windowWidth;
 
 		newX = newX < 92 ? (newX < 0 ? 0 : newX) : 92;
 
@@ -30,8 +51,10 @@
 	}
 
 	function stopResize() {
-		window.removeEventListener('mousemove', resize);
+		window.removeEventListener('mousemove', resizeMouse);
 		window.removeEventListener('mouseup', stopResize);
+		window.removeEventListener('touchmove', resizeTouch);
+		window.removeEventListener('touchend', stopResize);
 	}
 </script>
 
@@ -41,7 +64,7 @@
 	class:edit_mode={store.edit_mode}
 	class:hidden={store.minimized}
 >
-	<div id="resizer" onmousedown={resizerOnMouseDown}></div>
+	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 
 	<img
 		id="article_image"
