@@ -12,7 +12,6 @@ export const target = new Target;
 export const bind_components = (id: number | null) => {
     switch (target.update_target) {
         case TargetType.ParentMap:
-            console.log("inside func!")
             maps.update((maps) => {
                 let map_id = get(current_map_id);
                 maps[map_id].parent_id = id;

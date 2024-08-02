@@ -32,6 +32,11 @@
 			bind_components(null);
 		}
 	};
+
+	function edit_wrapper()
+	{
+		change_parent_map(TargetType.ParentMap, null, [remove_map, add_map]);
+	}
 </script>
 
 <img
@@ -44,7 +49,7 @@
 />
 <button
 	id="edit_map"
-	onclick={change_parent_map(TargetType.ParentMap, null, [remove_map, add_map])}
+	onclick={edit_wrapper}
 	class:hidden={!store.edit_mode || !parent_image}
 >
 </button>
@@ -67,7 +72,7 @@
 	#edit_map {
 		position: fixed;
 		left: 14.5%;
-		top: 7%;
+		top: 50px;
 		width: 3%;
 		height: 3%;
 		background: url('/assets/cog.png') no-repeat center center;
