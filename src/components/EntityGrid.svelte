@@ -13,7 +13,7 @@
 <div id="grid-container">
 	<div id="grid">
 		{#each special_entities_ as special_entity}
-			<div class="entity-item" on:click={special_entity.func}>
+			<div class="entity-item" onclick={special_entity.func}>
 				<div class="image-container">
 					<img class="entity-image" src={special_entity.image} alt={special_entity.title} />
 				</div>
@@ -22,7 +22,7 @@
 		{/each}
 
 		{#each entities as entity}
-			<div class="entity-item" on:click={() => handleMapClick(entity)}>
+			<div class="entity-item" onclick={() => handleMapClick(entity)}>
 				<div class="image-container">
 					<img class="entity-image" src={entity.image} alt={entity.title} />
 				</div>
