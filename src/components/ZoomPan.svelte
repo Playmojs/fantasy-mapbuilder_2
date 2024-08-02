@@ -2,13 +2,12 @@
 	import { onMount } from 'svelte';
 	import { store } from '../store.svelte';
 
-	export let parent_selector = ''; // CSS selector to find the parent container
+	export let parent_selector = '';
 
 	let parent: any;
 	let scale = 1;
 	let current_x = 0;
 	let current_y = 0;
-	let is_panning = false;
 	let start_x = 0;
 	let start_y = 0;
 
@@ -20,7 +19,7 @@
 
 	function handle_mouse_down(event: MouseEvent) {
 		event.preventDefault();
-		is_panning = true;
+		store.is_panning = true;
 		start_x = event.clientX - current_x;
 		start_y = event.clientY - current_y;
 		window.addEventListener('mousemove', handle_mouse_move);
@@ -28,21 +27,21 @@
 	}
 
 	function handle_mouse_move(event: MouseEvent) {
-		if (!is_panning) return;
+		if (!store.is_panning) return;
 		current_x = clamp(event.clientX - start_x, get_min_x(), 0);
 		current_y = clamp(event.clientY - start_y, get_min_y(), get_max_y());
 		update_transform();
 	}
 
 	function handle_mouse_up() {
-		is_panning = false;
+		store.is_panning = false;
 		window.removeEventListener('mousemove', handle_mouse_move);
 		window.removeEventListener('mouseup', handle_mouse_up);
 	}
 
 	function handle_touch_start(event: TouchEvent) {
 		if (event.touches.length === 1) {
-			is_panning = true;
+			store.is_panning = true;
 			start_x = event.touches[0].clientX - current_x;
 			start_y = event.touches[0].clientY - current_y;
 		} else if (event.touches.length === 2) {
@@ -53,11 +52,11 @@
 
 	function handle_touch_move(event: TouchEvent) {
 		event.preventDefault()
-		if (event.touches.length === 1 && is_panning) {
+		if (event.touches.length === 1 && store.is_panning) {
 			current_x = clamp(event.touches[0].clientX - start_x, get_min_x(), 0);
 			current_y = clamp(event.touches[0].clientY - start_y, get_min_y(), get_max_y());
 		} else if (event.touches.length === 2) {
-			is_panning = false;
+			store.is_panning = false;
 			const new_distance = get_distance(event.touches[0], event.touches[1]);
 			let new_scale = clamp(initial_scale * (new_distance / initial_distance), min_scale, max_scale);
 
@@ -71,7 +70,7 @@
 
 	function handle_touch_end(event: TouchEvent) {
 		if (event.touches.length === 0) {
-			is_panning = false;
+			store.is_panning = false;
 		}
 	}
 

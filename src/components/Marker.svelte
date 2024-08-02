@@ -23,22 +23,47 @@
 		}
 	}
 
-	function toggle_movement() {
+	function toggle_movement_mouse() {
 		if (!in_movement) {
-			window.addEventListener('mousemove', move_marker);
+			window.addEventListener('mousemove', move_marker_mouse);
 			window.addEventListener('mouseup', stop_movement);
 			in_movement = true;
+			store.is_panning = false;
+		}
+	}
+
+	function toggle_movement_touch() {
+		if (!in_movement) {
+			window.addEventListener('touchmove', move_marker_touch);
+			window.addEventListener('touchend', stop_movement);
+			in_movement = true;
+			store.is_panning = false;
 		}
 	}
 
 	function stop_movement() {
-		window.removeEventListener('mousemove', move_marker);
+		window.removeEventListener('mousemove', move_marker_mouse);
 		window.removeEventListener('mouseup', stop_movement);
+		window.removeEventListener('touchmove', move_marker_touch);
+		window.removeEventListener('touchend', stop_movement);
 		in_movement = false;
 	}
 
-	function move_marker(e: MouseEvent) {
-		let rel_pos: { x: number; y: number } = get_relative_movement(e.x, e.y);
+	function move_marker_touch(e: TouchEvent)
+	{
+		e.stopPropagation;
+		if(e.touches.length !== 1){return}
+		move_marker(e.touches[0].pageX, e.touches[0].pageY);
+	}
+
+	function move_marker_mouse(e: MouseEvent)
+	{
+		move_marker(e.x, e.y);
+	}
+
+	function move_marker(x_px: number, y_px: number) {
+		store.is_panning=false;
+		let rel_pos: { x: number; y: number } = get_relative_movement(x_px, y_px);
 		marker.style.left = rel_pos.x + '%';
 		marker.style.top = rel_pos.y + '%';
 	}
@@ -48,7 +73,8 @@
 	class="marker"
 	bind:this={marker}
 	style="top: {marker_data.position.y}%; left: {marker_data.position.x}%"
-	on:mousedown={store.edit_mode ? toggle_movement : handleClick}
+	onmousedown={store.edit_mode ? toggle_movement_mouse : handleClick}
+	ontouchstart={store.edit_mode ? toggle_movement_touch : handleClick}
 	class:edit_mode={store.edit_mode}
 >
 	<img
