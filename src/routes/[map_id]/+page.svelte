@@ -27,7 +27,7 @@
 	change_parent_map={open_modal}
 />
 <Informatic />
-<Toolbar />
+<Toolbar change_marker_target={open_modal}/>
 <Modal close={() => (store.show_modal = false)}>
 	<EntityGrid {special_entities_} entities={Object.values($maps)} />
 </Modal>

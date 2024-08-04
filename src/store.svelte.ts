@@ -7,7 +7,8 @@ class Store {
     non_map_informatic_id = writable<number | null>(null)
     show_modal = $state(false);
     minimized = $state(false);
-    is_panning = $state(false)
+    is_panning = $state(false);
+    selected_marker = $state<number |null>(null);
     informatic_width = $state(66);
 }
 

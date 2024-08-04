@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { store } from '../store.svelte';
-
-	function showAlert() {
-		alert('Button clicked!');
-	}
+	import { TargetType } from '$lib/types';
+	import { add_map, store } from '../store.svelte';
+	export let change_marker_target: any;
 
 	function showSecondAlert() {
 		alert('Second button clicked!');
@@ -18,12 +16,14 @@
 	}
 
 	function toggleEditable() {
+		store.selected_marker = null;
 		store.edit_mode = !store.edit_mode;
 	}
+
 </script>
 
 <div id="toolbar">
-	<button onclick={showAlert} style="background-image: url('/assets/a_town.png');"></button>
+	<button onclick={() => {change_marker_target(TargetType.Marker, store.selected_marker, [add_map]);}} style="background-image: url('/assets/a_town.png');" class:hidden={!store.edit_mode || store.selected_marker === null}></button>
 	<button onclick={showSecondAlert} style="background-image: url('/assets/magil.png');"></button>
 	<button onclick={showThirdAlert} style="background-image: url('/assets/a_town.png');"></button>
 
@@ -77,5 +77,9 @@
 
 	#minimize_button {
 		margin-left: 50%;
+	}
+
+	.hidden{
+		display: none;
 	}
 </style>

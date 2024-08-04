@@ -29,6 +29,7 @@
 			window.addEventListener('mouseup', stop_movement);
 			in_movement = true;
 			store.is_panning = false;
+			store.selected_marker = marker_data.id;
 		}
 	}
 
@@ -38,6 +39,7 @@
 			window.addEventListener('touchend', stop_movement);
 			in_movement = true;
 			store.is_panning = false;
+			store.selected_marker = marker_data.id
 		}
 	}
 
@@ -76,6 +78,7 @@
 	onmousedown={store.edit_mode ? toggle_movement_mouse : handleClick}
 	ontouchstart={store.edit_mode ? toggle_movement_touch : handleClick}
 	class:edit_mode={store.edit_mode}
+	class:selected={store.selected_marker === marker_data.id}
 >
 	<img
 		class="marker-image"
@@ -105,6 +108,9 @@
 
 	.marker.edit_mode {
 		box-shadow: inset 0 0 0 10em rgba(255, 255, 255, 0.8);
+	}
+	.marker.selected {
+		border: 2px solid black;
 	}
 
 	.marker-image {
