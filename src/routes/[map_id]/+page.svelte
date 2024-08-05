@@ -28,8 +28,10 @@
 				switch (get(markers)[id].type) {
 					case MarkerType.Map:
 						entity_type = 'map';
+						break;
 					case MarkerType.Informatic:
 						entity_type = 'informatic';
+						break;
 				}
 				break;
 
