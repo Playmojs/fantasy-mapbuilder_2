@@ -22,9 +22,9 @@ export const markers: Writable<{ [id: number]: MarkerData }> = writable({
 });
 
 export const articles: Writable<{ [id: number]: Article }> = writable({
-    0: { id: 0, text: '# Magil \n This is Magil', article_image: '/assets/magil_image.jpg' },
-    1: { id: 1, text: '# Second Realm \n This is the second Realm', article_image: null },
-    2: { id: 2, text: 'This is a portal :)', article_image: null }
+    0: { id: 0, text: '# Magil \n This is Magil', image: '/assets/magil_image.jpg', title: "Magil" },
+    1: { id: 1, text: '# Second Realm \n This is the second Realm', image: null, title: "Second Realm" },
+    2: { id: 2, text: 'This is a portal :)', image: null, title: "Portal" }
 });
 
 export const maps: Writable<{ [id: number]: MapData }> = writable({

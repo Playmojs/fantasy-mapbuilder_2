@@ -36,7 +36,8 @@ export type MapData = {
 export type Article = {
 	id: number;
 	text: string;
-	article_image: string | null;
+	image: string | null;
+	title: string;
 };
 
 export type SpecialEntity = {

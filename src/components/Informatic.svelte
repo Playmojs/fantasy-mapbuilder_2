@@ -23,19 +23,20 @@
 		e.preventDefault();
 		windowWidth = window.innerWidth / 100;
 		originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
-		originalMouseX = e.touches[0].pageX
+		originalMouseX = e.touches[0].pageX;
 		window.addEventListener('touchmove', resizeTouch);
 		window.addEventListener('touchend', stopResize);
-	}
+	};
 
-	function resizeMouse(e: MouseEvent) 
-	{
+	function resizeMouse(e: MouseEvent) {
 		resize(e.pageX);
 	}
 
 	function resizeTouch(e: TouchEvent) {
 		e.stopPropagation;
-		if(e.touches.length !==1){return}
+		if (e.touches.length !== 1) {
+			return;
+		}
 		resize(e.touches[0].pageX);
 	}
 
@@ -68,9 +69,9 @@
 
 	<img
 		id="article_image"
-		src={$current_article.article_image}
+		src={$current_article.image}
 		alt="Article image"
-		class:hidden={$current_article.article_image === null}
+		class:hidden={$current_article.image === null}
 	/>
 
 	<div id="informatic" class={store.edit_mode ? 'editable' : 'non-editable'}>

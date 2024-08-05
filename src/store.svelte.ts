@@ -8,7 +8,7 @@ class Store {
     show_modal = $state(false);
     minimized = $state(false);
     is_panning = $state(false);
-    selected_marker = $state<number |null>(null);
+    selected_marker = $state<number | null>(null);
     informatic_width = $state(66);
 }
 
@@ -18,5 +18,13 @@ export let add_map: SpecialEntity =
     title: "Add Map",
     func: () => { console.log('Map added :)') }
 }
+
+export let add_article: SpecialEntity =
+{
+    image: "/assets/plus.png",
+    title: "Add Article",
+    func: () => { console.log('Article added :)') }
+}
+
 
 export const store = new Store()

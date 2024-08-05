@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { TargetType } from '$lib/types';
-	import { add_map, store } from '../store.svelte';
+	import { MarkerType, TargetType, type SpecialEntity } from '$lib/types';
+	import { get } from 'svelte/store';
+	import { add_map, store, add_article } from '../store.svelte';
+	import { markers } from '../lib/data';
 	export let change_marker_target: any;
 
 	function showSecondAlert() {
@@ -20,10 +22,31 @@
 		store.edit_mode = !store.edit_mode;
 	}
 
+	function change_marker_target_() {
+		let add_entity: SpecialEntity;
+		if (store.selected_marker === null) {
+			return;
+		}
+		switch (get(markers)[store.selected_marker].type) {
+			case MarkerType.Informatic:
+				add_entity = add_article;
+				break;
+			case MarkerType.Map:
+				add_entity = add_map;
+				break;
+		}
+		change_marker_target(TargetType.Marker, store.selected_marker, [add_entity]);
+	}
 </script>
 
 <div id="toolbar">
-	<button onclick={() => {change_marker_target(TargetType.Marker, store.selected_marker, [add_map]);}} style="background-image: url('/assets/a_town.png');" class:hidden={!store.edit_mode || store.selected_marker === null}></button>
+	<button
+		onclick={() => {
+			change_marker_target_();
+		}}
+		style="background-image: url('/assets/a_town.png');"
+		class:hidden={!store.edit_mode || store.selected_marker === null}
+	></button>
 	<button onclick={showSecondAlert} style="background-image: url('/assets/magil.png');"></button>
 	<button onclick={showThirdAlert} style="background-image: url('/assets/a_town.png');"></button>
 
@@ -79,7 +102,7 @@
 		margin-left: 50%;
 	}
 
-	.hidden{
+	.hidden {
 		display: none;
 	}
 </style>
