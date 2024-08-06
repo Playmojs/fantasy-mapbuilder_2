@@ -6,37 +6,33 @@
 	import ParentMap from '../../components/ParentMap.svelte';
 	import Modal from '../../components/Modal.svelte';
 	import EntityGrid from '../../components/EntityGrid.svelte';
-	import { MarkerType, TargetType } from '../../lib/types';
-	import { maps, markers, articles } from '../../lib/data';
+	import { MarkerType, ModalEntity, TargetType } from '../../lib/types';
 
 	import { target } from '../../lib/bind_component';
 	import { get } from 'svelte/store';
 
-	let special_entities_: any[];
-	$: special_entities_;
+	let special_entities_ = $state<any[]>([]);
 
-	let entity_type: String;
-	$: entity_type;
+	let entity_type = $state<ModalEntity>(ModalEntity.Map);
 
 	const open_modal = (target_type: TargetType, id: number | null, special_entities: any[]) => {
-		console.log(target_type);
 		switch (target_type) {
 			case TargetType.Marker:
-				if (id === null || id! in markers) {
+				if (id === null || !(id in store.markers)) {
 					return;
 				}
-				switch (get(markers)[id].type) {
+				switch (store.markers[id].type) {
 					case MarkerType.Map:
-						entity_type = 'map';
+						entity_type = ModalEntity.Map;
 						break;
 					case MarkerType.Informatic:
-						entity_type = 'informatic';
+						entity_type = ModalEntity.Article;
 						break;
 				}
 				break;
 
 			case TargetType.ParentMap:
-				entity_type = 'map';
+				entity_type = ModalEntity.Map;
 				break;
 		}
 
@@ -52,9 +48,9 @@
 <Informatic />
 <Toolbar change_marker_target={open_modal} />
 <Modal close={() => (store.show_modal = false)}>
-	{#if entity_type === 'map'}
-		<EntityGrid {special_entities_} entities={Object.values($maps)} />
-	{:else if entity_type === 'informatic'}
-		<EntityGrid {special_entities_} entities={Object.values($articles)} />
+	{#if entity_type === ModalEntity.Map}
+		<EntityGrid {special_entities_} entities={Object.values(store.maps)} />
+	{:else if entity_type === ModalEntity.Article}
+		<EntityGrid {special_entities_} entities={Object.values(store.articles)} />
 	{/if}
 </Modal>

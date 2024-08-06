@@ -13,9 +13,9 @@
 	function handleClick() {
 		switch (marker_data.type) {
 			case MarkerType.Informatic:
-				get(store.non_map_informatic_id) === marker_data.query_id
-					? store.non_map_informatic_id.set(null)
-					: store.non_map_informatic_id.set(marker_data.query_id);
+				store.non_map_informatic_id === marker_data.query_id
+					? (store.non_map_informatic_id = null)
+					: (store.non_map_informatic_id = marker_data.query_id);
 				break;
 			case MarkerType.Map:
 				gotoMap(marker_data.query_id);
@@ -39,7 +39,7 @@
 			window.addEventListener('touchend', stop_movement);
 			in_movement = true;
 			store.is_panning = false;
-			store.selected_marker = marker_data.id
+			store.selected_marker = marker_data.id;
 		}
 	}
 
@@ -51,20 +51,20 @@
 		in_movement = false;
 	}
 
-	function move_marker_touch(e: TouchEvent)
-	{
+	function move_marker_touch(e: TouchEvent) {
 		e.stopPropagation;
-		if(e.touches.length !== 1){return}
+		if (e.touches.length !== 1) {
+			return;
+		}
 		move_marker(e.touches[0].pageX, e.touches[0].pageY);
 	}
 
-	function move_marker_mouse(e: MouseEvent)
-	{
+	function move_marker_mouse(e: MouseEvent) {
 		move_marker(e.x, e.y);
 	}
 
 	function move_marker(x_px: number, y_px: number) {
-		store.is_panning=false;
+		store.is_panning = false;
 		let rel_pos: { x: number; y: number } = get_relative_movement(x_px, y_px);
 		marker.style.left = rel_pos.x + '%';
 		marker.style.top = rel_pos.y + '%';

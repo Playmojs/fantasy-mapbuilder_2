@@ -2,7 +2,7 @@
 	import SvelteMarkdown from 'svelte-markdown';
 	import { store } from '../store.svelte';
 	import Editor from './Editor.svelte';
-	import { current_article } from '$lib/data';
+	import { getCurrentArticleId } from '$lib/data.svelte';
 
 	let informaticWindow: HTMLDivElement;
 
@@ -69,16 +69,16 @@
 
 	<img
 		id="article_image"
-		src={$current_article.image}
+		src={store.articles[getCurrentArticleId()].image}
 		alt="Article image"
-		class:hidden={$current_article.image === null}
+		class:hidden={store.articles[getCurrentArticleId()].image === null}
 	/>
 
 	<div id="informatic" class={store.edit_mode ? 'editable' : 'non-editable'}>
 		{#if store.edit_mode}
 			<Editor />
 		{:else}
-			<SvelteMarkdown source={$current_article.text} />
+			<SvelteMarkdown source={store.articles[getCurrentArticleId()].text} />
 		{/if}
 	</div>
 </div>

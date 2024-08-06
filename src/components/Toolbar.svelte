@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { MarkerType, TargetType, type SpecialEntity } from '$lib/types';
+	import { add_article, add_map, MarkerType, TargetType, type SpecialEntity } from '$lib/types';
 	import { get } from 'svelte/store';
-	import { add_map, store, add_article } from '../store.svelte';
-	import { markers } from '../lib/data';
+	import { store } from '../store.svelte';
 	export let change_marker_target: any;
 
 	function showSecondAlert() {
@@ -27,7 +26,7 @@
 		if (store.selected_marker === null) {
 			return;
 		}
-		switch (get(markers)[store.selected_marker].type) {
+		switch (store.markers[store.selected_marker].type) {
 			case MarkerType.Informatic:
 				add_entity = add_article;
 				break;

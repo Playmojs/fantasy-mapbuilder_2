@@ -8,6 +8,12 @@ export enum MarkerType {
 	Map,
 }
 
+export enum ModalEntity {
+	Article,
+	Map,
+	Icon
+}
+
 export enum TargetType {
 	Marker,
 	Map,
@@ -44,4 +50,18 @@ export type SpecialEntity = {
 	image: string | null;
 	title: string;
 	func: () => void;
+}
+
+export const add_map: SpecialEntity =
+{
+	image: "/assets/plus.png",
+	title: "Add Map",
+	func: () => { console.log('Map added :)') }
+}
+
+export const add_article: SpecialEntity =
+{
+	image: "/assets/plus.png",
+	title: "Add Article",
+	func: () => { console.log('Article added :)') }
 }
