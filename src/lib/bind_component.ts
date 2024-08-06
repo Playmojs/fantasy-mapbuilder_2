@@ -1,5 +1,5 @@
 import { store } from "../store.svelte";
-import { TargetType } from "./types";
+import { MarkerType, TargetType } from "./types";
 import { getCurrentMapId } from "./data.svelte";
 
 class Target {

@@ -5,11 +5,9 @@
 
 	import { store } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
-	import { add_map, TargetType, type SpecialEntity } from '$lib/types';
+	import { add_map, TargetType, type ModalEntity } from '$lib/types';
 	import { bind_components } from '$lib/bind_component';
 	import { getCurrentMapId } from '$lib/data.svelte';
-
-	export let change_parent_map: any;
 
 	onMount(() => {
 		parentMap.addEventListener('click', () => parent_func(store.maps[getCurrentMapId()].parent_id));
@@ -17,35 +15,54 @@
 
 	function parent_func(parent_id: number | null) {
 		if (parent_id === null && store.edit_mode) {
-			change_parent_map(TargetType.ParentMap, null, [add_map]);
+			// store.modal_data=...
 		}
 		if (parent_id !== null && !store.edit_mode) {
 			gotoMap(parent_id);
 		}
 	}
 
-	let remove_map: SpecialEntity = {
+	let remove_map: ModalEntity = {
 		image: '/assets/minus.png',
 		title: 'Remove Map',
 		func: () => {
-			bind_components(null);
+			store.maps[getCurrentMapId()].parent_id = null;
+			store.maps[getCurrentMapId()].parent_image = null;
 		}
 	};
 
-	function edit_wrapper() {
-		change_parent_map(TargetType.ParentMap, null, [remove_map, add_map]);
+	function changeParentMap() {
+		store.modal_data = {
+			entities: Object.entries(store.maps).map(([id, map]) => {
+				return {
+					image: map.image,
+					title: map.title,
+					func: () => {
+						store.maps[getCurrentMapId()].parent_id = +id;
+						store.maps[getCurrentMapId()].parent_image = store.maps[+id].image;
+					}
+				};
+			})
+		};
+		console.log(store.modal_data.entities);
 	}
 </script>
 
 <img
-	src={store.maps[getCurrentMapId()].parent_image ? store.maps[getCurrentMapId()].parent_image : '/assets/parent_plus.png'}
+	src={store.maps[getCurrentMapId()].parent_image
+		? store.maps[getCurrentMapId()].parent_image
+		: '/assets/parent_plus.png'}
 	id="parent_map"
 	class:edit_mode={store.edit_mode}
 	class:hidden={!store.maps[getCurrentMapId()].parent_image && !store.edit_mode}
 	bind:this={parentMap}
 	alt="Parent Map"
 />
-<button id="edit_map" onclick={edit_wrapper} class:hidden={!store.edit_mode || !store.maps[getCurrentMapId()].parent_image}>
+<button
+	id="edit_map"
+	onclick={changeParentMap}
+	class:hidden={!store.edit_mode || !store.maps[getCurrentMapId()].parent_image}
+>
 </button>
 
 <style>

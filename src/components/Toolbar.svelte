@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { add_article, add_map, MarkerType, TargetType, type SpecialEntity } from '$lib/types';
+	import { add_article, add_map, MarkerType, TargetType, type ModalEntity } from '$lib/types';
 	import { get } from 'svelte/store';
 	import { store } from '../store.svelte';
-	export let change_marker_target: any;
 
 	function showSecondAlert() {
 		alert('Second button clicked!');
@@ -22,7 +21,7 @@
 	}
 
 	function change_marker_target_() {
-		let add_entity: SpecialEntity;
+		let add_entity: ModalEntity;
 		if (store.selected_marker === null) {
 			return;
 		}
@@ -34,7 +33,7 @@
 				add_entity = add_map;
 				break;
 		}
-		change_marker_target(TargetType.Marker, store.selected_marker, [add_entity]);
+		// store.modal_data = { entities: [add_entity] };
 	}
 </script>
 

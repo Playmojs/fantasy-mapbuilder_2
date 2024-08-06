@@ -1,28 +1,13 @@
 <script lang="ts">
-	import { type SpecialEntity } from '$lib/types';
-	import { bind_components } from '$lib/bind_component';
+	import { type ModalEntity } from '$lib/types';
 
-	export let special_entities_: SpecialEntity[] = [];
-	export let entities: any = [];
-
-	const handleMapClick = (entity: any) => {
-		bind_components(entity.id);
-	};
+	export let modal_entities: ModalEntity[] = [];
 </script>
 
 <div id="grid-container">
 	<div id="grid">
-		{#each special_entities_ as special_entity}
-			<div class="entity-item" onclick={() => special_entity.func()}>
-				<div class="image-container">
-					<img class="entity-image" src={special_entity.image} alt={special_entity.title} />
-				</div>
-				<p>{special_entity.title}</p>
-			</div>
-		{/each}
-
-		{#each entities as entity}
-			<div class="entity-item" onclick={() => handleMapClick(entity)}>
+		{#each modal_entities as entity}
+			<div class="entity-item" onclick={() => entity.func()}>
 				<div class="image-container">
 					<img class="entity-image" src={entity.image} alt={entity.title} />
 				</div>

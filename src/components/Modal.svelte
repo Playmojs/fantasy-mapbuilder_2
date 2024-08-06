@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { store } from "../store.svelte";
-
+	import type { ModalData } from '$lib/types';
+	import { store } from '../store.svelte';
+	import EntityGrid from './EntityGrid.svelte';
+	export let modal_data: ModalData | null = null;
 	export let close;
 
 	const handleClose = (e: Event) => {
@@ -9,10 +11,12 @@
 	};
 </script>
 
-<div class="modal" on:click={handleClose} class:hidden={!store.show_modal}>
+<div class="modal" on:click={handleClose} class:hidden={!store.modal_data}>
 	<div class="modal-content" on:click|stopPropagation>
 		<span class="close" on:click={handleClose}>&times;</span>
-		<slot></slot>
+		{#if modal_data}
+			<EntityGrid modal_entities={modal_data.entities} />
+		{/if}
 	</div>
 </div>
 

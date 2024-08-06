@@ -1,5 +1,4 @@
-import { MarkerType, type Article, type MapData, type MarkerData } from "$lib/types";
-
+import { MarkerType, type Article, type MapData, type MarkerData, type ModalData} from "$lib/types";
 
 class Store {
     edit_mode = $state(false);
@@ -9,6 +8,8 @@ class Store {
     is_panning = $state(false);
     selected_marker = $state<number | null>(null);
     informatic_width = $state(66);
+
+    modal_data = $state<ModalData | null>(null);
 
     markers = $state<{ [id: number]: MarkerData }>({
         0: {
