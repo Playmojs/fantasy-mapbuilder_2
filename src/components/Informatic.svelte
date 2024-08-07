@@ -2,7 +2,7 @@
 	import SvelteMarkdown from 'svelte-markdown';
 	import { store } from '../store.svelte';
 	import Editor from './Editor.svelte';
-	import { getCurrentArticleId } from '$lib/data.svelte';
+	import { current_article_id } from '$lib/data.svelte';
 
 	let informaticWindow: HTMLDivElement;
 
@@ -67,18 +67,19 @@
 >
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 
+
 	<img
 		id="article_image"
-		src={store.articles[getCurrentArticleId()].image}
+		src={store.articles[$current_article_id].image}
 		alt="Article image"
-		class:hidden={store.articles[getCurrentArticleId()].image === null}
+		class:hidden={store.articles[$current_article_id].image === null}
 	/>
 
 	<div id="informatic" class={store.edit_mode ? 'editable' : 'non-editable'}>
 		{#if store.edit_mode}
 			<Editor />
 		{:else}
-			<SvelteMarkdown source={store.articles[getCurrentArticleId()].text} />
+			<SvelteMarkdown source={store.articles[$current_article_id].text} />
 		{/if}
 	</div>
 </div>

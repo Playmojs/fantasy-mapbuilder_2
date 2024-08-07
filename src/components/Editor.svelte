@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getCurrentArticleId } from '$lib/data.svelte';
+	import { current_article_id } from '$lib/data.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { store } from '../store.svelte';
 
@@ -32,10 +32,10 @@
 				suggestions: {
                 	enabled: false
             	},
-				value: store.articles[getCurrentArticleId()].text,
+				value: store.articles[$current_article_id].text,
 			});		
 		}
-		editor.onDidChangeModelContent(()=>{store.articles[getCurrentArticleId()].text = editor.getValue()})
+		editor.onDidChangeModelContent(()=>{store.articles[$current_article_id].text = editor.getValue()})
 	});
 
 	
