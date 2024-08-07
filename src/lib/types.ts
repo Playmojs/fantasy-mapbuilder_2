@@ -20,7 +20,7 @@ export type MarkerData = {
 	type: MarkerType;
 	position: { x: number; y: number };
 	image: string | null;
-	query_id: number;
+	query_id: number | null;
 };
 
 export type MapData = {

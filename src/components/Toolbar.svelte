@@ -1,15 +1,32 @@
 <script lang="ts">
-	import { add_article, add_map, MarkerType, TargetType, type ModalEntity } from '$lib/types';
-	import { get } from 'svelte/store';
+	import { add_article, add_map, MarkerType } from '$lib/types';
 	import { store } from '../store.svelte';
-	import { getModalEntityMaps } from '$lib/data.svelte';
+	import { current_map_id } from '$lib/data.svelte';
 
-	function showSecondAlert() {
-		alert('Second button clicked!');
+	function addMarker(event: MouseEvent) {
+		const id = new Uint32Array(1);
+		crypto.getRandomValues(id);
+		store.markers[id[0]] = {
+			id: id[0],
+			type: MarkerType.Map,
+			position: { x: 50, y: 50 },
+			image: null,
+			query_id: null
+		};
+		store.maps[$current_map_id].marker_ids.push(id[0]);
 	}
 
-	function showThirdAlert() {
-		alert('Third button clicked!');
+	function deleteMarker() {
+		if (store.selected_marker === null) {
+			return;
+		}
+		store.maps[$current_map_id].marker_ids = store.maps[$current_map_id].marker_ids.filter(
+			(id: number) => {
+				return id !== store.selected_marker;
+			}
+		);
+
+		store.selected_marker = null;
 	}
 
 	function toggleMinimize() {
@@ -21,7 +38,7 @@
 		store.edit_mode = !store.edit_mode;
 	}
 
-	function change_marker_target_() {
+	function changeMarkerTarget() {
 		if (store.selected_marker === null) {
 			return;
 		}
@@ -67,14 +84,22 @@
 
 <div id="toolbar">
 	<button
-		onclick={() => {
-			change_marker_target_();
-		}}
+		onclick={() => deleteMarker()}
+		class:hidden={!store.edit_mode || store.selected_marker === null}
 		style="background-image: url('/assets/a_town.png');"
+	></button>
+	<button
+		onclick={() => {
+			changeMarkerTarget();
+		}}
+		style="background-image: url('/assets/magil.png');"
 		class:hidden={!store.edit_mode || store.selected_marker === null}
 	></button>
-	<button onclick={showSecondAlert} style="background-image: url('/assets/magil.png');"></button>
-	<button onclick={showThirdAlert} style="background-image: url('/assets/a_town.png');"></button>
+	<button
+		onclick={(event: MouseEvent) => addMarker(event)}
+		class:hidden={!store.edit_mode}
+		style="background-image: url('/assets/a_town.png');"
+	></button>
 
 	<button
 		id="minimize_button"

@@ -18,6 +18,9 @@
 					: (store.non_map_informatic_id = marker_data.query_id);
 				break;
 			case MarkerType.Map:
+				if (marker_data.query_id === null) {
+					return;
+				}
 				gotoMap(marker_data.query_id);
 				break;
 		}
@@ -66,8 +69,10 @@
 	function move_marker(x_px: number, y_px: number) {
 		store.is_panning = false;
 		let rel_pos: { x: number; y: number } = get_relative_movement(x_px, y_px);
-		marker.style.left = rel_pos.x + '%';
-		marker.style.top = rel_pos.y + '%';
+		marker_data.position.y = rel_pos.y;
+		marker_data.position.x = rel_pos.x;
+		// marker.style.left = rel_pos.x + '%';
+		// marker.style.top = rel_pos.y + '%';
 	}
 </script>
 
