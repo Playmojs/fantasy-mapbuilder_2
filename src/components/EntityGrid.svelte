@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { type ModalEntity } from '$lib/types';
+	import { store } from '../store.svelte';
 
 	export let modal_entities: ModalEntity[] = [];
 </script>
@@ -7,7 +8,13 @@
 <div id="grid-container">
 	<div id="grid">
 		{#each modal_entities as entity}
-			<div class="entity-item" onclick={() => entity.func()}>
+			<div
+				class="entity-item"
+				onclick={() => {
+					entity.func();
+					store.modal_data = null;
+				}}
+			>
 				<div class="image-container">
 					<img class="entity-image" src={entity.image} alt={entity.title} />
 				</div>

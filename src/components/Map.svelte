@@ -3,7 +3,7 @@
 	import Marker from './Marker.svelte';
 	import type { MarkerData } from '$lib/types';
 	import ZoomPan from './ZoomPan.svelte';
-	import { getCurrentMapId } from '$lib/data.svelte';
+	import { current_map_id } from '$lib/data.svelte';
 	import { store } from '../store.svelte';
 
 	let mapContainer: HTMLDivElement;
@@ -17,12 +17,14 @@
 		return position;
 	}
 
-	const current_markers = $derived((store.maps[getCurrentMapId()]?.marker_ids ?? []).map((id) => store.markers[id]));
+	const current_markers = $derived(
+		(store.maps[$current_map_id]?.marker_ids ?? []).map((id) => store.markers[id])
+	);
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
 	<ZoomPan parent_selector="#map-container" />
-	<img id="map" alt="Map" bind:this={map_} src={store.maps[getCurrentMapId()].image} />
+	<img id="map" alt="Map" bind:this={map_} src={store.maps[$current_map_id].image} />
 	{#each current_markers as marker (marker.id)}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}

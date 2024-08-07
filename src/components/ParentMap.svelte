@@ -5,17 +5,31 @@
 
 	import { store } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
-	import { add_map, TargetType, type ModalEntity } from '$lib/types';
-	import { bind_components } from '$lib/bind_component';
-	import { getCurrentMapId } from '$lib/data.svelte';
+	import { add_map, type ModalEntity } from '$lib/types';
+	import { current_map_id } from '$lib/data.svelte';
 
 	onMount(() => {
-		parentMap.addEventListener('click', () => parent_func(store.maps[getCurrentMapId()].parent_id));
+		parentMap.addEventListener('click', () => parent_func(store.maps[$current_map_id].parent_id));
 	});
+
+	export const getMaps = () => {
+		return Object.entries(store.maps).map(([id, map]) => {
+			return {
+				image: map.image,
+				title: map.title,
+				func: () => {
+					store.maps[$current_map_id].parent_id = +id;
+					store.maps[$current_map_id].parent_image = store.maps[+id].image;
+				}
+			};
+		});
+	};
 
 	function parent_func(parent_id: number | null) {
 		if (parent_id === null && store.edit_mode) {
-			// store.modal_data=...
+			store.modal_data = {
+				entities: [add_map].concat(getMaps())
+			};
 		}
 		if (parent_id !== null && !store.edit_mode) {
 			gotoMap(parent_id);
@@ -26,42 +40,32 @@
 		image: '/assets/minus.png',
 		title: 'Remove Map',
 		func: () => {
-			store.maps[getCurrentMapId()].parent_id = null;
-			store.maps[getCurrentMapId()].parent_image = null;
+			store.maps[$current_map_id].parent_id = null;
+			store.maps[$current_map_id].parent_image = null;
 		}
 	};
 
 	function changeParentMap() {
 		store.modal_data = {
-			entities: Object.entries(store.maps).map(([id, map]) => {
-				return {
-					image: map.image,
-					title: map.title,
-					func: () => {
-						store.maps[getCurrentMapId()].parent_id = +id;
-						store.maps[getCurrentMapId()].parent_image = store.maps[+id].image;
-					}
-				};
-			})
+			entities: [remove_map, add_map].concat(getMaps())
 		};
-		console.log(store.modal_data.entities);
 	}
 </script>
 
 <img
-	src={store.maps[getCurrentMapId()].parent_image
-		? store.maps[getCurrentMapId()].parent_image
+	src={store.maps[$current_map_id].parent_image
+		? store.maps[$current_map_id].parent_image
 		: '/assets/parent_plus.png'}
 	id="parent_map"
 	class:edit_mode={store.edit_mode}
-	class:hidden={!store.maps[getCurrentMapId()].parent_image && !store.edit_mode}
+	class:hidden={!store.maps[$current_map_id].parent_image && !store.edit_mode}
 	bind:this={parentMap}
 	alt="Parent Map"
 />
 <button
 	id="edit_map"
 	onclick={changeParentMap}
-	class:hidden={!store.edit_mode || !store.maps[getCurrentMapId()].parent_image}
+	class:hidden={!store.edit_mode || !store.maps[$current_map_id].parent_image}
 >
 </button>
 

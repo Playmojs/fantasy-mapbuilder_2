@@ -2,6 +2,7 @@
 	import { add_article, add_map, MarkerType, TargetType, type ModalEntity } from '$lib/types';
 	import { get } from 'svelte/store';
 	import { store } from '../store.svelte';
+	import { getModalEntityMaps } from '$lib/data.svelte';
 
 	function showSecondAlert() {
 		alert('Second button clicked!');
@@ -21,19 +22,46 @@
 	}
 
 	function change_marker_target_() {
-		let add_entity: ModalEntity;
 		if (store.selected_marker === null) {
 			return;
 		}
 		switch (store.markers[store.selected_marker].type) {
 			case MarkerType.Informatic:
-				add_entity = add_article;
+				store.modal_data = {
+					entities: [add_article].concat(
+						Object.entries(store.articles).map(([id, article]) => {
+							return {
+								image: article.image,
+								title: article.title,
+								func: () => {
+									if (store.selected_marker === null) {
+										return;
+									}
+									store.markers[store.selected_marker].query_id = +id;
+								}
+							};
+						})
+					)
+				};
 				break;
 			case MarkerType.Map:
-				add_entity = add_map;
-				break;
+				store.modal_data = {
+					entities: [add_map].concat(
+						Object.entries(store.maps).map(([id, map]) => {
+							return {
+								image: map.image,
+								title: map.title,
+								func: () => {
+									if (store.selected_marker === null) {
+										return;
+									}
+									store.markers[store.selected_marker].query_id = +id;
+								}
+							};
+						})
+					)
+				};
 		}
-		// store.modal_data = { entities: [add_entity] };
 	}
 </script>
 
