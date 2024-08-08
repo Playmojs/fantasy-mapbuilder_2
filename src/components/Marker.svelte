@@ -13,9 +13,9 @@
 	function handleClick() {
 		switch (marker_data.type) {
 			case MarkerType.Informatic:
-				store.non_map_informatic_id === marker_data.query_id
-					? (store.non_map_informatic_id = null)
-					: (store.non_map_informatic_id = marker_data.query_id);
+				get(store.non_map_informatic_id) === marker_data.query_id
+					? store.non_map_informatic_id.set(null)
+					: store.non_map_informatic_id.set(marker_data.query_id);
 				break;
 			case MarkerType.Map:
 				if (marker_data.query_id === null) {

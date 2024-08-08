@@ -2,6 +2,7 @@
 	import { current_article_id } from '$lib/data.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { store } from '../store.svelte';
+	import { get } from 'svelte/store';
 
 	let editorElement = $state<HTMLDivElement>();
 	let editor = $state<any>();
@@ -27,18 +28,18 @@
 				lineNumbers: 'off',
 				wordWrap: 'on',
 				minimap: {
-                	enabled: false
-            	},
+					enabled: false
+				},
 				suggestions: {
-                	enabled: false
-            	},
-				value: store.articles[$current_article_id].text,
-			});		
+					enabled: false
+				},
+				value: store.articles[$current_article_id].text
+			});
 		}
-		editor.onDidChangeModelContent(()=>{store.articles[$current_article_id].text = editor.getValue()})
+		editor.onDidChangeModelContent(() => {
+			store.articles[$current_article_id].text = editor.getValue();
+		});
 	});
-
-	
 
 	onDestroy(() => {
 		monaco?.editor.getModels().forEach((model: any) => model.dispose());
@@ -46,11 +47,10 @@
 	});
 </script>
 
-<div style="height: 100%; width: 100%" bind:this={editorElement} id="editor"/>
+<div style="height: 100%; width: 100%" bind:this={editorElement} id="editor" />
 
 <style>
-	#editor
-	{
+	#editor {
 		background-color: white;
 		color: black;
 	}

@@ -1,8 +1,9 @@
-import { MarkerType, type Article, type MapData, type MarkerData, type ModalData} from "$lib/types";
+import { MarkerType, type Article, type MapData, type MarkerData, type ModalData } from "$lib/types";
+import { readable, writable } from "svelte/store";
 
 class Store {
     edit_mode = $state(false);
-    non_map_informatic_id = $state<number | null>(null)
+    non_map_informatic_id = writable<number | null>(null)
     show_modal = $state(false);
     minimized = $state(false);
     is_panning = $state(false);

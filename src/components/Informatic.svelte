@@ -3,6 +3,7 @@
 	import { store } from '../store.svelte';
 	import Editor from './Editor.svelte';
 	import { current_article_id } from '$lib/data.svelte';
+	import { get } from 'svelte/store';
 
 	let informaticWindow: HTMLDivElement;
 
@@ -66,7 +67,6 @@
 	class:hidden={store.minimized}
 >
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
-
 
 	<img
 		id="article_image"
