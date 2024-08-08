@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { add_article, add_map, MarkerType } from '$lib/types';
 	import { store } from '../store.svelte';
-	import { current_map_id } from '$lib/data.svelte';
+	import { current_article_id, current_map_id } from '$lib/data.svelte';
+	import { get } from 'svelte/store';
 
 	function addMarker(event: MouseEvent) {
 		const id = new Uint32Array(1);
@@ -48,7 +49,7 @@
 					entities: [add_article].concat(
 						Object.entries(store.articles).map(([id, article]) => {
 							return {
-								image: article.image,
+								image: article.image ?? '/assets/article_icon.png',
 								title: article.title,
 								func: () => {
 									if (store.selected_marker === null) {
@@ -150,7 +151,7 @@
 	}
 
 	#minimize_button {
-		margin-left: 50%;
+		margin-left: 25%;
 	}
 
 	.hidden {

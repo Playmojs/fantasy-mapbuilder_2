@@ -4,13 +4,20 @@
 	import Editor from './Editor.svelte';
 	import { current_article_id } from '$lib/data.svelte';
 	import { get } from 'svelte/store';
+	import edit_mode from '../store';
+	import { onMount } from 'svelte';
 
 	let informaticWindow: HTMLDivElement;
+	let article_title: HTMLHeadElement;
 
 	let originalX: number;
 	let originalMouseX: number;
 	let windowWidth: number;
 
+	function updateTitle() {
+		const title: string = article_title.innerText;
+		store.articles[$current_article_id].title = title;
+	}
 	const resizerOnMouseDown = (e: MouseEvent) => {
 		e.preventDefault();
 		windowWidth = window.innerWidth / 100;
@@ -49,7 +56,6 @@
 		store.informatic_width = newX;
 
 		informaticWindow.style.left = `${newX}%`;
-		informaticWindow.style.width = `${100 - newX}%`;
 	}
 
 	function stopResize() {
@@ -58,6 +64,8 @@
 		window.removeEventListener('touchmove', resizeTouch);
 		window.removeEventListener('touchend', stopResize);
 	}
+
+	const title = $derived(store.articles[$current_article_id].title);
 </script>
 
 <div
@@ -68,6 +76,16 @@
 >
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 
+	<div
+		id="article_title"
+		contenteditable={store.edit_mode}
+		class={store.edit_mode ? 'editable' : 'non-editable'}
+		onblur={() => {
+			updateTitle();
+		}}
+	>
+		<h1 bind:this={article_title}>{store.articles[$current_article_id].title}</h1>
+	</div>
 	<img
 		id="article_image"
 		src={store.articles[$current_article_id].image}
@@ -91,7 +109,7 @@
 		top: 50px; /* TODO: Define once */
 		bottom: 0;
 		left: 66%;
-		width: 34%;
+		right: 0%;
 		z-index: 10;
 		display: flex;
 		flex-direction: column;
@@ -103,6 +121,15 @@
 		display: none;
 	}
 
+	#article_title {
+		position: relative;
+		height: 10%;
+		left: 0;
+		font-size: x-large;
+		text-align: center;
+		border-radius: 10px;
+	}
+
 	#informatic {
 		position: relative;
 		height: 100%;
@@ -112,15 +139,16 @@
 		font-size: large;
 		text-align: justify;
 		overflow-y: scroll;
+		border-radius: 10px;
 	}
 
-	#informatic.non-editable {
+	.non-editable {
 		background-color: rgb(47, 47, 47);
 		color: white;
 		white-space: normal;
 	}
 
-	#informatic.editable {
+	.editable {
 		background-color: white;
 		color: black;
 		white-space: pre-wrap;

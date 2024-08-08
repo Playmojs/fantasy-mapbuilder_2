@@ -30,8 +30,8 @@ class Store {
     });
 
     articles = $state<{ [id: number]: Article }>({
-        0: { id: 0, text: '# Magil \n This is Magil', image: '/assets/magil_image.jpg', title: "Magil" },
-        1: { id: 1, text: '# Second Realm \n This is the second Realm', image: null, title: "Second Realm" },
+        0: { id: 0, text: 'This is Magil', image: '/assets/magil_image.jpg', title: "Magil" },
+        1: { id: 1, text: 'This is the second Realm', image: null, title: "Second Realm" },
         2: { id: 2, text: 'This is a portal :)', image: null, title: "Portal" }
     });
 

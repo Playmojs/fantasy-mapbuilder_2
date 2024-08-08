@@ -1,3 +1,4 @@
+import { store } from "../store.svelte";
 
 export enum SearchParam {
 	informatic_id = 'informatic'
@@ -57,9 +58,23 @@ export const add_map: ModalEntity =
 	func: () => { console.log('Map added :)') }
 }
 
+const addArticle = () => {
+	const id = new Uint32Array(1);
+	crypto.getRandomValues(id);
+	store.articles[id[0]] = {
+		id: id[0],
+		text: "",
+		title: "New Article",
+		image: null,
+	};
+	if (store.selected_marker) {
+		store.markers[store.selected_marker].query_id = id[0];
+	}
+}
+
 export const add_article: ModalEntity =
 {
 	image: "/assets/plus.png",
 	title: "Add Article",
-	func: () => { console.log('Article added :)') }
+	func: () => { addArticle() }
 }
