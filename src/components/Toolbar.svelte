@@ -91,19 +91,19 @@
 	<button
 		onclick={() => deleteMarker()}
 		class:hidden={!store.edit_mode || store.selected_marker === null}
-		style="background-image: url('/assets/a_town.png');"
+		style="background-image: url('/assets/delete_marker.png');"
 	></button>
 	<button
 		onclick={() => {
 			changeMarkerTarget();
 		}}
-		style="background-image: url('/assets/magil.png');"
+		style="background-image: url('/assets/change_marker.png');"
 		class:hidden={!store.edit_mode || store.selected_marker === null}
 	></button>
 	<button
 		onclick={(event: MouseEvent) => addMarker(event)}
 		class:hidden={!store.edit_mode}
-		style="background-image: url('/assets/a_town.png');"
+		style="background-image: url('/assets/add_marker.png');"
 	></button>
 
 	<button id="edit_content_button" class:edit_mode={store.edit_mode} onclick={toggleEditable}
@@ -114,13 +114,16 @@
 			change_text_size(1.1);
 		}}
 		style="background-image: url('/assets/plus.png');"
+		class:hidden={store.minimized}
 	></button>
+
 	<button
 		id="decrement_text_size_button"
 		onclick={() => {
 			change_text_size(0.9);
 		}}
 		style="background-image: url('/assets/minus.png');"
+		class:hidden={store.minimized}
 	></button>
 	<button
 		id="minimize_button"
