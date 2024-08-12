@@ -7,6 +7,7 @@
 	let editorElement = $state<HTMLDivElement>();
 	let editor = $state<any>();
 	let monaco: any;
+	let font_size = $derived(store.text_size / 7);
 
 	onMount(async () => {
 		monaco = await import('monaco-editor');
@@ -24,7 +25,7 @@
 			editor = monaco.editor.create(editorElement, {
 				automaticLayout: true,
 				language: 'markdown',
-				fontSize: store.text_size / 7,
+				fontSize: font_size,
 				theme: 'vs-light',
 				lineNumbers: 'off',
 				wordWrap: 'on',
@@ -42,13 +43,23 @@
 		});
 	});
 
+	$effect(() => {
+		if (editor) {
+			editor.updateOptions({ fontSize: font_size });
+		}
+	});
+
 	onDestroy(() => {
 		monaco?.editor.getModels().forEach((model: any) => model.dispose());
 		editor?.dispose();
 	});
 </script>
 
-<div style="height: 100%; width: 100%" bind:this={editorElement} id="editor" />
+<div
+	style="height: 100%; width: 100%; font-size: {store.text_size}%;"
+	bind:this={editorElement}
+	id="editor"
+/>
 
 <style>
 	#editor {

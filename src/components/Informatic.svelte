@@ -68,7 +68,7 @@
 	id="informaticWindow"
 	bind:this={informaticWindow}
 	class:edit_mode={store.edit_mode}
-	transition:fly={{ x: 300, duration: 500 }}
+	transition:fly={{ x: 400, duration: 500 }}
 >
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 
