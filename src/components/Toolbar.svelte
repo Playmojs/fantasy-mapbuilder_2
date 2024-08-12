@@ -39,6 +39,10 @@
 		store.edit_mode = !store.edit_mode;
 	}
 
+	function change_text_size(factor: number) {
+		store.text_size = store.text_size * factor;
+	}
+
 	function changeMarkerTarget() {
 		if (store.selected_marker === null) {
 			return;
@@ -102,12 +106,28 @@
 		style="background-image: url('/assets/a_town.png');"
 	></button>
 
+	<button id="edit_content_button" class:edit_mode={store.edit_mode} onclick={toggleEditable}
+	></button>
+	<button
+		id="increment_text_size_button"
+		onclick={() => {
+			change_text_size(1.1);
+		}}
+		style="background-image: url('/assets/plus.png');"
+	></button>
+	<button
+		id="decrement_text_size_button"
+		onclick={() => {
+			change_text_size(0.9);
+		}}
+		style="background-image: url('/assets/minus.png');"
+	></button>
 	<button
 		id="minimize_button"
 		onclick={toggleMinimize}
-		style="background-image: url('/assets/{store.minimized ? 'plus' : 'minus'}.png');"
-	></button>
-	<button id="edit_content_button" class:edit_mode={store.edit_mode} onclick={toggleEditable}
+		style="background-image: url('/assets/{store.minimized
+			? 'double_arrow_left'
+			: 'double_arrow_right'}.png');"
 	></button>
 </div>
 
@@ -130,7 +150,7 @@
 		aspect-ratio: 4/3; /* Adjust the size as needed */
 		height: 80%; /* Adjust the size as needed */
 		border: none;
-		padding: 0;
+		padding: 10px;
 		cursor: pointer;
 		background-size: contain;
 		background-position: center center;
@@ -144,14 +164,15 @@
 
 	#edit_content_button {
 		background: url('/assets/edit-icon.png');
+		margin-left: 10%;
 	}
 
 	#edit_content_button.edit_mode {
 		background-color: #111;
 	}
 
-	#minimize_button {
-		margin-left: 25%;
+	#increment_text_size_button {
+		margin-left: 5%;
 	}
 
 	.hidden {

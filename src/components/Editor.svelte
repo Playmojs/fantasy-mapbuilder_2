@@ -24,6 +24,7 @@
 			editor = monaco.editor.create(editorElement, {
 				automaticLayout: true,
 				language: 'markdown',
+				fontSize: store.text_size / 7,
 				theme: 'vs-light',
 				lineNumbers: 'off',
 				wordWrap: 'on',

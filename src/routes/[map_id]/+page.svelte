@@ -5,10 +5,13 @@
 	import Toolbar from '../../components/Toolbar.svelte';
 	import ParentMap from '../../components/ParentMap.svelte';
 	import Modal from '../../components/Modal.svelte';
+	import { slide } from 'svelte/transition';
 </script>
 
 <Map />
 <ParentMap />
-<Informatic />
+{#if !store.minimized}
+	<Informatic />
+{/if}
 <Toolbar />
 <Modal close={() => (store.modal_data = null)} modal_data={store.modal_data} />

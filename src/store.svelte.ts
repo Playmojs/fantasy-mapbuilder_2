@@ -9,6 +9,7 @@ class Store {
     is_panning = $state(false);
     selected_marker = $state<number | null>(null);
     informatic_width = $state(66);
+    text_size = $state(150);
 
     modal_data = $state<ModalData | null>(null);
 

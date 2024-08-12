@@ -3,9 +3,7 @@
 	import { store } from '../store.svelte';
 	import Editor from './Editor.svelte';
 	import { current_article_id } from '$lib/data.svelte';
-	import { get } from 'svelte/store';
-	import edit_mode from '../store';
-	import { onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -64,15 +62,13 @@
 		window.removeEventListener('touchmove', resizeTouch);
 		window.removeEventListener('touchend', stopResize);
 	}
-
-	const title = $derived(store.articles[$current_article_id].title);
 </script>
 
 <div
 	id="informaticWindow"
 	bind:this={informaticWindow}
 	class:edit_mode={store.edit_mode}
-	class:hidden={store.minimized}
+	transition:fly={{ x: 300, duration: 500 }}
 >
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 
@@ -93,7 +89,11 @@
 		class:hidden={store.articles[$current_article_id].image === null}
 	/>
 
-	<div id="informatic" class={store.edit_mode ? 'editable' : 'non-editable'}>
+	<div
+		id="informatic"
+		class={store.edit_mode ? 'editable' : 'non-editable'}
+		style="font-size: {store.text_size}%;"
+	>
 		{#if store.edit_mode}
 			<Editor />
 		{:else}
@@ -117,10 +117,6 @@
 		padding: 10px;
 	}
 
-	#informaticWindow.hidden {
-		display: none;
-	}
-
 	#article_title {
 		position: relative;
 		height: 10%;
@@ -128,6 +124,7 @@
 		font-size: x-large;
 		text-align: center;
 		border-radius: 10px;
+		font-family: 'Garamond Semibold Italic';
 	}
 
 	#informatic {
@@ -136,7 +133,7 @@
 		left: 0;
 		right: 0;
 		background-color: inherit;
-		font-size: large;
+		font-family: 'Garamond Regular';
 		text-align: justify;
 		overflow-y: scroll;
 		border-radius: 10px;
@@ -196,9 +193,60 @@
 		margin-left: auto;
 		margin-right: auto;
 		flex-shrink: 0;
+		border-radius: 10px;
 	}
 
 	#article_image.hidden {
 		display: none;
+	}
+
+	/* Fonts */
+
+	@font-face {
+		font-family: 'Cormorant Garamond';
+		src: url('/fonts/Cormorant_Garamond/CormorantGaramond-Regular.ttf');
+		font-weight: normal;
+		font-style: normal;
+	}
+
+	@font-face {
+		font-family: 'Cormorant Garamond';
+		src: url('/fonts/Cormorant_Garamond/CormorantGaramond-Bold.ttf');
+		font-weight: bold;
+		font-style: normal;
+	}
+
+	@font-face {
+		font-family: 'Cormorant Garamond';
+		src: url('/fonts/Cormorant_Garamond/CormorantGaramond-Italic.ttf');
+		font-weight: normal;
+		font-style: italic;
+	}
+
+	@font-face {
+		font-family: 'Cormorant Garamond';
+		src: url('/fonts/Cormorant_Garamond/CormorantGaramond-SemiBoldItalic.ttf');
+		font-weight: 600;
+		font-style: italic;
+	}
+
+	:global(p) {
+		font-family: 'Cormorant Garamond', serif;
+	}
+
+	:global(strong) {
+		font-family: 'Cormorant Garamond';
+		font-weight: bold;
+	}
+
+	:global(em) {
+		font-family: 'Cormorant Garamond', serif;
+		font-style: italic;
+	}
+
+	h1 {
+		font-family: 'Cormorant Garamond', serif;
+		font-weight: bold;
+		font-style: italic;
 	}
 </style>
