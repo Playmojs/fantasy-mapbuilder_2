@@ -119,17 +119,29 @@
 
 	#article_title {
 		position: relative;
-		height: 10%;
+		height: 7%;
 		left: 0;
-		font-size: x-large;
+		font-size: 150%;
 		text-align: center;
 		border-radius: 10px;
 		font-family: 'Garamond Semibold Italic';
 	}
 
+	h1 {
+		margin: 5px;
+	}
+
+	@media (max-width: 1080px)
+	{
+		#article_title 
+		{
+			height: 15%;
+		}
+	}
+
 	#informatic {
 		position: relative;
-		height: 100%;
+		height: 90%;
 		left: 0;
 		right: 0;
 		background-color: inherit;
