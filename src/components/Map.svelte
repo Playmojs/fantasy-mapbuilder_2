@@ -9,6 +9,41 @@
 	let mapContainer: HTMLDivElement;
 	let map_: HTMLImageElement;
 
+	let click_pos: { x: number; y: number } = { x: 0, y: 0 };
+
+	function detectClick(e: MouseEvent) {
+		click_pos.x = e.x;
+		click_pos.y = e.y;
+		map_.addEventListener('mouseup', clickRelease);
+	}
+
+	function detectTouch(e: TouchEvent) {
+		click_pos.x = e.touches[0].pageX;
+		click_pos.y = e.touches[0].pageY;
+		map_.addEventListener('touchend', touchRelease);
+	}
+
+	function touchRelease(e: TouchEvent) {
+		determineMarkerRelease({ x: e.touches[0].pageX, y: e.touches[0].pageY });
+	}
+
+	function clickRelease(e: MouseEvent) {
+		determineMarkerRelease({ x: e.x, y: e.y });
+	}
+
+	function determineMarkerRelease(release_pos: { x: number; y: number }) {
+		if (Math.abs(click_pos.x - release_pos.x) > 20 || Math.abs(click_pos.y - release_pos.y) > 20) {
+			return;
+		}
+		store.selected_marker = null;
+		return;
+	}
+
+	onMount(() => {
+		map_.addEventListener('mousedown', detectClick);
+		map_.addEventListener('touchstart', detectTouch);
+	});
+
 	function get_relative_movement(x: number, y: number) {
 		let rect = map_.getBoundingClientRect();
 		let rel_x = Math.max(0, Math.min(((x - rect.x) / rect.width) * 100, 100));

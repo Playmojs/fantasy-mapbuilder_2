@@ -14,7 +14,7 @@
 	let initial_distance = 0;
 	let initial_scale = 1;
 
-	const min_scale = 0.7;
+	const min_scale = 0.5;
 	const max_scale = 5;
 
 	function handle_mouse_down(event: MouseEvent) {
