@@ -2,7 +2,6 @@
 	import SvelteMarkdown from 'svelte-markdown';
 	import { store } from '../store.svelte';
 	import Editor from './Editor.svelte';
-	import { current_article_id } from '$lib/data.svelte';
 	import { fly } from 'svelte/transition';
 
 	let informaticWindow: HTMLDivElement;
@@ -14,7 +13,9 @@
 
 	function updateTitle() {
 		const title: string = article_title.innerText;
-		store.articles[$current_article_id].title = title;
+		if (store.article) {
+			store.article.title = title;
+		}
 	}
 	const resizerOnMouseDown = (e: MouseEvent) => {
 		e.preventDefault();
@@ -80,13 +81,13 @@
 			updateTitle();
 		}}
 	>
-		<h1 bind:this={article_title}>{store.articles[$current_article_id].title}</h1>
+		<h1 bind:this={article_title}>{store.article?.title}</h1>
 	</div>
 	<img
 		id="article_image"
-		src={store.articles[$current_article_id].image}
+		src={store.article?.image}
 		alt="Article image"
-		class:hidden={store.articles[$current_article_id].image === null}
+		class:hidden={store.article?.image === null}
 	/>
 
 	<div
@@ -97,7 +98,7 @@
 		{#if store.edit_mode}
 			<Editor />
 		{:else}
-			<SvelteMarkdown source={store.articles[$current_article_id].text} />
+			<SvelteMarkdown source={store.article?.content} />
 		{/if}
 	</div>
 </div>
@@ -131,10 +132,8 @@
 		margin: 5px;
 	}
 
-	@media (max-width: 1080px)
-	{
-		#article_title 
-		{
+	@media (max-width: 1080px) {
+		#article_title {
 			height: 15%;
 		}
 	}

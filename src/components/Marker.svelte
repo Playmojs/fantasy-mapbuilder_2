@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { gotoMap } from '$lib/goto_map';
-	import { MarkerType, type MarkerData } from '$lib/types';
+	import { type MarkerData } from '$lib/types';
 	import { get, writable } from 'svelte/store';
 	import { store } from '../store.svelte';
+	import { supabase } from '$lib/dtb';
 
 	export let marker_data: MarkerData;
 	export let get_relative_movement: (x: number, y: number) => { x: number; y: number };
@@ -11,16 +12,26 @@
 	let in_movement: boolean = false;
 
 	function handleClick() {
+		if (marker_data.query_id === null) {
+			return;
+		}
 		switch (marker_data.type) {
-			case MarkerType.Informatic:
-				get(store.non_map_informatic_id) === marker_data.query_id
-					? store.non_map_informatic_id.set(null)
-					: store.non_map_informatic_id.set(marker_data.query_id);
+			case 'Informatic':
+				supabase
+					.from('article')
+					.select()
+					.eq('id', marker_data.query_id)
+					.single()
+					.then(({ data, error }) => {
+						if (error) {
+							console.error(error);
+						}
+						if (data) {
+							store.article = data;
+						}
+					});
 				break;
-			case MarkerType.Map:
-				if (marker_data.query_id === null) {
-					return;
-				}
+			case 'Map':
 				gotoMap(marker_data.query_id);
 				break;
 		}
@@ -69,8 +80,8 @@
 	function move_marker(x_px: number, y_px: number) {
 		store.is_panning = false;
 		let rel_pos: { x: number; y: number } = get_relative_movement(x_px, y_px);
-		marker_data.position.y = rel_pos.y;
-		marker_data.position.x = rel_pos.x;
+		marker_data.y = rel_pos.y;
+		marker_data.x = rel_pos.x;
 		// marker.style.left = rel_pos.x + '%';
 		// marker.style.top = rel_pos.y + '%';
 	}
@@ -79,17 +90,17 @@
 <button
 	class="marker"
 	bind:this={marker}
-	style="top: {marker_data.position.y}%; left: {marker_data.position.x}%"
+	style="top: {marker_data?.y}%; left: {marker_data?.x}%"
 	onmousedown={store.edit_mode ? toggle_movement_mouse : handleClick}
 	ontouchstart={store.edit_mode ? toggle_movement_touch : handleClick}
 	class:edit_mode={store.edit_mode}
-	class:selected={store.selected_marker === marker_data.id}
+	class:selected={store.selected_marker === marker_data?.id}
 >
 	<img
 		class="marker-image"
-		src={marker_data.image}
+		src={marker_data?.image}
 		alt="Marker"
-		class:hidden={marker_data.image === null}
+		class:hidden={marker_data?.image === null}
 	/>
 </button>
 

@@ -1,8 +1,6 @@
 <script lang="ts">
-	import { current_article_id } from '$lib/data.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import { store } from '../store.svelte';
-	import { get } from 'svelte/store';
 
 	let editorElement = $state<HTMLDivElement>();
 	let editor = $state<any>();
@@ -35,11 +33,11 @@
 				suggestions: {
 					enabled: false
 				},
-				value: store.articles[$current_article_id].text
+				value: store.article?.content
 			});
 		}
 		editor.onDidChangeModelContent(() => {
-			store.articles[$current_article_id].text = editor.getValue();
+			if (store.article) store.article.content = editor.getValue();
 		});
 	});
 

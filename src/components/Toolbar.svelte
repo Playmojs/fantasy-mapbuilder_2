@@ -1,31 +1,24 @@
 <script lang="ts">
-	import { add_article, add_map, MarkerType } from '$lib/types';
+	import { add_article, add_map } from '$lib/types';
 	import { store } from '../store.svelte';
-	import { current_article_id, current_map_id } from '$lib/data.svelte';
 	import { get } from 'svelte/store';
 
 	function addMarker(event: MouseEvent) {
+		if (store.map === undefined) {
+			return;
+		}
 		const id = new Uint32Array(1);
 		crypto.getRandomValues(id);
-		store.markers[id[0]] = {
-			id: id[0],
-			type: MarkerType.Map,
-			position: { x: 50, y: 50 },
-			image: null,
-			query_id: null
-		};
-		store.maps[$current_map_id].marker_ids.push(id[0]);
+		store.map.marker_ids.push(id[0]);
 	}
 
 	function deleteMarker() {
-		if (store.selected_marker === null) {
+		if (store.selected_marker === null || store.map === undefined) {
 			return;
 		}
-		store.maps[$current_map_id].marker_ids = store.maps[$current_map_id].marker_ids.filter(
-			(id: number) => {
-				return id !== store.selected_marker;
-			}
-		);
+		store.map.marker_ids = store.map.marker_ids.filter((id: number) => {
+			return id !== store.selected_marker;
+		});
 
 		store.selected_marker = null;
 	}
@@ -48,40 +41,14 @@
 			return;
 		}
 		switch (store.markers[store.selected_marker].type) {
-			case MarkerType.Informatic:
+			case 'Informatic':
 				store.modal_data = {
-					entities: [add_article].concat(
-						Object.entries(store.articles).map(([id, article]) => {
-							return {
-								image: article.image ?? '/assets/article_icon.png',
-								title: article.title,
-								func: () => {
-									if (store.selected_marker === null) {
-										return;
-									}
-									store.markers[store.selected_marker].query_id = +id;
-								}
-							};
-						})
-					)
+					entities: [add_article].concat()
 				};
 				break;
-			case MarkerType.Map:
+			case 'Map':
 				store.modal_data = {
-					entities: [add_map].concat(
-						Object.entries(store.maps).map(([id, map]) => {
-							return {
-								image: map.image,
-								title: map.title,
-								func: () => {
-									if (store.selected_marker === null) {
-										return;
-									}
-									store.markers[store.selected_marker].query_id = +id;
-								}
-							};
-						})
-					)
+					entities: [add_map].concat()
 				};
 		}
 	}

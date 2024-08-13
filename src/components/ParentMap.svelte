@@ -6,23 +6,13 @@
 	import { store } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
 	import { add_map, type ModalEntity } from '$lib/types';
-	import { current_map_id } from '$lib/data.svelte';
 
 	onMount(() => {
-		parentMap.addEventListener('click', () => parent_func(store.maps[$current_map_id].parent_id));
+		parentMap.addEventListener('click', () => parent_func(store.map?.parent_id ?? null));
 	});
 
 	export const getMaps = () => {
-		return Object.entries(store.maps).map(([id, map]) => {
-			return {
-				image: map.image,
-				title: map.title,
-				func: () => {
-					store.maps[$current_map_id].parent_id = +id;
-					store.maps[$current_map_id].parent_image = store.maps[+id].image;
-				}
-			};
-		});
+		return [];
 	};
 
 	function parent_func(parent_id: number | null) {
@@ -40,8 +30,10 @@
 		image: '/assets/minus.png',
 		title: 'Remove Map',
 		func: () => {
-			store.maps[$current_map_id].parent_id = null;
-			store.maps[$current_map_id].parent_image = null;
+			if (store.map) {
+				store.map.parent_id = null;
+				store.map.parent_image = null;
+			}
 		}
 	};
 
@@ -53,19 +45,17 @@
 </script>
 
 <img
-	src={store.maps[$current_map_id].parent_image
-		? store.maps[$current_map_id].parent_image
-		: '/assets/parent_plus.png'}
+	src={store.map?.parent_image ?? '/assets/parent_plus.png'}
 	id="parent_map"
 	class:edit_mode={store.edit_mode}
-	class:hidden={!store.maps[$current_map_id].parent_image && !store.edit_mode}
+	class:hidden={!store.map?.parent_image && !store.edit_mode}
 	bind:this={parentMap}
 	alt="Parent Map"
 />
 <button
 	id="edit_map"
 	onclick={changeParentMap}
-	class:hidden={!store.edit_mode || !store.maps[$current_map_id].parent_image}
+	class:hidden={!store.edit_mode || !store.map?.parent_image}
 >
 </button>
 
