@@ -10,6 +10,7 @@
 
 	let marker: HTMLButtonElement;
 	let in_movement: boolean = false;
+	let article_is_shown: boolean = false;
 
 	function handleClick() {
 		if (marker_data.query_id === null) {
@@ -17,10 +18,11 @@
 		}
 		switch (marker_data.type) {
 			case 'Informatic':
+				const id: number = article_is_shown ? marker_data.query_id : store.map.article_id;
 				supabase
 					.from('article')
 					.select()
-					.eq('id', marker_data.query_id)
+					.eq('id', id)
 					.single()
 					.then(({ data, error }) => {
 						if (error) {
@@ -30,6 +32,7 @@
 							store.article = data;
 						}
 					});
+				article_is_shown = !article_is_shown;
 				break;
 			case 'Map':
 				gotoMap(marker_data.query_id);

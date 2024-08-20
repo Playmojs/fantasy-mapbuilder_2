@@ -13,10 +13,12 @@ class Store {
     modal_data = $state<ModalData | null>(null);
 
     // From database
-    map = $state<MapData>();
+    map = $state<MapData>(default_map);
     markers = $state<MarkerData[]>([]);
-    article = $state<Article>();
+    article = $state<Article>(default_article);
 }
 
+const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "", marker_ids: [], parent_id: null, parent_image: null }
+const default_article: Article = { id: -1, title: "", created_at: "", content: "", image: null }
 
 export const store = new Store()

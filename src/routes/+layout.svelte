@@ -12,41 +12,39 @@
 			.single()
 			.then(({ data, error }) => {
 				if (error) {
-					console.error(error);
+					console.error(`Couldn't fetch map data for ${map_id}, error was: ${error}`);
 				}
 				if (data) {
 					store.map = data;
 				}
 			});
-		let marker_ids = store.map?.marker_ids ?? [];
+		let marker_ids = store.map.marker_ids;
 		await supabase
 			.from('marker')
 			.select()
 			.in('id', marker_ids)
 			.then(({ data, error }) => {
 				if (error) {
-					console.error(error);
+					console.error(`Couldn't fetch marker data for ${marker_ids}, error was: ${error}`);
 				}
 				if (data) {
 					store.markers = data;
 				}
 			});
-		let article_id = store.map?.article_id ?? null;
-		if (article_id) {
-			await supabase
-				.from('article')
-				.select()
-				.eq('id', article_id)
-				.single()
-				.then(({ data, error }) => {
-					if (error) {
-						console.error(error);
-					}
-					if (data) {
-						store.article = data;
-					}
-				});
-		}
+		let article_id = store.map.article_id;
+		await supabase
+			.from('article')
+			.select()
+			.eq('id', article_id)
+			.single()
+			.then(({ data, error }) => {
+				if (error) {
+					console.error(`Couldn't fetch article data for ${article_id}, error was: ${error}`);
+				}
+				if (data) {
+					store.article = data;
+				}
+			});
 	});
 </script>
 

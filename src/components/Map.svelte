@@ -50,12 +50,12 @@
 		return position;
 	}
 
-	const current_markers = $derived((store.map?.marker_ids ?? []).map((id) => store.markers[id]));
+	const current_markers = $derived(store.map.marker_ids.map((id) => store.markers[id]));
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
 	<ZoomPan parent_selector="#map-container" />
-	<img id="map" alt="Map" bind:this={map_} src={store.map?.image} />
+	<img id="map" alt="Map" bind:this={map_} src={store.map.image} />
 	{#each current_markers as marker (marker?.id)}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}

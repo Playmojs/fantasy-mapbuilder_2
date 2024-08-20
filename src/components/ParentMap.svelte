@@ -8,7 +8,7 @@
 	import { add_map, type ModalEntity } from '$lib/types';
 
 	onMount(() => {
-		parentMap.addEventListener('click', () => parent_func(store.map?.parent_id ?? null));
+		parentMap.addEventListener('click', () => parent_func(store.map.parent_id));
 	});
 
 	export const getMaps = () => {
@@ -45,17 +45,17 @@
 </script>
 
 <img
-	src={store.map?.parent_image ?? '/assets/parent_plus.png'}
+	src={store.map.parent_image ?? '/assets/parent_plus.png'}
 	id="parent_map"
 	class:edit_mode={store.edit_mode}
-	class:hidden={!store.map?.parent_image && !store.edit_mode}
+	class:hidden={!store.map.parent_image && !store.edit_mode}
 	bind:this={parentMap}
 	alt="Parent Map"
 />
 <button
 	id="edit_map"
 	onclick={changeParentMap}
-	class:hidden={!store.edit_mode || !store.map?.parent_image}
+	class:hidden={!store.edit_mode || !store.map.parent_image}
 >
 </button>
 

@@ -81,13 +81,13 @@
 			updateTitle();
 		}}
 	>
-		<h1 bind:this={article_title}>{store.article?.title}</h1>
+		<h1 bind:this={article_title}>{store.article.title}</h1>
 	</div>
 	<img
 		id="article_image"
-		src={store.article?.image}
+		src={store.article.image}
 		alt="Article image"
-		class:hidden={store.article?.image === null}
+		class:hidden={store.article.image === null}
 	/>
 
 	<div
@@ -98,7 +98,7 @@
 		{#if store.edit_mode}
 			<Editor />
 		{:else}
-			<SvelteMarkdown source={store.article?.content} />
+			<SvelteMarkdown source={store.article.content} />
 		{/if}
 	</div>
 </div>

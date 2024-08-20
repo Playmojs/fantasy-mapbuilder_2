@@ -33,7 +33,7 @@
 				suggestions: {
 					enabled: false
 				},
-				value: store.article?.content
+				value: store.article.content
 			});
 		}
 		editor.onDidChangeModelContent(() => {
