@@ -2,6 +2,7 @@
 	import { add_article, add_map } from '$lib/types';
 	import { store } from '../store.svelte';
 	import { get } from 'svelte/store';
+	import dtb from '$lib/dtb';
 
 	function addMarker(event: MouseEvent) {
 		if (store.map === undefined) {
@@ -27,9 +28,12 @@
 		store.minimized = !store.minimized;
 	}
 
-	function toggleEditable() {
+	async function toggleEditable() {
 		store.selected_marker = null;
 		store.edit_mode = !store.edit_mode;
+		if (store.edit_mode) {
+			await dtb.fetch_all();
+		}
 	}
 
 	function change_text_size(factor: number) {

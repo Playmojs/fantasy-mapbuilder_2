@@ -6,13 +6,26 @@
 	import { store } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
 	import { add_map, type ModalEntity } from '$lib/types';
+	import dtb, { map_cache } from '$lib/dtb';
 
 	onMount(() => {
 		parentMap.addEventListener('click', () => parent_func(store.map.parent_id));
 	});
 
-	export const getMaps = () => {
-		return [];
+	const getMaps = () => {
+		dtb.fetch_all();
+		let maps: ModalEntity[] = [];
+		for (let [_id, map] of map_cache) {
+			maps.push({
+				image: map.image,
+				title: map.title,
+				func: () => {
+					store.map.parent_id = map.id;
+					store.map.parent_image = map.image;
+				}
+			});
+		}
+		return maps;
 	};
 
 	function parent_func(parent_id: number | null) {
