@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { store } from '../store.svelte';
+	import dtb from '$lib/dtb';
 
 	let editorElement = $state<HTMLDivElement>();
 	let editor = $state<any>();
@@ -47,9 +48,10 @@
 		}
 	});
 
-	onDestroy(() => {
+	onDestroy(async () => {
 		monaco?.editor.getModels().forEach((model: any) => model.dispose());
 		editor?.dispose();
+		dtb.update_article(store.article);
 	});
 </script>
 

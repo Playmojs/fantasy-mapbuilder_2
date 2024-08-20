@@ -1,25 +1,7 @@
 <script lang="ts">
 	import { add_article, add_map } from '$lib/types';
 	import { store } from '../store.svelte';
-	import { get } from 'svelte/store';
-	import dtb, { article_cache, map_cache } from '$lib/dtb';
-
-	function addMarker(event: MouseEvent) {
-		const id = new Uint32Array(1);
-		crypto.getRandomValues(id);
-		store.map.marker_ids.push(id[0]);
-	}
-
-	function deleteMarker() {
-		if (store.selected_marker === null) {
-			return;
-		}
-		store.map.marker_ids = store.map.marker_ids.filter((id: number) => {
-			return id !== store.selected_marker;
-		});
-
-		store.selected_marker = null;
-	}
+	import dtb from '$lib/dtb';
 
 	function toggleMinimize() {
 		store.minimized = !store.minimized;
@@ -37,16 +19,21 @@
 		store.text_size = store.text_size * factor;
 	}
 
-	function changeMarkerTarget() {
+	async function changeMarkerTarget() {
 		if (store.selected_marker === null) {
 			return;
 		}
 		dtb.fetch_all();
-		switch (store.markers[store.selected_marker].type) {
+		const selected_markers = await dtb.get_markers([store.selected_marker]);
+		if (selected_markers === undefined || selected_markers.length === 0) {
+			return;
+		}
+		const selected_marker = selected_markers[0];
+		switch (selected_marker.type) {
 			case 'Informatic':
 				store.modal_data = {
 					entities: [add_article].concat(
-						Object.entries(article_cache).map(([id, article]) => {
+						Object.entries(store.article_cache).map(([id, article]) => {
 							return {
 								image: article.image ?? '/assets/article_icon.png',
 								title: article.title,
@@ -54,7 +41,10 @@
 									if (store.selected_marker === null) {
 										return;
 									}
-									store.markers[store.selected_marker].query_id = +id;
+									dtb.update_marker({
+										...selected_marker,
+										query_id: +id
+									});
 								}
 							};
 						})
@@ -64,7 +54,7 @@
 			case 'Map':
 				store.modal_data = {
 					entities: [add_map].concat(
-						Object.entries(map_cache).map(([id, map]) => {
+						Object.entries(store.map_cache).map(([id, map]) => {
 							return {
 								image: map.image,
 								title: map.title,
@@ -72,7 +62,10 @@
 									if (store.selected_marker === null) {
 										return;
 									}
-									store.markers[store.selected_marker].query_id = +id;
+									dtb.update_marker({
+										...selected_marker,
+										query_id: +id
+									});
 								}
 							};
 						})
@@ -84,21 +77,24 @@
 
 <div id="toolbar">
 	<button
-		onclick={() => deleteMarker()}
+		onclick={() => dtb.delete_marker(store.selected_marker)}
 		class:hidden={!store.edit_mode || store.selected_marker === null}
 		style="background-image: url('/assets/delete_marker.png');"
+		title="Delete selected marker"
 	></button>
 	<button
 		onclick={() => {
 			changeMarkerTarget();
 		}}
 		style="background-image: url('/assets/change_marker.png');"
+		title="Set target of selected marker"
 		class:hidden={!store.edit_mode || store.selected_marker === null}
 	></button>
 	<button
-		onclick={(event: MouseEvent) => addMarker(event)}
+		onclick={(_event: MouseEvent) => dtb.create_and_select_marker_in_current_map()}
 		class:hidden={!store.edit_mode}
 		style="background-image: url('/assets/add_marker.png');"
+		title="Add new marker to map"
 	></button>
 
 	<button id="edit_content_button" class:edit_mode={store.edit_mode} onclick={toggleEditable}
@@ -109,6 +105,7 @@
 			change_text_size(1.1);
 		}}
 		style="background-image: url('/assets/plus.png');"
+		title="Increase text size"
 		class:hidden={store.minimized}
 	></button>
 
@@ -118,6 +115,7 @@
 			change_text_size(0.9);
 		}}
 		style="background-image: url('/assets/minus.png');"
+		title="Decrease text size"
 		class:hidden={store.minimized}
 	></button>
 	<button
