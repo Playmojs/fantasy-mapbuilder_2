@@ -3,7 +3,7 @@
 	import { type MarkerData } from '$lib/types';
 	import { get, writable } from 'svelte/store';
 	import { store } from '../store.svelte';
-	import { supabase } from '$lib/dtb';
+	import dtb from '$lib/dtb';
 
 	export let marker_data: MarkerData;
 	export let get_relative_movement: (x: number, y: number) => { x: number; y: number };
@@ -12,26 +12,17 @@
 	let in_movement: boolean = false;
 	let article_is_shown: boolean = false;
 
-	function handleClick() {
+	async function handleClick() {
 		if (marker_data.query_id === null) {
 			return;
 		}
 		switch (marker_data.type) {
 			case 'Informatic':
 				const id: number = article_is_shown ? marker_data.query_id : store.map.article_id;
-				supabase
-					.from('article')
-					.select()
-					.eq('id', id)
-					.single()
-					.then(({ data, error }) => {
-						if (error) {
-							console.error(error);
-						}
-						if (data) {
-							store.article = data;
-						}
-					});
+				const article = await dtb.get_article(id);
+				if (article) {
+					store.article = article;
+				}
 				article_is_shown = !article_is_shown;
 				break;
 			case 'Map':

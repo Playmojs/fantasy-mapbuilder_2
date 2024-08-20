@@ -1,50 +1,22 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { supabase } from '$lib/dtb';
 	import { store } from '../store.svelte';
+	import dtb from '$lib/dtb';
 
 	page.subscribe(async (value) => {
 		const map_id = +value.params.map_id;
-		await supabase
-			.from('map')
-			.select()
-			.eq('id', map_id)
-			.single()
-			.then(({ data, error }) => {
-				if (error) {
-					console.error(`Couldn't fetch map data for ${map_id}, error was: ${error}`);
-				}
-				if (data) {
-					store.map = data;
-				}
-			});
-		let marker_ids = store.map.marker_ids;
-		await supabase
-			.from('marker')
-			.select()
-			.in('id', marker_ids)
-			.then(({ data, error }) => {
-				if (error) {
-					console.error(`Couldn't fetch marker data for ${marker_ids}, error was: ${error}`);
-				}
-				if (data) {
-					store.markers = data;
-				}
-			});
-		let article_id = store.map.article_id;
-		await supabase
-			.from('article')
-			.select()
-			.eq('id', article_id)
-			.single()
-			.then(({ data, error }) => {
-				if (error) {
-					console.error(`Couldn't fetch article data for ${article_id}, error was: ${error}`);
-				}
-				if (data) {
-					store.article = data;
-				}
-			});
+		const map = await dtb.get_map(map_id);
+		if (map) {
+			store.map = map;
+		}
+		const markers = await dtb.get_markers(store.map.marker_ids);
+		if (markers) {
+			store.markers = markers;
+		}
+		const article = await dtb.get_article(store.map.article_id);
+		if (article) {
+			store.article = article;
+		}
 	});
 </script>
 

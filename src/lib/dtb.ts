@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
 import { type Article, type MapData, type MarkerData } from "$lib/types";
+import { store } from '../store.svelte';
 
 const supabaseUrl = "https://ybazluanarelyccrfuuc.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYXpsdWFuYXJlbHljY3JmdXVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM1NDgyMTYsImV4cCI6MjAzOTEyNDIxNn0.hUbetjxp4zUMXS4C7wosekpD8CtJwpPU0jOOLyAxzt8";
@@ -9,12 +10,12 @@ if (!supabaseUrl || !supabaseKey) {
     throw new Error('Missing Supabase environment variables');
 }
 
-export let map_cache: { [id: number]: MapData } = {};
-let marker_cache: { [id: number]: MarkerData } = {};
-export let article_cache: { [id: number]: Article } = {};
+export const map_cache: { [id: number]: MapData } = {};
+const marker_cache: { [id: number]: MarkerData } = {};
+export const article_cache: { [id: number]: Article } = {};
 let all_fetched: boolean = false;
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
 export default {
     async get_map(map_id: number) {
@@ -38,7 +39,7 @@ export default {
     },
 
     async get_markers(marker_ids: number[]) {
-        const unloaded_marker_ids = marker_ids.filter(id => id in marker_cache);
+        const unloaded_marker_ids = marker_ids.filter(id => !(id in marker_cache));
         const loaded_markers: MarkerData[] = marker_ids.map(id => marker_cache[id]).filter(marker => marker !== undefined) as MarkerData[];
         if (unloaded_marker_ids.length === 0) {
             return loaded_markers;
@@ -115,6 +116,18 @@ export default {
                 }
             });
         all_fetched = true;
+    },
+
+    async new_article() {
+        const response = await supabase.from('article').insert({}).select().single();
+        const { data, error } = response;
+        if (error) {
+            console.error(`Couldn't add article, error was: ${error}`);
+        }
+        if (data) {
+            article_cache[data.id] = data;
+            store.article = data;
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 import { store } from "../store.svelte";
 import type { Database } from "./database.types";
+import dtb from "$lib/dtb"
 
 export enum SearchParam {
 	informatic_id = 'informatic'
@@ -34,17 +35,9 @@ export const add_map: ModalEntity =
 	func: () => { console.log('Map added :)') }
 }
 
-const addArticle = () => {
-	const id = new Uint32Array(1);
-	crypto.getRandomValues(id);
-	if (store.selected_marker) {
-		store.markers[store.selected_marker].query_id = id[0];
-	}
-}
-
 export const add_article: ModalEntity =
 {
 	image: "/assets/plus.png",
 	title: "Add Article",
-	func: () => { addArticle() }
+	func: async () => { await dtb.new_article() }
 }
