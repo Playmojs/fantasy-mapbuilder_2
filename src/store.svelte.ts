@@ -14,8 +14,11 @@ class Store {
 
     // From database
     map = $state<MapData>(default_map);
-    markers = $state<MarkerData[]>([]);
     article = $state<Article>(default_article);
+
+    map_cache = $state<{ [id: number]: MapData }>({});
+    marker_cache = $state<{ [id: number]: MarkerData }>({});
+    article_cache = $state<{ [id: number]: Article }>({});
 }
 
 const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "", marker_ids: [], parent_id: null, parent_image: null }

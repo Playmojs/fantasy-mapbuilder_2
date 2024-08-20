@@ -3,6 +3,7 @@
 	import Marker from './Marker.svelte';
 	import ZoomPan from './ZoomPan.svelte';
 	import { store } from '../store.svelte';
+	import dtb from '$lib/dtb';
 
 	let mapContainer: HTMLDivElement;
 	let map_: HTMLImageElement;
@@ -50,13 +51,14 @@
 		return position;
 	}
 
-	const current_markers = $derived(store.map.marker_ids.map((id) => store.markers[id]));
+	//TODO: It would be nice to not assume updated cache, but call dtb.get_markers(ids) instead
+	const current_markers = $derived(store.map.marker_ids.map((id) => store.marker_cache[id]));
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
 	<ZoomPan parent_selector="#map-container" />
 	<img id="map" alt="Map" bind:this={map_} src={store.map.image} />
-	{#each current_markers as marker (marker?.id)}
+	{#each current_markers as marker}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}
 </div>

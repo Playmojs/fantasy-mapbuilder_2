@@ -6,7 +6,7 @@
 	import { store } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
 	import { add_map, type ModalEntity } from '$lib/types';
-	import dtb, { map_cache } from '$lib/dtb';
+	import dtb from '$lib/dtb';
 
 	onMount(() => {
 		parentMap.addEventListener('click', () => parent_func(store.map.parent_id));
@@ -14,7 +14,7 @@
 
 	const getMaps = async () => {
 		await dtb.fetch_all();
-		const maps = Object.entries(map_cache).map(([_, map]) => {
+		const maps = Object.entries(store.map_cache).map(([_, map]) => {
 			return {
 				image: map.image,
 				title: map.title,
@@ -68,6 +68,7 @@
 	id="edit_map"
 	onclick={changeParentMap}
 	class:hidden={!store.edit_mode || !store.map.parent_image}
+	title="Add parent map"
 >
 </button>
 

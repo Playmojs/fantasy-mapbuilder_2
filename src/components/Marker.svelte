@@ -10,7 +10,6 @@
 
 	let marker: HTMLButtonElement;
 	let in_movement: boolean = false;
-	let article_is_shown: boolean = false;
 
 	async function handleClick() {
 		if (marker_data.query_id === null) {
@@ -18,12 +17,12 @@
 		}
 		switch (marker_data.type) {
 			case 'Informatic':
-				const id: number = article_is_shown ? marker_data.query_id : store.map.article_id;
+				const id: number =
+					store.article.id !== marker_data.query_id ? marker_data.query_id : store.map.article_id;
 				const article = await dtb.get_article(id);
 				if (article) {
 					store.article = article;
 				}
-				article_is_shown = !article_is_shown;
 				break;
 			case 'Map':
 				gotoMap(marker_data.query_id);
@@ -56,6 +55,7 @@
 		window.removeEventListener('mouseup', stop_movement);
 		window.removeEventListener('touchmove', move_marker_touch);
 		window.removeEventListener('touchend', stop_movement);
+		dtb.update_marker(marker_data);
 		in_movement = false;
 	}
 
