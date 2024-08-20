@@ -53,7 +53,16 @@ export default {
                     data.forEach(marker => store.marker_cache[marker.id] = marker);
                     return data.concat(loaded_markers);
                 }
+                return null;
             });
+    },
+
+    async get_marker(marker_id: number) {
+        const markers = await this.get_markers([marker_id]);
+        if (markers === null) {
+            return;
+        }
+        return markers[0];
     },
 
     async get_article(article_id: number) {

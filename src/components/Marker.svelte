@@ -11,7 +11,7 @@
 	let marker: HTMLButtonElement;
 	let in_movement: boolean = false;
 
-	async function handleClick() {
+	async function handleClick(event: MouseEvent | TouchEvent) {
 		if (marker_data.query_id === null) {
 			return;
 		}
@@ -25,7 +25,9 @@
 				}
 				break;
 			case 'Map':
-				gotoMap(marker_data.query_id);
+				if (!store.edit_mode || event.ctrlKey) {
+					gotoMap(marker_data.query_id);
+				}
 				break;
 		}
 	}
@@ -85,8 +87,18 @@
 	class="marker"
 	bind:this={marker}
 	style="top: {marker_data?.y}%; left: {marker_data?.x}%"
-	onmousedown={store.edit_mode ? toggle_movement_mouse : handleClick}
-	ontouchstart={store.edit_mode ? toggle_movement_touch : handleClick}
+	onmousedown={(event) => {
+		handleClick(event);
+		if (store.edit_mode) {
+			toggle_movement_mouse();
+		}
+	}}
+	ontouchstart={(event) => {
+		handleClick(event);
+		if (store.edit_mode) {
+			toggle_movement_touch();
+		}
+	}}
 	class:edit_mode={store.edit_mode}
 	class:selected={store.selected_marker === marker_data?.id}
 >
