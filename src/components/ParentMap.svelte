@@ -12,26 +12,25 @@
 		parentMap.addEventListener('click', () => parent_func(store.map.parent_id));
 	});
 
-	const getMaps = () => {
-		dtb.fetch_all();
-		let maps: ModalEntity[] = [];
-		for (let [_id, map] of map_cache) {
-			maps.push({
+	const getMaps = async () => {
+		await dtb.fetch_all();
+		const maps = Object.entries(map_cache).map(([_, map]) => {
+			return {
 				image: map.image,
 				title: map.title,
 				func: () => {
 					store.map.parent_id = map.id;
 					store.map.parent_image = map.image;
 				}
-			});
-		}
+			};
+		});
 		return maps;
 	};
 
-	function parent_func(parent_id: number | null) {
+	async function parent_func(parent_id: number | null) {
 		if (parent_id === null && store.edit_mode) {
 			store.modal_data = {
-				entities: [add_map].concat(getMaps())
+				entities: [add_map].concat(await getMaps())
 			};
 		}
 		if (parent_id !== null && !store.edit_mode) {
@@ -50,9 +49,9 @@
 		}
 	};
 
-	function changeParentMap() {
+	async function changeParentMap() {
 		store.modal_data = {
-			entities: [remove_map, add_map].concat(getMaps())
+			entities: [remove_map, add_map].concat(await getMaps())
 		};
 	}
 </script>

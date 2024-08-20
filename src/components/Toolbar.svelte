@@ -2,19 +2,16 @@
 	import { add_article, add_map } from '$lib/types';
 	import { store } from '../store.svelte';
 	import { get } from 'svelte/store';
-	import dtb from '$lib/dtb';
+	import dtb, { article_cache, map_cache } from '$lib/dtb';
 
 	function addMarker(event: MouseEvent) {
-		if (store.map === undefined) {
-			return;
-		}
 		const id = new Uint32Array(1);
 		crypto.getRandomValues(id);
 		store.map.marker_ids.push(id[0]);
 	}
 
 	function deleteMarker() {
-		if (store.selected_marker === null || store.map === undefined) {
+		if (store.selected_marker === null) {
 			return;
 		}
 		store.map.marker_ids = store.map.marker_ids.filter((id: number) => {
@@ -44,15 +41,42 @@
 		if (store.selected_marker === null) {
 			return;
 		}
+		dtb.fetch_all();
 		switch (store.markers[store.selected_marker].type) {
 			case 'Informatic':
 				store.modal_data = {
-					entities: [add_article].concat()
+					entities: [add_article].concat(
+						Object.entries(article_cache).map(([id, article]) => {
+							return {
+								image: article.image ?? '/assets/article_icon.png',
+								title: article.title,
+								func: () => {
+									if (store.selected_marker === null) {
+										return;
+									}
+									store.markers[store.selected_marker].query_id = +id;
+								}
+							};
+						})
+					)
 				};
 				break;
 			case 'Map':
 				store.modal_data = {
-					entities: [add_map].concat()
+					entities: [add_map].concat(
+						Object.entries(map_cache).map(([id, map]) => {
+							return {
+								image: map.image,
+								title: map.title,
+								func: () => {
+									if (store.selected_marker === null) {
+										return;
+									}
+									store.markers[store.selected_marker].query_id = +id;
+								}
+							};
+						})
+					)
 				};
 		}
 	}

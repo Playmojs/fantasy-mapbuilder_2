@@ -9,17 +9,17 @@ if (!supabaseUrl || !supabaseKey) {
     throw new Error('Missing Supabase environment variables');
 }
 
-export let map_cache: Map<number, MapData> = new Map();
-let marker_cache: Map<number, MarkerData> = new Map();
-export let article_cache: Map<number, Article> = new Map();
+export let map_cache: { [id: number]: MapData } = {};
+let marker_cache: { [id: number]: MarkerData } = {};
+export let article_cache: { [id: number]: Article } = {};
 let all_fetched: boolean = false;
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
 export default {
     async get_map(map_id: number) {
-        if (map_cache.has(map_id)) {
-            return map_cache.get(map_id);
+        if (map_id in map_cache) {
+            return map_cache[map_id];
         }
         return await supabase
             .from('map')
@@ -31,15 +31,15 @@ export default {
                     console.error(`Couldn't fetch map data for ${map_id}, error was: ${error}`);
                 }
                 if (data) {
-                    map_cache.set(map_id, data);
+                    map_cache[map_id] = data;
                     return data
                 }
             });
     },
 
     async get_markers(marker_ids: number[]) {
-        const unloaded_marker_ids = marker_ids.filter(id => marker_cache.has(id));
-        const loaded_markers: MarkerData[] = marker_ids.map(id => marker_cache.get(id)).filter(marker => marker !== undefined) as MarkerData[];
+        const unloaded_marker_ids = marker_ids.filter(id => id in marker_cache);
+        const loaded_markers: MarkerData[] = marker_ids.map(id => marker_cache[id]).filter(marker => marker !== undefined) as MarkerData[];
         if (unloaded_marker_ids.length === 0) {
             return loaded_markers;
         }
@@ -52,15 +52,15 @@ export default {
                     console.error(`Couldn't fetch marker data for ${marker_ids}, error was: ${error}`);
                 }
                 if (data) {
-                    data.forEach(marker => marker_cache.set(marker.id, marker));
+                    data.forEach(marker => marker_cache[marker.id] = marker);
                     return data.concat(loaded_markers);
                 }
             });
     },
 
     async get_article(article_id: number) {
-        if (article_cache.has(article_id)) {
-            return article_cache.get(article_id);
+        if (article_id in article_cache) {
+            return article_cache[article_id];
         }
         return await supabase
             .from('article')
@@ -72,7 +72,7 @@ export default {
                     console.error(`Couldn't fetch article data for ${article_id}, error was: ${error}`);
                 }
                 if (data) {
-                    article_cache.set(article_id, data);
+                    article_cache[article_id] = data;
                     return data
                 }
             });
@@ -89,7 +89,7 @@ export default {
                     console.error(`Couldn't fetch map data, error was: ${error}`);
                 }
                 if (data) {
-                    data.forEach(map => map_cache.set(map.id, map));
+                    data.forEach(map => map_cache[map.id] = map);
                 }
             });
         await supabase
@@ -100,7 +100,7 @@ export default {
                     console.error(`Couldn't fetch marker data, error was: ${error}`);
                 }
                 if (data) {
-                    data.forEach(marker => marker_cache.set(marker.id, marker));
+                    data.forEach(marker => marker_cache[marker.id] = marker);
                 }
             });
         await supabase
@@ -111,7 +111,7 @@ export default {
                     console.error(`Couldn't fetch map data, error was: ${error}`);
                 }
                 if (data) {
-                    data.forEach(article => article_cache.set(article.id, article));
+                    data.forEach(article => article_cache[article.id] = article);
                 }
             });
         all_fetched = true;
