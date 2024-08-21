@@ -49,7 +49,7 @@
 	});
 
 	$effect(() => {
-		if (editor && store.selected_marker) {
+		if (editor && store.article.id !== null) {
 			editor.setValue(untrack(() => store.article.content));
 		}
 	});
