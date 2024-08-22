@@ -11,6 +11,7 @@ class Store {
     informatic_width = $state(66);
     text_size = $state(150);
     modal_data = $state<ModalData | null>(null);
+    map_transform = $state({ x: 0, y: 0, scale: 1 });
 
     // From database
     map = $state<MapData>(default_map);

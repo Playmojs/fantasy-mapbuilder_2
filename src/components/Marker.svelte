@@ -4,12 +4,14 @@
 	import { get, writable } from 'svelte/store';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
+	import MarkerWindow from './MarkerWindow.svelte';
 
 	export let marker_data: MarkerData;
 	export let get_relative_movement: (x: number, y: number) => { x: number; y: number };
 
 	let marker: HTMLButtonElement;
 	let in_movement: boolean = false;
+	let hover: boolean = false;
 
 	async function handleClick(event: MouseEvent | TouchEvent) {
 		if (marker_data.query_id === null) {
@@ -99,6 +101,12 @@
 			toggle_movement_touch();
 		}
 	}}
+	onmouseenter={() => {
+		hover = true;
+	}}
+	onmouseleave={() => {
+		hover = false;
+	}}
 	class:edit_mode={store.edit_mode}
 	class:selected={store.selected_marker === marker_data?.id}
 >
@@ -108,6 +116,9 @@
 		alt="Marker"
 		class:hidden={marker_data?.image === null}
 	/>
+	{#if hover}
+		<MarkerWindow type={marker_data.type} id={marker_data.query_id} />
+	{/if}
 </button>
 
 <style>
