@@ -180,8 +180,14 @@ export default {
         }
     },
 
+    async remove_marker_from_map(marker_id: number | null, map: MapData) {
+        if (marker_id === null) { return; }
+        map.marker_ids = map.marker_ids.filter(id => id !== marker_id)
+        this.update_map(map)
+    },
+
     async delete_marker(marker_id: number | null) {
-        if (!marker_id) {
+        if (marker_id === null) {
             return;
         }
         delete store.marker_cache[marker_id];

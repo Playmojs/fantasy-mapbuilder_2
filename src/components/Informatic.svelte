@@ -126,6 +126,15 @@
 		text-align: center;
 		border-radius: 10px;
 		font-family: 'Garamond Semibold Italic';
+		white-space: nowrap;
+	}
+
+	#article_title h1 {
+		margin: 0;
+		padding: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	h1 {
@@ -148,6 +157,7 @@
 		text-align: justify;
 		overflow-y: scroll;
 		border-radius: 10px;
+		padding-right: 10px;
 	}
 
 	.non-editable {

@@ -120,6 +120,7 @@
 
 	function update_transform() {
 		if (parent) {
+			store.map_transform = { x: current_x, y: current_y, scale: scale };
 			parent.style.transform = `translate(${current_x}px, ${current_y}px) scale(${scale})`;
 		}
 	}

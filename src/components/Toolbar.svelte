@@ -77,7 +77,7 @@
 
 <div id="toolbar">
 	<button
-		onclick={() => dtb.delete_marker(store.selected_marker)}
+		onclick={() => dtb.remove_marker_from_map(store.selected_marker, store.map)}
 		class:hidden={!store.edit_mode || store.selected_marker === null}
 		style="background-image: url('/assets/delete_marker.png');"
 		title="Delete selected marker"
