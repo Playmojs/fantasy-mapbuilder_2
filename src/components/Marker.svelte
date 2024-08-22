@@ -5,6 +5,7 @@
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 	import MarkerWindow from './MarkerWindow.svelte';
+	import { assert } from '$lib/utils';
 
 	export let marker_data: MarkerData;
 	export let get_relative_movement: (x: number, y: number) => { x: number; y: number };
@@ -14,23 +15,23 @@
 	let hover: boolean = false;
 
 	async function handleClick(event: MouseEvent | TouchEvent) {
-		if (marker_data.query_id === null) {
-			return;
-		}
-		switch (marker_data.type) {
-			case 'Informatic':
-				const id: number =
-					store.article.id !== marker_data.query_id ? marker_data.query_id : store.map.article_id;
-				const article = await dtb.get_article(id);
-				if (article) {
-					store.article = article;
-				}
-				break;
-			case 'Map':
-				if (!store.edit_mode || event.ctrlKey) {
-					gotoMap(marker_data.query_id);
-				}
-				break;
+		assert(
+			marker_data.target_article_id !== null || marker_data.target_map_id !== null,
+			'Marker has both article_id and map_id'
+		);
+		if (marker_data.target_article_id !== null) {
+			const id: number =
+				store.article.id !== marker_data.target_article_id
+					? marker_data.target_article_id
+					: store.map.article_id;
+			const article = await dtb.get_article(id);
+			if (article) {
+				store.article = article;
+			}
+		} else if (marker_data.target_map_id !== null) {
+			if (!store.edit_mode || event.ctrlKey) {
+				gotoMap(marker_data.target_map_id);
+			}
 		}
 	}
 
@@ -117,7 +118,7 @@
 		class:hidden={marker_data?.image === null}
 	/>
 	{#if hover}
-		<MarkerWindow type={marker_data.type} id={marker_data.query_id} />
+		<MarkerWindow map_id={marker_data.target_map_id} article_id={marker_data.target_article_id} />
 	{/if}
 </button>
 

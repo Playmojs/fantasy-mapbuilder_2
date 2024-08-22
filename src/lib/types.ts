@@ -14,7 +14,6 @@ export enum TargetType {
 }
 
 export type MarkerData = Database["public"]["Tables"]["marker"]["Row"];
-export type MarkerType = MarkerData["type"];
 export type MapData = Database["public"]["Tables"]["map"]["Row"];
 export type Article = Database["public"]["Tables"]["article"]["Row"];
 

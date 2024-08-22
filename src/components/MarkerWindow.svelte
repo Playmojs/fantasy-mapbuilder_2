@@ -4,24 +4,23 @@
 	import { get } from 'svelte/store';
 	import { store } from '../store.svelte';
 	import { fade } from 'svelte/transition';
+	import { assert, assert_unreachable } from '$lib/utils';
 
-	export let type: String;
-	export let id: number | null;
+	export let map_id: number | null;
+	export let article_id: number | null;
 
 	let image: string;
 	let title: string;
 
 	async function get_data() {
-		if (id === null) {
-			return;
-		}
+		assert(map_id !== null || article_id !== null, 'Both map id and article id are not null');
 		let response;
 		let default_img: string = '';
-		if (type === 'Map') {
-			response = await dtb.get_map(id);
+		if (map_id !== null) {
+			response = await dtb.get_map(map_id);
 			default_img = '/assets/article_icon.png';
-		} else if (type === 'Informatic') {
-			response = await dtb.get_article(id);
+		} else if (article_id !== null) {
+			response = await dtb.get_article(article_id);
 			default_img = '/assets/article_icon.png';
 		}
 

@@ -2,6 +2,7 @@
 	import { add_article, add_map } from '$lib/types';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
+	import { assert } from '$lib/utils';
 
 	function toggleMinimize() {
 		store.minimized = !store.minimized;
@@ -25,52 +26,60 @@
 		}
 		dtb.fetch_all();
 		const selected_markers = await dtb.get_markers([store.selected_marker]);
-		if (selected_markers === undefined || selected_markers.length === 0) {
+		if (
+			selected_markers === undefined ||
+			selected_markers === null ||
+			selected_markers.length === 0
+		) {
 			return;
 		}
 		const selected_marker = selected_markers[0];
-		switch (selected_marker.type) {
-			case 'Informatic':
-				store.modal_data = {
-					entities: [add_article].concat(
-						Object.entries(store.article_cache).map(([id, article]) => {
-							return {
-								image: article.image ?? '/assets/article_icon.png',
-								title: article.title,
-								func: () => {
-									if (store.selected_marker === null) {
-										return;
-									}
-									dtb.update_marker({
-										...selected_marker,
-										query_id: +id
-									});
+
+		assert(
+			selected_marker.target_article_id !== null || selected_marker.target_map_id !== null,
+			'Marker has both article_id and map_id'
+		);
+
+		if (selected_marker.target_article_id !== null) {
+			store.modal_data = {
+				entities: [add_article].concat(
+					Object.entries(store.article_cache).map(([id, article]) => {
+						return {
+							image: article.image ?? '/assets/article_icon.png',
+							title: article.title,
+							func: () => {
+								if (store.selected_marker === null) {
+									return;
 								}
-							};
-						})
-					)
-				};
-				break;
-			case 'Map':
-				store.modal_data = {
-					entities: [add_map].concat(
-						Object.entries(store.map_cache).map(([id, map]) => {
-							return {
-								image: map.image,
-								title: map.title,
-								func: () => {
-									if (store.selected_marker === null) {
-										return;
-									}
-									dtb.update_marker({
-										...selected_marker,
-										query_id: +id
-									});
+								dtb.update_marker({
+									...selected_marker,
+									target_article_id: +id
+								});
+							}
+						};
+					})
+				)
+			};
+		} else if (selected_marker.target_map_id !== null) {
+			store.modal_data = {
+				entities: [add_map].concat(
+					Object.entries(store.map_cache).map(([id, map]) => {
+						return {
+							image: map.image,
+							title: map.title,
+							func: () => {
+								if (store.selected_marker === null) {
+									return;
 								}
-							};
-						})
-					)
-				};
+								dtb.update_marker({
+									...selected_marker,
+									target_map_id: +id
+								});
+							}
+						};
+					})
+				)
+			};
 		}
 	}
 </script>
