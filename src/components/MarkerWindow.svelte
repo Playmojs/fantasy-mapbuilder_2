@@ -13,7 +13,7 @@
 	let title: string;
 
 	async function get_data() {
-		assert(map_id !== null || article_id !== null, 'Both map id and article id are not null');
+		assert(map_id === null || article_id === null, 'Both map id and article id are not null');
 		let response;
 		let default_img: string = '';
 		if (map_id !== null) {

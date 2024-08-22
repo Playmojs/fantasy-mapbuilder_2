@@ -12,7 +12,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 let all_fetched: boolean = false;
 
-const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
 export default {
     async get_map(map_id: number) {
@@ -30,39 +30,24 @@ export default {
         }
         if (data) {
             store.map_cache[map_id] = data;
-            await this.get_markers(data.marker_ids); // TODO: Temporary hack. See TODO in Map.svelte
             return data;
         }
     },
 
-    async get_markers(marker_ids: number[]) {
-        const unloaded_marker_ids = marker_ids.filter(id => !(id in store.marker_cache));
-        const loaded_markers: MarkerData[] = marker_ids.map(id => store.marker_cache[id]).filter(marker => marker !== undefined) as MarkerData[];
-        if (unloaded_marker_ids.length === 0) {
-            return loaded_markers;
-        }
+    async get_markers(map_id: number): Promise<MarkerData[] | null> {
         return await supabase
             .from('marker')
             .select()
-            .in('id', unloaded_marker_ids)
+            .eq('owner_map_id', map_id)
             .then(({ data, error }) => {
                 if (error) {
-                    console.error(`Couldn't fetch marker data for ${marker_ids}, error was: ${error}`);
+                    console.error(`Couldn't fetch marker data for ${map_id}, error was: ${error}`);
                 }
                 if (data) {
-                    data.forEach(marker => store.marker_cache[marker.id] = marker);
-                    return data.concat(loaded_markers);
+                    return data;
                 }
                 return null;
             });
-    },
-
-    async get_marker(marker_id: number) {
-        const markers = await this.get_markers([marker_id]);
-        if (markers === null) {
-            return;
-        }
-        return markers[0];
     },
 
     async get_article(article_id: number) {
@@ -100,17 +85,6 @@ export default {
                 }
             });
         await supabase
-            .from('marker')
-            .select()
-            .then(({ data, error }) => {
-                if (error) {
-                    console.error(`Couldn't fetch marker data, error was: ${error}`);
-                }
-                if (data) {
-                    data.forEach(marker => store.marker_cache[marker.id] = marker);
-                }
-            });
-        await supabase
             .from('article')
             .select()
             .then(({ data, error }) => {
@@ -139,16 +113,14 @@ export default {
     async create_and_select_marker_in_current_map() {
         // TODO: How do we determine the type? Hardcoded to Informatic for now
         // TODO: How do we determine the x and y? Hardcoded to 50, 50 for now
-        const response = await supabase.from('marker').insert({ type: 'Informatic', x: 50, y: 50 }).select().single();
+        const response = await supabase.from('marker').insert({ owner_map_id: store.map.id, x: 50, y: 50 }).select().single();
         const { data } = response
         if (response.error) {
             console.error(response);
         }
         if (data) {
-            store.marker_cache[data.id] = data;
             store.selected_marker = data.id;
-            store.map.marker_ids.push(data.id);// = new_map; // overwriting (as opposed to updating with push) to trigger reactivity
-            this.update_map(store.map);
+            store.markers.push(data);
         }
     },
 
@@ -161,7 +133,6 @@ export default {
     },
 
     async update_marker(marker: MarkerData) {
-        store.marker_cache[marker.id] = marker;
         marker.x = Math.round(marker.x);
         marker.y = Math.round(marker.y);
         const response = await supabase.from('marker').upsert(marker).select().single()
@@ -180,26 +151,16 @@ export default {
         }
     },
 
-    async remove_marker_from_map(marker_id: number | null, map: MapData) {
-        if (marker_id === null) { return; }
-        map.marker_ids = map.marker_ids.filter(id => id !== marker_id)
-        this.update_map(map)
-    },
-
     async delete_marker(marker_id: number | null) {
         if (marker_id === null) {
             return;
         }
-        delete store.marker_cache[marker_id];
-        this.fetch_all();
-        for (const map_id in store.map_cache) {
-            const map = store.map_cache[map_id];
-            map.marker_ids = map.marker_ids.filter(id => id !== marker_id);
-            this.update_map(map);
-        }
         const response = await supabase.from('marker').delete().eq('id', marker_id).select();
         if (response.error) {
             console.error(response);
+        }
+        if (response.data) {
+            store.markers = store.markers.filter(marker => marker.id !== marker_id);
         }
     }
 }

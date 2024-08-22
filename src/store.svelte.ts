@@ -7,7 +7,7 @@ class Store {
     show_modal = $state(false);
     minimized = $state(false);
     is_panning = $state(false);
-    selected_marker = $state<number | null>(null);
+    selected_marker = $state<number | null>(null); // TODO: Could this be a MarkerData instead of an id?
     informatic_width = $state(66);
     text_size = $state(150);
     modal_data = $state<ModalData | null>(null);
@@ -15,10 +15,10 @@ class Store {
 
     // From database
     map = $state<MapData>(default_map);
+    markers = $state<MarkerData[]>([]);
     article = $state<Article>(default_article);
 
     map_cache = $state<{ [id: number]: MapData }>({});
-    marker_cache = $state<{ [id: number]: MarkerData }>({});
     article_cache = $state<{ [id: number]: Article }>({});
 }
 

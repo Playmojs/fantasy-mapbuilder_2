@@ -13,6 +13,10 @@
 		if (article) {
 			store.article = article;
 		}
+		const current_markers = await dtb.get_markers(store.map.id);
+		if (current_markers) {
+			store.markers = current_markers;
+		}
 	});
 </script>
 

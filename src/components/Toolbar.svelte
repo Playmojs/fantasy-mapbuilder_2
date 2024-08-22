@@ -2,7 +2,7 @@
 	import { add_article, add_map } from '$lib/types';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
-	import { assert } from '$lib/utils';
+	import { assert, assert_unreachable } from '$lib/utils';
 
 	function toggleMinimize() {
 		store.minimized = !store.minimized;
@@ -24,43 +24,18 @@
 		if (store.selected_marker === null) {
 			return;
 		}
-		dtb.fetch_all();
-		const selected_markers = await dtb.get_markers([store.selected_marker]);
-		if (
-			selected_markers === undefined ||
-			selected_markers === null ||
-			selected_markers.length === 0
-		) {
+		const selected_marker = store.markers.find((marker) => marker.id === store.selected_marker);
+		if (selected_marker === undefined) {
+			assert_unreachable("Selected marker doesn't exist");
 			return;
 		}
-		const selected_marker = selected_markers[0];
 
 		assert(
-			selected_marker.target_article_id !== null || selected_marker.target_map_id !== null,
+			selected_marker.target_article_id === null || selected_marker.target_map_id === null,
 			'Marker has both article_id and map_id'
 		);
 
-		if (selected_marker.target_article_id !== null) {
-			store.modal_data = {
-				entities: [add_article].concat(
-					Object.entries(store.article_cache).map(([id, article]) => {
-						return {
-							image: article.image ?? '/assets/article_icon.png',
-							title: article.title,
-							func: () => {
-								if (store.selected_marker === null) {
-									return;
-								}
-								dtb.update_marker({
-									...selected_marker,
-									target_article_id: +id
-								});
-							}
-						};
-					})
-				)
-			};
-		} else if (selected_marker.target_map_id !== null) {
+		if (selected_marker.target_map_id !== null) {
 			store.modal_data = {
 				entities: [add_map].concat(
 					Object.entries(store.map_cache).map(([id, map]) => {
@@ -80,13 +55,33 @@
 					})
 				)
 			};
+		} else {
+			store.modal_data = {
+				entities: [add_article].concat(
+					Object.entries(store.article_cache).map(([id, article]) => {
+						return {
+							image: article.image ?? '/assets/article_icon.png',
+							title: article.title,
+							func: () => {
+								if (store.selected_marker === null) {
+									return;
+								}
+								dtb.update_marker({
+									...selected_marker,
+									target_article_id: +id
+								});
+							}
+						};
+					})
+				)
+			};
 		}
 	}
 </script>
 
 <div id="toolbar">
 	<button
-		onclick={() => dtb.remove_marker_from_map(store.selected_marker, store.map)}
+		onclick={() => dtb.delete_marker(store.selected_marker)}
 		class:hidden={!store.edit_mode || store.selected_marker === null}
 		style="background-image: url('/assets/delete_marker.png');"
 		title="Delete selected marker"

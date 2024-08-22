@@ -16,7 +16,7 @@
 
 	async function handleClick(event: MouseEvent | TouchEvent) {
 		assert(
-			marker_data.target_article_id !== null || marker_data.target_map_id !== null,
+			marker_data.target_article_id === null || marker_data.target_map_id === null,
 			'Marker has both article_id and map_id'
 		);
 		if (marker_data.target_article_id !== null) {
