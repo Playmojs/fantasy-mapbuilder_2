@@ -22,17 +22,21 @@
 		map_.addEventListener('touchend', touchRelease);
 	}
 
-	function touchRelease(e: TouchEvent) {
-		determineMarkerRelease({ x: e.touches[0].pageX, y: e.touches[0].pageY });
+	async function touchRelease(e: TouchEvent) {
+		await determineMarkerRelease({ x: e.touches[0].pageX, y: e.touches[0].pageY });
 	}
 
-	function clickRelease(e: MouseEvent) {
-		determineMarkerRelease({ x: e.x, y: e.y });
+	async function clickRelease(e: MouseEvent) {
+		await determineMarkerRelease({ x: e.x, y: e.y });
 	}
 
-	function determineMarkerRelease(release_pos: { x: number; y: number }) {
+	async function determineMarkerRelease(release_pos: { x: number; y: number }) {
 		if (Math.abs(click_pos.x - release_pos.x) > 20 || Math.abs(click_pos.y - release_pos.y) > 20) {
 			return;
+		}
+		const article = await dtb.get_article(store.map.article_id);
+		if (article) {
+			store.article = article;
 		}
 		store.selected_marker = null;
 		return;
@@ -52,13 +56,12 @@
 	}
 
 	//TODO: It would be nice to not assume updated cache, but call dtb.get_markers(ids) instead
-	const current_markers = $derived(store.map.marker_ids.map((id) => store.marker_cache[id]));
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
 	<ZoomPan parent_selector="#map-container" />
 	<img id="map" alt="Map" bind:this={map_} src={store.map.image} />
-	{#each current_markers as marker}
+	{#each store.current_markers as marker}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}
 </div>

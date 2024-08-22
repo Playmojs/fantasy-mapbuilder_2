@@ -9,10 +9,6 @@
 		if (map) {
 			store.map = map;
 		}
-		const markers = await dtb.get_markers(store.map.marker_ids);
-		if (markers) {
-			store.markers = markers;
-		}
 		const article = await dtb.get_article(store.map.article_id);
 		if (article) {
 			store.article = article;

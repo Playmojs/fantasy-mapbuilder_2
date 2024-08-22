@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 
@@ -38,7 +38,7 @@
 			});
 		}
 		editor.onDidChangeModelContent(() => {
-			if (store.article) store.article.content = editor.getValue();
+			store.article.content = editor.getValue();
 		});
 	});
 

@@ -9,7 +9,7 @@
 	import dtb from '$lib/dtb';
 
 	onMount(() => {
-		parentMap.addEventListener('click', () => parent_func(store.map.parent_id));
+		parentMap.addEventListener('click', (event) => parent_func(event, store.map.parent_id));
 	});
 
 	const getMaps = async () => {
@@ -27,13 +27,13 @@
 		return maps;
 	};
 
-	async function parent_func(parent_id: number | null) {
+	async function parent_func(event: MouseEvent | TouchEvent, parent_id: number | null) {
 		if (parent_id === null && store.edit_mode) {
 			store.modal_data = {
 				entities: [add_map].concat(await getMaps())
 			};
 		}
-		if (parent_id !== null && !store.edit_mode) {
+		if (parent_id !== null && (!store.edit_mode || event.ctrlKey)) {
 			gotoMap(parent_id);
 		}
 	}

@@ -30,7 +30,7 @@ export default {
         }
         if (data) {
             store.map_cache[map_id] = data;
-            await this.get_markers(data.marker_ids); // TODO: Temporary hack. See TODO in Marker.svelte
+            await this.get_markers(data.marker_ids); // TODO: Temporary hack. See TODO in Map.svelte
             return data;
         }
     },
@@ -53,7 +53,16 @@ export default {
                     data.forEach(marker => store.marker_cache[marker.id] = marker);
                     return data.concat(loaded_markers);
                 }
+                return null;
             });
+    },
+
+    async get_marker(marker_id: number) {
+        const markers = await this.get_markers([marker_id]);
+        if (markers === null) {
+            return;
+        }
+        return markers[0];
     },
 
     async get_article(article_id: number) {
@@ -75,6 +84,7 @@ export default {
                 }
             });
     },
+
     async fetch_all() {
         if (all_fetched) {
             return;
@@ -139,7 +149,7 @@ export default {
             store.marker_cache[data.id] = data;
             store.selected_marker = data.id;
             store.map.marker_ids.push(data.id);// = new_map; // overwriting (as opposed to updating with push) to trigger reactivity
-            this.update_map(store.map);
+            this.update_map(store.map, store.current_markers);
         }
     },
 
@@ -161,7 +171,7 @@ export default {
         }
     },
 
-    async update_map(map: MapData) {
+    async update_map(map: MapData, markers: MarkerData[]) {
         if (store.map_cache[map.id] === map) {
             return;
         };
@@ -169,10 +179,26 @@ export default {
         if (response.error) {
             console.error(response);
         }
+        const upsert_markers_response = await supabase.from('map_to_marker').upsert(markers.map(marker => ({ map_id: map.id, marker_id: marker.id })), { onConflict: 'map_id, marker_id' })
+        if (upsert_markers_response.error) {
+            console.error(upsert_markers_response)
+        }
+
+        const delete_markers_response = await supabase.from('map_to_marker').delete().eq('map_id', map.id).not('marker_id', 'in', `(${markers.map(marker => marker.id)})`)
+        if (delete_markers_response.error) {
+            console.error(delete_markers_response)
+        }
+
+    },
+
+    async remove_marker_from_map(marker_id: number | null, map: MapData) {
+        if (marker_id === null) { return; }
+        map.marker_ids = map.marker_ids.filter(id => id !== marker_id)
+        this.update_map(map, store.current_markers)
     },
 
     async delete_marker(marker_id: number | null) {
-        if (!marker_id) {
+        if (marker_id === null) {
             return;
         }
         delete store.marker_cache[marker_id];
@@ -180,7 +206,7 @@ export default {
         for (const map_id in store.map_cache) {
             const map = store.map_cache[map_id];
             map.marker_ids = map.marker_ids.filter(id => id !== marker_id);
-            this.update_map(map);
+            this.update_map(map, store.current_markers);
         }
         const response = await supabase.from('marker').delete().eq('id', marker_id).select();
         if (response.error) {

@@ -19,6 +19,7 @@ class Store {
     map_cache = $state<{ [id: number]: MapData }>({});
     marker_cache = $state<{ [id: number]: MarkerData }>({});
     article_cache = $state<{ [id: number]: Article }>({});
+    current_markers = $derived(store.map.marker_ids.map((id) => store.marker_cache[id]));
 }
 
 const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "", marker_ids: [], parent_id: null, parent_image: null }
