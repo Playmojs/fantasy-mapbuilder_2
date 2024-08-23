@@ -25,7 +25,7 @@
 		background-color: #333;
 		padding: 1rem 2rem;
 		display: flex;
-		justify-content: space-between;
+		justify-content: space-around;
 		align-items: center;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 		z-index: 1000;
@@ -38,11 +38,11 @@
 	}
 
 	.left-buttons a {
-		margin-right: 2rem; /* Space out left-aligned buttons */
+		margin-right: 2rem;
 	}
 
 	.right-buttons a {
-		margin-left: 1rem; /* Keep login/signup buttons close to each other */
+		margin-left: 1rem;
 	}
 
 	a {
