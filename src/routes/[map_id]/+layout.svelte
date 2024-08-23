@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { store } from '../store.svelte';
+	import { store } from '../../store.svelte';
 	import dtb from '$lib/dtb';
 
 	page.subscribe(async (value) => {

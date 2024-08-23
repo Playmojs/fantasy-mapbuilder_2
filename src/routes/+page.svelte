@@ -1,50 +1,56 @@
 <script>
-	import { goto } from '$app/navigation';
+	import Homebar from '../components/Homebar.svelte';
+
+	let homebarItems = [
+		{ label: 'Home', href: '/', position: 'left' },
+		{ label: 'Demo Project', href: '/1', position: 'left' },
+		{ label: 'Login', href: '/login', position: 'right' },
+		{ label: 'Signup', href: '/signup', position: 'right' }
+	];
 </script>
 
-<div class="container">
-	<h1>Fantasy Mapbuilder Prototype</h1>
-	<p>
-		Fantasy Mapbuilder is a world building tool. It is in very early stages of development. This
-		demo shows a single example project with public write access. Please don't overload our free
-		Supabase account.
-	</p>
-	<button on:click={() => goto('/1')}>Yes, I will be kind</button>
-</div>
+<main>
+	<Homebar items={homebarItems} />
+	<h2>Welcome to</h2>
+	<h1>Fantasy Mapbuilder</h1>
+	<div id="description_box">
+		<h3>
+			Our vision is to create a tool that can help you organize your fantasy world. Upload your maps
+			and connect them with each other, and add articles so all your geographical and factual
+			information is in one place. This is currently in development, but feel free to check out the
+			demo project and play around!
+		</h3>
+	</div>
+</main>
 
 <style>
-	.container {
-		background-color: #fff;
-		padding: 20px 30px;
-		border-radius: 10px;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	main {
 		text-align: center;
-		max-width: 500px;
-		width: 100%;
+		padding: 2rem;
 	}
 
 	h1 {
-		color: #2c3e50;
-		margin-bottom: 15px;
-	}
-
-	p {
-		margin-bottom: 20px;
-		line-height: 1.6;
-	}
-
-	button {
-		background-color: #3498db;
+		font-size: 7rem;
 		color: white;
-		padding: 10px 20px;
-		border: none;
-		border-radius: 5px;
-		cursor: pointer;
-		font-size: 16px;
-		transition: background-color 0.3s ease;
+		font-family: 'Cormorant Garamond', serif;
+		font-weight: bold;
+		font-style: italic;
 	}
 
-	button:hover {
-		background-color: #2980b9;
+	h2 {
+		font-size: 4rem;
+		color: white;
+		font-family: 'Cormorant Garamond', serif;
+	}
+
+	#description_box {
+		width: 30%;
+		margin: auto;
+	}
+
+	h3 {
+		font-size: 2rem;
+		color: white;
+		font-family: 'Cormorant Garamond', serif;
 	}
 </style>

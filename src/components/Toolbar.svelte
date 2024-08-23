@@ -3,6 +3,7 @@
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 	import { assert, assert_unreachable } from '$lib/utils';
+	import { goto } from '$app/navigation';
 
 	function toggleMinimize() {
 		store.informatic_minimized = !store.informatic_minimized;
@@ -80,6 +81,14 @@
 </script>
 
 <div id="toolbar">
+	<button
+		onclick={() => {
+			goto('/');
+		}}
+		style="background-image: url('/assets/home_icon.png');"
+	>
+	</button>
+
 	<button
 		onclick={() => dtb.delete_marker(store.selected_marker)}
 		class:hidden={!store.edit_mode || store.selected_marker === null}
