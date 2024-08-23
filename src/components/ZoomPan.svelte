@@ -92,7 +92,7 @@
 
 	function get_min_x() {
 		return (
-			window.innerWidth * (store.minimized ? 1 : store.informatic_width / 100) -
+			window.innerWidth * (store.informatic_minimized ? 1 : store.informatic_width / 100) -
 			parent.clientWidth * scale
 		);
 	}

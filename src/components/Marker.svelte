@@ -27,6 +27,7 @@
 			const article = await dtb.get_article(id);
 			if (article) {
 				store.article = article;
+				store.informatic_minimized = false;
 			}
 		} else if (marker_data.target_map_id !== null) {
 			if (!store.edit_mode || event.ctrlKey) {

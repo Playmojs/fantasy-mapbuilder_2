@@ -5,7 +5,7 @@
 	import { assert, assert_unreachable } from '$lib/utils';
 
 	function toggleMinimize() {
-		store.minimized = !store.minimized;
+		store.informatic_minimized = !store.informatic_minimized;
 	}
 
 	async function toggleEditable() {
@@ -110,7 +110,7 @@
 		}}
 		style="background-image: url('/assets/plus.png');"
 		title="Increase text size"
-		class:hidden={store.minimized}
+		class:hidden={store.informatic_minimized}
 	></button>
 
 	<button
@@ -120,12 +120,12 @@
 		}}
 		style="background-image: url('/assets/minus.png');"
 		title="Decrease text size"
-		class:hidden={store.minimized}
+		class:hidden={store.informatic_minimized}
 	></button>
 	<button
 		id="minimize_button"
 		onclick={toggleMinimize}
-		style="background-image: url('/assets/{store.minimized
+		style="background-image: url('/assets/{store.informatic_minimized
 			? 'double_arrow_left'
 			: 'double_arrow_right'}.png');"
 	></button>

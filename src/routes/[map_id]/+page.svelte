@@ -10,7 +10,7 @@
 
 <Map />
 <ParentMap />
-{#if !store.minimized}
+{#if !store.informatic_minimized}
 	<Informatic />
 {/if}
 <Toolbar />
