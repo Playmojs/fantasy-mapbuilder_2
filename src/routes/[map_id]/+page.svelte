@@ -25,7 +25,6 @@
 			store.markers = current_markers;
 		}
 	});
-	console.log(store.user);
 
 	onDestroy(() => {
 		unsubscribe();

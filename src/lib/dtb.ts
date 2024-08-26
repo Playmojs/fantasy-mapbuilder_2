@@ -18,7 +18,6 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
 supabase.auth.getSession().then(({ data }) => {
     store.user = data.session?.user ?? null;
-    console.log(store.user)
 });
 
 supabase.auth.onAuthStateChange((event, session) => {

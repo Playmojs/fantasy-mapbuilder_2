@@ -103,6 +103,7 @@
 		title="Set target of selected marker"
 		class:hidden={!store.edit_mode || store.selected_marker === null}
 	></button>
+
 	<button
 		onclick={(_event: MouseEvent) => dtb.create_and_select_marker_in_current_map()}
 		class:hidden={!store.edit_mode}
@@ -110,7 +111,11 @@
 		title="Add new marker to map"
 	></button>
 
-	<button id="edit_content_button" class:edit_mode={store.edit_mode} onclick={toggleEditable}
+	<button
+		id="edit_content_button"
+		class:edit_mode={store.edit_mode}
+		onclick={toggleEditable}
+		class:hidden={!store.user}
 	></button>
 	<button
 		id="increment_text_size_button"
