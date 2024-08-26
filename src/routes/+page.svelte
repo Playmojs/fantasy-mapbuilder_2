@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Homebar from '../components/Homebar.svelte';
 
 	let homebarItems = [

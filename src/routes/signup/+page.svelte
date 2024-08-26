@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import Homebar from '../../components/Homebar.svelte';
 	import { supabase } from '$lib/dtb';
 	import { goto } from '$app/navigation';
