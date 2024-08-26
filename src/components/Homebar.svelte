@@ -1,16 +1,30 @@
 <script lang="ts">
-	export let items: { label: string; href: string; position: string }[] = [];
+	import { store } from '../store.svelte';
+
+	let main_items: { label: string; href: string }[] = [
+		{ label: 'Home', href: '/' },
+		{ label: 'Demo Project', href: '/1' }
+	];
+
+	let right_items: { label: string; href: string }[] = $derived(
+		store.user
+			? [{ label: 'Log Out', href: 'logout' }]
+			: [
+					{ label: 'Login', href: 'login' },
+					{ label: 'Sign Up ', href: 'signup' }
+				]
+	);
 </script>
 
 <nav>
 	<div class="left-buttons">
-		{#each items.filter((item) => item.position === 'left') as item}
+		{#each main_items as item}
 			<a href={item.href}>{item.label}</a>
 		{/each}
 	</div>
 
 	<div class="right-buttons">
-		{#each items.filter((item) => item.position === 'right') as item}
+		{#each right_items as item}
 			<a href={item.href}>{item.label}</a>
 		{/each}
 	</div>

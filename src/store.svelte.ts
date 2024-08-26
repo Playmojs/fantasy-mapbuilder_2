@@ -1,4 +1,5 @@
 import { type Article, type MapData, type MarkerData, type ModalData } from "$lib/types";
+import type { User } from "@supabase/supabase-js";
 import { readable, writable } from "svelte/store";
 
 class Store {
@@ -12,6 +13,7 @@ class Store {
     text_size = $state(150);
     modal_data = $state<ModalData | null>(null);
     map_transform = $state({ x: 0, y: 0, scale: 1 });
+    user = $state<User | null>(null)
 
     // From database
     map = $state<MapData>(default_map);

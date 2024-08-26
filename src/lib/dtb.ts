@@ -10,9 +10,24 @@ if (!supabaseUrl || !supabaseKey) {
     throw new Error('Missing Supabase environment variables');
 }
 
+
 let all_fetched: boolean = false;
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+
+
+supabase.auth.getSession().then(({ data }) => {
+    store.user = data.session?.user ?? null;
+    console.log(store.user)
+});
+
+supabase.auth.onAuthStateChange((event, session) => {
+    if (event == 'SIGNED_IN' && session) {
+        store.user = session.user;
+    } else if (event == 'SIGNED_OUT') {
+        store.user = null;
+    }
+});
 
 export default {
     async get_map(map_id: number) {

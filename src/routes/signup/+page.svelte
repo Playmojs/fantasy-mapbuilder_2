@@ -5,30 +5,22 @@
 
 	let email = '';
 	let password = '';
+	let confirm_password = '';
 	let errorMessage = '';
 	let isDisabled = true;
 
-	let homebarItems = [
-		{ label: 'Home', href: '/', position: 'left' },
-		{ label: 'Demo Project', href: '/1', position: 'left' },
-		{ label: 'Login', href: '/login', position: 'right' },
-		{ label: 'Signup', href: '/signup', position: 'right' }
-	];
-
 	function validateInputs() {
-		isDisabled = email.length === 0 || password.length === 0;
+		isDisabled = email.length === 0 || password.length === 0 || password !== confirm_password;
 	}
 
 	async function handleSignup() {
-		console.log('Sign up test!');
-		return;
-		// const { data, error } = await supabase.auth.signUp({ email, password });
-
-		// if (error) {
-		// 	errorMessage = error.message;
-		// } else {
-		// 	goto('/');
-		// }
+		const { data, error } = await supabase.auth.signUp({ email, password });
+		if (error) {
+			errorMessage = error.message;
+			console.log(errorMessage);
+		} else {
+			goto('/');
+		}
 	}
 
 	function redirectToLogin() {
@@ -36,7 +28,7 @@
 	}
 </script>
 
-<Homebar items={homebarItems} />
+<Homebar />
 <div id="background">
 	<div id="box">
 		<h1>Sign Up</h1>
@@ -52,6 +44,15 @@
 				type="password"
 				id="password"
 				bind:value={password}
+				on:input={validateInputs}
+				required
+			/>
+
+			<label for="confirm_password">Confirm password:</label>
+			<input
+				type="password"
+				id="confirm_password"
+				bind:value={confirm_password}
 				on:input={validateInputs}
 				required
 			/>
@@ -77,7 +78,7 @@
 		top: 200px;
 		margin: auto;
 		width: 30%;
-		height: 45%;
+		height: 52%;
 		background-color: rgb(47, 47, 47);
 		border-color: rgb(100, 100, 100);
 		border-width: 5px;
@@ -94,6 +95,7 @@
 
 	.error {
 		color: red;
+		left: 10%;
 	}
 
 	form {

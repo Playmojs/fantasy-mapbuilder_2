@@ -1,16 +1,9 @@
 <script lang="ts">
 	import Homebar from '../components/Homebar.svelte';
-
-	let homebarItems = [
-		{ label: 'Home', href: '/', position: 'left' },
-		{ label: 'Demo Project', href: '/1', position: 'left' },
-		{ label: 'Login', href: '/login', position: 'right' },
-		{ label: 'Signup', href: '/signup', position: 'right' }
-	];
 </script>
 
 <main>
-	<Homebar items={homebarItems} />
+	<Homebar />
 	<h2>Welcome to</h2>
 	<h1>Fantasy Mapbuilder</h1>
 	<div id="description_box">

@@ -9,27 +9,19 @@
 	let errorMessage = '';
 	let isDisabled = true;
 
-	let homebarItems = [
-		{ label: 'Home', href: '/', position: 'left' },
-		{ label: 'Demo Project', href: '/1', position: 'left' },
-		{ label: 'Login', href: '/login', position: 'right' },
-		{ label: 'Signup', href: '/signup', position: 'right' }
-	];
-
 	function validateInputs() {
 		isDisabled = email.length === 0 || password.length === 0;
 	}
 
 	async function handleLogin() {
-		console.log('Login test!');
-		return;
-		// const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+		const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-		// if (error) {
-		// 	errorMessage = error.message;
-		// } else {
-		// 	goto('/'); // Redirect to home after successful login
-		// }
+		if (error) {
+			errorMessage = error.message;
+			console.log(error);
+		} else {
+			goto('/');
+		}
 	}
 
 	function redirectToSignup() {
@@ -37,7 +29,7 @@
 	}
 </script>
 
-<Homebar items={homebarItems} />
+<Homebar />
 <div id="background">
 	<div id="box">
 		<h1>Login</h1>
@@ -95,6 +87,7 @@
 
 	.error {
 		color: red;
+		left: 10%;
 	}
 
 	form {
