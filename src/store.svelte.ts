@@ -13,7 +13,9 @@ class Store {
     text_size = $state(150);
     modal_data = $state<ModalData | null>(null);
     map_transform = $state({ x: 0, y: 0, scale: 1 });
-    user = $state<User | null>(null)
+    user = $state<User | null>(null);
+    project_id: number = 0;
+    write_access = writable(false);
 
     // From database
     map = $state<MapData>(default_map);
@@ -24,7 +26,7 @@ class Store {
     article_cache = $state<{ [id: number]: Article }>({});
 }
 
-const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "", marker_ids: [], parent_id: null, parent_image: null }
-const default_article: Article = { id: -1, title: "", created_at: "", content: "", image: null }
+const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "", parent_id: null, parent_image: null, project_id: 0 }
+const default_article: Article = { id: -1, title: "", created_at: "", content: "", image: null, project_id: 0 }
 
 export const store = new Store()

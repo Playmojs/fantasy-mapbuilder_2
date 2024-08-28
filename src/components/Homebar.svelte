@@ -3,7 +3,7 @@
 
 	let main_items: { label: string; href: string }[] = [
 		{ label: 'Home', href: '/' },
-		{ label: 'Demo Project', href: '/1' }
+		{ label: 'Demo Project', href: 'projects/0/1' }
 	];
 
 	let right_items: { label: string; href: string }[] = $derived(

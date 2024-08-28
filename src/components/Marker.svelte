@@ -24,7 +24,7 @@
 				store.article.id !== marker_data.target_article_id
 					? marker_data.target_article_id
 					: store.map.article_id;
-			const article = await dtb.get_article(id);
+			const article = await dtb.get_article(store.project_id, id);
 			if (article) {
 				store.article = article;
 				store.informatic_minimized = false;

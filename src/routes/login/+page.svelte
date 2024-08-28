@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Homebar from '../../components/Homebar.svelte';
 	import { supabase } from '$lib/dtb';
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { store } from '../../store.svelte';
 
 	let email = '';
 	let password = '';

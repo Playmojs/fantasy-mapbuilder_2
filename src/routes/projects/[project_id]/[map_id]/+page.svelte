@@ -1,10 +1,10 @@
 <script lang="ts">
-	import Map from '../../components/Map.svelte';
-	import { store } from '../../store.svelte';
-	import Informatic from '../../components/Informatic.svelte';
-	import Toolbar from '../../components/Toolbar.svelte';
-	import ParentMap from '../../components/ParentMap.svelte';
-	import Modal from '../../components/Modal.svelte';
+	import Map from '../../../../components/Map.svelte';
+	import { store } from '../../../../store.svelte';
+	import Informatic from '../../../../components/Informatic.svelte';
+	import Toolbar from '../../../../components/Toolbar.svelte';
+	import ParentMap from '../../../../components/ParentMap.svelte';
+	import Modal from '../../../../components/Modal.svelte';
 
 	import { page } from '$app/stores';
 	import dtb from '$lib/dtb';
@@ -12,11 +12,11 @@
 
 	let unsubscribe = page.subscribe(async (value) => {
 		const map_id = +value.params.map_id;
-		const map = await dtb.get_map(map_id);
+		const map = await dtb.get_map(store.project_id, map_id);
 		if (map) {
 			store.map = map;
 		}
-		const article = await dtb.get_article(store.map.article_id);
+		const article = await dtb.get_article(store.project_id, store.map.article_id);
 		if (article) {
 			store.article = article;
 		}

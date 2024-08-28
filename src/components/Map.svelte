@@ -34,7 +34,7 @@
 		if (Math.abs(click_pos.x - release_pos.x) > 20 || Math.abs(click_pos.y - release_pos.y) > 20) {
 			return;
 		}
-		const article = await dtb.get_article(store.map.article_id);
+		const article = await dtb.get_article(store.project_id, store.map.article_id);
 		if (article) {
 			store.article = article;
 		}

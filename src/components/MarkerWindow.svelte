@@ -17,10 +17,10 @@
 		let response;
 		let default_img: string = '';
 		if (map_id !== null) {
-			response = await dtb.get_map(map_id);
+			response = await dtb.get_map(store.project_id, map_id);
 			default_img = '/assets/article_icon.png';
 		} else if (article_id !== null) {
-			response = await dtb.get_article(article_id);
+			response = await dtb.get_article(store.project_id, article_id);
 			default_img = '/assets/article_icon.png';
 		}
 

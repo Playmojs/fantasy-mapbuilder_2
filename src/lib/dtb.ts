@@ -29,13 +29,14 @@ supabase.auth.onAuthStateChange((event, session) => {
 });
 
 export default {
-    async get_map(map_id: number) {
+    async get_map(project_id: number, map_id: number) {
         if (map_id in store.map_cache) {
             return store.map_cache[map_id];
         }
         const response = await supabase
             .from('map')
             .select()
+            .eq('project_id', project_id)
             .eq('id', map_id)
             .single();
         const { data } = response;
@@ -64,13 +65,14 @@ export default {
             });
     },
 
-    async get_article(article_id: number) {
+    async get_article(project_id: number, article_id: number) {
         if (article_id in store.article_cache) {
             return store.article_cache[article_id];
         }
         return await supabase
             .from('article')
             .select()
+            .eq('project_id', project_id)
             .eq('id', article_id)
             .single()
             .then(({ data, error }) => {
@@ -113,7 +115,7 @@ export default {
     },
 
     async create_and_show_article() {
-        const response = await supabase.from('article').insert({}).select().single();
+        const response = await supabase.from('article').insert({ project_id: store.project_id }).select().single();
         const { data } = response
         if (response.error) {
             console.error(response);
@@ -176,6 +178,28 @@ export default {
         if (response.data) {
             store.markers = store.markers.filter(marker => marker.id !== marker_id);
         }
+    },
+
+    async check_write_access() {
+        let access = false;
+        if (store.user === null) {
+            return access;
+        }
+
+        const { data, error } = await supabase
+            .from('user_project_access')
+            .select()
+            .eq('user_id', store.user.id)
+            .eq('project_id', store.project_id);
+
+
+        if (error) {
+            console.error('Error checking access:', error);
+        } else if (data.length > 0) {
+            access = true;
+        }
+
+        return access;
     }
 }
 

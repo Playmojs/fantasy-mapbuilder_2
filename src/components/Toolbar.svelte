@@ -4,6 +4,7 @@
 	import dtb from '$lib/dtb';
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
+	import { get } from 'svelte/store';
 
 	function toggleMinimize() {
 		store.informatic_minimized = !store.informatic_minimized;
@@ -78,6 +79,11 @@
 			};
 		}
 	}
+
+	let edit_visible: boolean;
+	store.write_access.subscribe((value: boolean) => {
+		edit_visible = value;
+	});
 </script>
 
 <div id="toolbar">
@@ -115,7 +121,7 @@
 		id="edit_content_button"
 		class:edit_mode={store.edit_mode}
 		onclick={toggleEditable}
-		class:hidden={!store.user}
+		class:hidden={!edit_visible}
 	></button>
 	<button
 		id="increment_text_size_button"

@@ -2,12 +2,17 @@
 	import Homebar from '../../components/Homebar.svelte';
 	import { supabase } from '$lib/dtb';
 	import { goto } from '$app/navigation';
+	import { store } from '../../store.svelte';
 
 	let email = '';
 	let password = '';
 	let confirm_password = '';
 	let errorMessage = '';
 	let isDisabled = true;
+
+	if (store.user !== null) {
+		goto('/');
+	}
 
 	function validateInputs() {
 		isDisabled = email.length === 0 || password.length === 0 || password !== confirm_password;
