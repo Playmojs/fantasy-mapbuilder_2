@@ -11,7 +11,8 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 
-let all_fetched: boolean = false;
+let all_fetched_from_project: boolean = false;
+let all_projects_fetched: boolean = false;
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
@@ -85,13 +86,28 @@ export default {
                 }
             });
     },
-    async fetch_all() {
-        if (all_fetched) {
+
+    async fetch_all_projects() {
+        if (all_projects_fetched) { return; }
+        await supabase.from('project').select().then(({ data, error }) => {
+            if (error) {
+                console.error(`Couldn't fetch project data, error was: ${error}`);
+            }
+            if (data) {
+                data.forEach(project => store.project_cache[project.id] = project);
+            }
+        })
+        all_projects_fetched = true;
+    },
+
+    async fetch_all_from_project(project_id: number) {
+        if (all_fetched_from_project) {
             return;
         }
         await supabase
             .from('map')
             .select()
+            .eq('project_id', project_id)
             .then(({ data, error }) => {
                 if (error) {
                     console.error(`Couldn't fetch map data, error was: ${error}`);
@@ -103,6 +119,7 @@ export default {
         await supabase
             .from('article')
             .select()
+            .eq('project_id', project_id)
             .then(({ data, error }) => {
                 if (error) {
                     console.error(`Couldn't fetch map data, error was: ${error}`);
@@ -111,7 +128,7 @@ export default {
                     data.forEach(article => store.article_cache[article.id] = article);
                 }
             });
-        all_fetched = true;
+        all_fetched_from_project = true;
     },
 
     async create_and_show_article() {

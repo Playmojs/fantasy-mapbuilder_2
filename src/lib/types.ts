@@ -16,6 +16,7 @@ export enum TargetType {
 export type MarkerData = Database["public"]["Tables"]["marker"]["Row"];
 export type MapData = Database["public"]["Tables"]["map"]["Row"];
 export type Article = Database["public"]["Tables"]["article"]["Row"];
+export type Project = Database["public"]["Tables"]["project"]["Row"];
 
 export type ModalEntity = {
 	image: string | null;

@@ -3,7 +3,7 @@
 
 	let main_items: { label: string; href: string }[] = [
 		{ label: 'Home', href: '/' },
-		{ label: 'Demo Project', href: 'projects/0/1' }
+		{ label: 'Projects', href: 'projects' }
 	];
 
 	let right_items: { label: string; href: string }[] = $derived(
@@ -32,8 +32,7 @@
 
 <style>
 	nav {
-		position: fixed;
-		top: 0;
+		position: relative;
 		left: 0;
 		right: 0;
 		background-color: #333;
@@ -46,13 +45,6 @@
 		padding-left: 100px;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 		z-index: 1000;
-	}
-
-	@media (max-width: 550px) {
-		nav {
-			padding-left: 50px;
-			padding-right: 50px;
-		}
 	}
 
 	.left-buttons,
@@ -78,5 +70,25 @@
 
 	a:hover {
 		text-decoration: underline;
+	}
+
+	@media (max-width: 750px) {
+		nav {
+			padding-left: 60px;
+			padding-right: 60px;
+		}
+		a {
+			font-size: 1.1rem;
+		}
+	}
+
+	@media (max-width: 550px) {
+		nav {
+			padding-left: 30px;
+			padding-right: 30px;
+		}
+		a {
+			font-size: 0.85rem;
+		}
 	}
 </style>

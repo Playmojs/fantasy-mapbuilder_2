@@ -14,7 +14,7 @@
 		store.selected_marker = null;
 		store.edit_mode = !store.edit_mode;
 		if (store.edit_mode) {
-			await dtb.fetch_all();
+			await dtb.fetch_all_from_project(store.project_id);
 		}
 	}
 

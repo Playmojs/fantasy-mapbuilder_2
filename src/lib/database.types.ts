@@ -157,20 +157,31 @@ export type Database = {
       project: {
         Row: {
           created_at: string
+          head_map_id: number
           id: number
-          name: string | null
+          name: string
         }
         Insert: {
           created_at?: string
+          head_map_id?: number
           id?: number
-          name?: string | null
+          name: string
         }
         Update: {
           created_at?: string
+          head_map_id?: number
           id?: number
-          name?: string | null
+          name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "project_head_map_id_fkey"
+            columns: ["head_map_id"]
+            isOneToOne: false
+            referencedRelation: "map"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_project_access: {
         Row: {

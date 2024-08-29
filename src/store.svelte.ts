@@ -1,4 +1,4 @@
-import { type Article, type MapData, type MarkerData, type ModalData } from "$lib/types";
+import { type Article, type MapData, type MarkerData, type ModalData, type Project } from "$lib/types";
 import type { User } from "@supabase/supabase-js";
 import { readable, writable } from "svelte/store";
 
@@ -24,6 +24,7 @@ class Store {
 
     map_cache = $state<{ [id: number]: MapData }>({});
     article_cache = $state<{ [id: number]: Article }>({});
+    project_cache = $state<{ [id: number]: Project }>({});
 }
 
 const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "", parent_id: null, parent_image: null, project_id: 0 }

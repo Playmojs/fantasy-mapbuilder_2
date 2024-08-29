@@ -1,6 +1,142 @@
-<script>
+<script lang="ts">
+	import { goto } from '$app/navigation';
+	import type { ModalEntity, Project } from '$lib/types';
 	import Homebar from '../../components/Homebar.svelte';
 	import dtb from '../../lib/dtb';
+	import { store } from '../../store.svelte';
+	import EntityGrid from '../../components/EntityGrid.svelte';
+
+	const get_projects = async () => {
+		await dtb.fetch_all_projects();
+	};
+
+	get_projects();
+
+	let project_markers = $state<ModalEntity[]>([]);
+
+	$effect(() => {
+		project_markers = Object.entries(store.project_cache).map(([_, project]) => {
+			return {
+				image: '/assets/map.jpg',
+				title: project.name,
+				func: () => {
+					goto(`/projects/${project.id}/${project.head_map_id}`);
+				}
+			};
+		});
+	});
 </script>
 
-<Homebar />
+<main>
+	<Homebar />
+	<h1 id="title">Existing Projects</h1>
+	<div id="projects_container">
+		<div id="grid">
+			{#each project_markers as entity}
+				<div
+					class="entity-item"
+					onclick={() => {
+						entity.func();
+						store.modal_data = null;
+					}}
+				>
+					<div class="image-container">
+						<img class="entity-image" src={entity.image} alt={entity.title} />
+					</div>
+					<p>{entity.title}</p>
+				</div>
+			{/each}
+		</div>
+	</div>
+</main>
+
+<style>
+	main {
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		width: 100%;
+	}
+
+	#title {
+		position: relative;
+		margin: auto;
+		color: white;
+		margin-top: 50px;
+	}
+
+	#projects_container {
+		position: relative;
+		width: 90%;
+		left: 3%;
+		top: 30px;
+		max-height: 80vh;
+
+		padding: 20px 50px;
+
+		border-radius: 15px;
+		background-color: grey;
+		overflow-y: auto;
+	}
+
+	#grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 0.5fr));
+		gap: 50px;
+	}
+
+	.entity-item {
+		cursor: pointer;
+		text-align: center;
+		background-color: rgb(47, 47, 47);
+		border-radius: 10px;
+	}
+
+	.image-container {
+		position: relative;
+		margin: auto;
+		margin-top: 5px;
+		width: 80%;
+		height: 250px;
+		overflow: hidden;
+		margin-bottom: 0;
+	}
+
+	.entity-image {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		max-width: 100%;
+		max-height: 100%;
+
+		border-radius: 15px;
+		border-width: 3px;
+		border-color: rgb(47, 47, 47);
+		border-style: solid;
+	}
+
+	.entity-item p {
+		color: white;
+		font-size: 2rem;
+		margin-top: 0px;
+		font-family: 'Cormorant Garamond', serif;
+		font-style: italic;
+	}
+
+	#projects_container::-webkit-scrollbar {
+		width: 12px;
+	}
+
+	#projects_container::-webkit-scrollbar-thumb {
+		background-color: #555;
+	}
+
+	#projects_container::-webkit-scrollbar-corner {
+		background-color: rgb(47, 47, 47);
+	}
+
+	#projects_container::-webkit-scrollbar-thumb:hover {
+		background-color: #888;
+	}
+</style>

@@ -13,7 +13,7 @@
 	});
 
 	const getMaps = async () => {
-		await dtb.fetch_all();
+		await dtb.fetch_all_from_project(store.project_id);
 		const maps = Object.entries(store.map_cache).map(([_, map]) => {
 			return {
 				image: map.image,

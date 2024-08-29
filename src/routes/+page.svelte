@@ -21,9 +21,6 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		align-items: center;
-		margin-top: 150px;
-		margin-bottom: 150px;
 	}
 
 	h1 {
@@ -37,6 +34,7 @@
 	}
 
 	h2 {
+		padding-top: 50px;
 		font-size: 4rem;
 		margin: auto;
 		color: white;
