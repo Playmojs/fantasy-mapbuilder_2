@@ -4,7 +4,6 @@
 	import dtb from '$lib/dtb';
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
-	import { get } from 'svelte/store';
 
 	function toggleMinimize() {
 		store.informatic_minimized = !store.informatic_minimized;
@@ -89,7 +88,7 @@
 <div id="toolbar">
 	<button
 		onclick={() => {
-			goto('/');
+			goto('/projects');
 		}}
 		style="background-image: url('/assets/home_icon.png');"
 	>
