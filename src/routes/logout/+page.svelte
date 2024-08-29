@@ -4,9 +4,9 @@
 	import { assert_unreachable } from '$lib/utils';
 	import { store } from '../../store.svelte';
 
-	// if (store.user === null) {
-	// 	goto('/');
-	// }
+	if (store.user === null) {
+		goto('/');
+	}
 
 	const logout = async () => {
 		const { error } = await supabase.auth.signOut();

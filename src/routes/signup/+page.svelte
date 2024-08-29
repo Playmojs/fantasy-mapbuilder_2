@@ -4,15 +4,17 @@
 	import { goto } from '$app/navigation';
 	import { store } from '../../store.svelte';
 
-	let email = '';
-	let password = '';
-	let confirm_password = '';
-	let errorMessage = '';
-	let isDisabled = true;
+	let email = $state('');
+	let password = $state('');
+	let confirm_password = $state('');
+	let errorMessage = $state('');
+	let isDisabled = $state(true);
 
-	if (store.user !== null) {
-		goto('/');
-	}
+	$effect(() => {
+		if (store.user !== null) {
+			goto('/');
+		}
+	});
 
 	function validateInputs() {
 		isDisabled = email.length === 0 || password.length === 0 || password !== confirm_password;
@@ -35,6 +37,7 @@
 
 <Homebar />
 <div id="background">
+	<img id="image" src="/assets/map.jpg" alt="background" />
 	<div id="box">
 		<h1>Sign Up</h1>
 		{#if errorMessage}
@@ -70,26 +73,37 @@
 
 <style>
 	#background {
-		position: fixed;
-		background-color: rgb(60, 60, 60);
-		top: 0;
-		bottom: 0;
-		left: 0;
-		right: 0;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	#image {
+		width: 100%;
+		height: 100%;
+		display: block;
+		object-fit: cover;
+		object-position: center;
 	}
 
 	#box {
-		position: relative;
-		top: 200px;
-		margin: auto;
-		width: 30%;
-		height: 52%;
+		position: absolute;
+		width: 400px;
+		max-width: 50%;
 		background-color: rgb(47, 47, 47);
 		border-color: rgb(100, 100, 100);
 		border-width: 5px;
 		border-style: solid;
 		border-radius: 20px;
-		font-size: x-large;
+		padding: 2rem;
+
+		font-size: 100%;
+		display: flex;
+		flex-direction: column;
 	}
 
 	h1 {

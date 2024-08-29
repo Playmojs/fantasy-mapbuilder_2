@@ -35,14 +35,24 @@
 		position: fixed;
 		top: 0;
 		left: 0;
-		width: 100%;
+		right: 0;
 		background-color: #333;
+		height: 40px;
 		padding: 1rem 2rem;
 		display: flex;
-		justify-content: space-around;
+		justify-content: space-between;
 		align-items: center;
+		padding-right: 100px;
+		padding-left: 100px;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 		z-index: 1000;
+	}
+
+	@media (max-width: 550px) {
+		nav {
+			padding-left: 50px;
+			padding-right: 50px;
+		}
 	}
 
 	.left-buttons,
@@ -52,17 +62,18 @@
 	}
 
 	.left-buttons a {
-		margin-right: 2rem;
+		margin-right: 3rem;
 	}
 
 	.right-buttons a {
-		margin-left: 1rem;
+		margin-left: 1.5rem;
 	}
 
 	a {
 		color: white;
 		text-decoration: none;
 		font-weight: bold;
+		font-size: 1.2rem;
 	}
 
 	a:hover {
