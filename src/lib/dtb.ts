@@ -87,6 +87,21 @@ export default {
             });
     },
 
+    async fetch_project_images() {
+        if (all_projects_fetched) { return; }
+
+        for await (const [_, project] of Object.entries(store.project_cache)) {
+            await supabase.from('map').select('image').eq('id', project.head_map_id).single().then(({ data, error }) => {
+                if (error) {
+                    console.error(`Couldn't fetch project images, error was: ${error}`);
+                }
+                if (data) {
+                    store.project_images[project.id] = data.image;
+                }
+            })
+        }
+    },
+
     async fetch_all_projects() {
         if (all_projects_fetched) { return; }
         await supabase.from('project').select().then(({ data, error }) => {
@@ -94,7 +109,8 @@ export default {
                 console.error(`Couldn't fetch project data, error was: ${error}`);
             }
             if (data) {
-                data.forEach(project => store.project_cache[project.id] = project);
+                data.forEach(project => { store.project_cache[project.id] = project });
+                this.fetch_project_images();
             }
         })
         all_projects_fetched = true;

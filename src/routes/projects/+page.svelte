@@ -17,7 +17,7 @@
 	$effect(() => {
 		project_markers = Object.entries(store.project_cache).map(([_, project]) => {
 			return {
-				image: '/assets/map.jpg',
+				image: store.project_images[project.id],
 				title: project.name,
 				func: () => {
 					goto(`/projects/${project.id}/${project.head_map_id}`);
