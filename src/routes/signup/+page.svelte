@@ -79,7 +79,7 @@
 		overflow: hidden;
 		display: flex;
 		justify-content: center;
-		align-items: center;
+		align-items: start;
 	}
 
 	#image {
@@ -99,7 +99,8 @@
 		border-width: 5px;
 		border-style: solid;
 		border-radius: 20px;
-		padding: 2rem;
+		padding: 1rem;
+		margin-top: 1rem;
 
 		font-size: 100%;
 		display: flex;
@@ -171,5 +172,14 @@
 	a {
 		color: rgb(200, 200, 200);
 		font-weight: bold;
+	}
+
+	@media (max-width: 1100px) {
+		h1 {
+		margin-top: 0px;
+		}
+		label{
+		margin-top: 10px;
+		}
 	}
 </style>
