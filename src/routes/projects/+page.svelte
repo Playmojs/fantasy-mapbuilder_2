@@ -96,6 +96,7 @@
 		position: relative;
 		margin: auto;
 		margin-top: 5px;
+		margin-bottom: 0px;
 		width: 80%;
 		height: 250px;
 		overflow: hidden;
@@ -138,5 +139,29 @@
 
 	#projects_container::-webkit-scrollbar-thumb:hover {
 		background-color: #888;
+	}
+
+	@media (max-width: 1500px) {
+	#projects_container {
+		
+		max-height: 50vh;
+		width: 87%;
+
+		padding: 20px 50px;
+	}
+	}
+
+	@media (max-width: 1150px) {
+	#grid {
+		grid-template-columns: repeat(auto-fill, minmax(250px, 0.5fr));
+		gap: 25px;
+	}
+	#projects_container {
+		
+		max-height: 50vh;
+		width: 83%;
+
+		padding: 20px 50px;
+	}
 	}
 </style>

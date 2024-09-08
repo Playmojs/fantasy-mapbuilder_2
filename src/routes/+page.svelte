@@ -54,18 +54,16 @@
 	}
 
 	@media (max-width: 1100px) {
-		main {
-			margin-top: 120px;
-		}
 		h1 {
 			font-size: 5.5rem;
 		}
 		h2 {
+			padding-top: 30px;
 			font-size: 4rem;
 		}
 		#description_box {
 			width: 400px;
-			margin-top: 80px;
+			margin-top: 20px;
 		}
 		h3 {
 			font-size: 1.5rem;
