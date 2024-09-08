@@ -28,7 +28,7 @@
 
 	function handle_mouse_move(event: MouseEvent) {
 		if (!store.is_panning) return;
-		current_x = clamp(event.clientX - start_x, get_min_x(), 0);
+		current_x = clamp(event.clientX - start_x, get_min_x(), get_max_x());
 		current_y = clamp(event.clientY - start_y, get_min_y(), get_max_y());
 		update_transform();
 	}
@@ -53,7 +53,7 @@
 	function handle_touch_move(event: TouchEvent) {
 		event.preventDefault();
 		if (event.touches.length === 1 && store.is_panning) {
-			current_x = clamp(event.touches[0].clientX - start_x, get_min_x(), 0);
+			current_x = clamp(event.touches[0].clientX - start_x, get_min_x(), get_max_x());
 			current_y = clamp(event.touches[0].clientY - start_y, get_min_y(), get_max_y());
 		} else if (event.touches.length === 2) {
 			store.is_panning = false;
@@ -91,18 +91,27 @@
 	}
 
 	function get_min_x() {
-		return (
+		return Math.min(
+			0,
 			window.innerWidth * (store.informatic_minimized ? 1 : store.informatic_width / 100) -
-			parent.clientWidth * scale
+				parent.clientWidth * scale
+		);
+	}
+
+	function get_max_x() {
+		return Math.max(
+			0,
+			window.innerWidth * (store.informatic_minimized ? 1 : store.informatic_width / 100) -
+				parent.clientWidth * scale
 		);
 	}
 
 	function get_min_y() {
-		return window.innerHeight - parent.clientHeight * scale;
+		return Math.min(50, window.innerHeight - parent.clientHeight * scale);
 	}
 
 	function get_max_y() {
-		return 50; //Edit bar height
+		return Math.max(50, window.innerHeight - parent.clientHeight * scale);
 	}
 
 	function get_distance(touch1: Touch, touch2: Touch) {
@@ -114,7 +123,7 @@
 	function zoom_at(x: number, y: number, new_scale: number) {
 		let scale_ratio = new_scale / scale;
 		scale = new_scale;
-		current_x = clamp(-(x - current_x) * scale_ratio + x, get_min_x(), 0);
+		current_x = clamp(-(x - current_x) * scale_ratio + x, get_min_x(), get_max_x());
 		current_y = clamp(-(y - current_y) * scale_ratio + y, get_min_y(), get_max_y());
 	}
 
