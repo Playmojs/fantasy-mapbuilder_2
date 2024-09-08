@@ -47,10 +47,8 @@
 								if (store.selected_marker === null) {
 									return;
 								}
-								dtb.update_marker({
-									...selected_marker,
-									target_map_id: +id
-								});
+								selected_marker.target_map_id = +id;
+								dtb.update_marker(selected_marker);
 							}
 						};
 					})
@@ -67,10 +65,9 @@
 								if (store.selected_marker === null) {
 									return;
 								}
-								dtb.update_marker({
-									...selected_marker,
-									target_article_id: +id
-								});
+								selected_marker.target_article_id = +id;
+								dtb.update_marker(selected_marker);
+								store.article = article;
 							}
 						};
 					})
