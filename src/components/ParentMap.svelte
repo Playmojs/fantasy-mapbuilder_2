@@ -21,6 +21,7 @@
 				func: () => {
 					store.map.parent_id = map.id;
 					store.map.parent_image = map.image;
+					dtb.update_map(store.map);
 				}
 			};
 		});
@@ -45,6 +46,7 @@
 			if (store.map) {
 				store.map.parent_id = null;
 				store.map.parent_image = null;
+				dtb.update_map(store.map);
 			}
 		}
 	};

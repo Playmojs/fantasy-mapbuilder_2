@@ -10,6 +10,7 @@
 	import dtb from '$lib/dtb';
 	import { onDestroy } from 'svelte';
 
+
 	let unsubscribe = page.subscribe(async (value) => {
 		const map_id = +value.params.map_id;
 		const map = await dtb.get_map(store.project_id, map_id);

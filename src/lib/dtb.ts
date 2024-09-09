@@ -32,6 +32,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 export default {
     async get_map(project_id: number, map_id: number) {
         if (map_id in store.map_cache) {
+            this.update_map_image_blob(store.map_cache[map_id].image);
             return store.map_cache[map_id];
         }
         const response = await supabase
@@ -46,7 +47,21 @@ export default {
         }
         if (data) {
             store.map_cache[map_id] = data;
+            this.update_map_image_blob(store.map_cache[map_id].image);
             return data;
+        }
+    },
+
+    async update_map_image_blob(map_image: string) {
+        const filePath = `${store.project_id}/maps/${map_image}`;
+        const { data, error } = await supabase.storage.from('project').download(filePath);
+        if (error) {
+            console.error('Error downloading file:', error.message);
+            return;
+        }
+        if (data) {
+            store.map_image_public_urls[map_image] = data;
+            return data
         }
     },
 

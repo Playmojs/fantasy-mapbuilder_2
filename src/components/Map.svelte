@@ -54,11 +54,20 @@
 		let position: { x: number; y: number } = { x: rel_x, y: rel_y };
 		return position;
 	}
+
+	let image_source = $state('');
+	$effect(() => {
+		if (store.map.image && store.map_image_public_urls[store.map.image]) {
+			image_source = URL.createObjectURL(store.map_image_public_urls[store.map.image]);
+		}
+	});
+	$inspect(store.map.id);
+	$inspect(store.map.image);
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
 	<ZoomPan parent_selector="#map-container" />
-	<img id="map" alt="Map" bind:this={map_} src={store.map.image} />
+	<img id="map" alt="Map" bind:this={map_} src={image_source} />
 	{#each store.markers as marker}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}
