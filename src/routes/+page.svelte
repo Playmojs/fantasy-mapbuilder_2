@@ -18,25 +18,6 @@
 			information is in one place.
 		</h3>
 	</div>
-	<input
-		type="file"
-		id="fileInput"
-		onchange={(e) => (file = (e.target as HTMLInputElement).files?.[0] || null)}
-	/>
-	<button
-		onclick={async () => {
-			if (!file) {
-				return;
-			}
-			const map_id = uuidv4();
-			const { error } = await supabase.storage
-				.from('project')
-				.upload(`${store.project_id}/maps/${map_id}`, file);
-			if (error) {
-				console.log(error);
-			}
-		}}>Upload file</button
-	>
 </main>
 
 <style>

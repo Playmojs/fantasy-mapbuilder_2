@@ -1,9 +1,38 @@
 <script lang="ts">
-	import { add_article, add_map } from '$lib/types';
+	import { add_article, type MapOptionsData, type MapData, type ModalEntity } from '$lib/types';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
+	import MapOption from './MapOption.svelte';
+	import { gotoMap } from '$lib/goto_map';
+
+	const add_map: ModalEntity = {
+		image: '/assets/plus.png',
+		title: 'Add Map',
+		func: () => {
+			store.edit_map_window = {
+				func: async (file: File, title: string) => {
+					const selected_marker = store.markers.find(
+						(marker) => marker.id === store.selected_marker
+					);
+					if (selected_marker === undefined) {
+						assert_unreachable("Selected marker doesn't exist");
+						return;
+					}
+					let response = await dtb.create_new_map(file, title);
+					if (response !== null) {
+						console.log(response.id);
+						selected_marker.target_article_id = null;
+						selected_marker.target_map_id = +response.id;
+						dtb.update_marker(selected_marker);
+						gotoMap(response.id);
+					}
+				},
+				button_title: 'Create map'
+			};
+		}
+	};
 
 	function toggleMinimize() {
 		store.informatic_minimized = !store.informatic_minimized;

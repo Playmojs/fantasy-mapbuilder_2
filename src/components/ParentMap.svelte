@@ -5,12 +5,30 @@
 
 	import { store } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
-	import { add_map, type ModalEntity } from '$lib/types';
+	import { type ModalEntity } from '$lib/types';
 	import dtb from '$lib/dtb';
 
 	onMount(() => {
 		parentMap.addEventListener('click', (event) => parent_func(event, store.map.parent_id));
 	});
+
+	const add_map: ModalEntity = {
+		image: '/assets/plus.png',
+		title: 'Add Map',
+		func: () => {
+			store.edit_map_window = {
+				func: async (file: File, title: string) => {
+					let response = await dtb.create_new_map(file, title);
+					if (response !== null) {
+						store.map.parent_id = response.id;
+						store.map.parent_image = response.image;
+						dtb.update_map(store.map);
+					}
+				},
+				button_title: 'Create Map'
+			};
+		}
+	};
 
 	const getMaps = async () => {
 		await dtb.fetch_all_from_project(store.project_id);

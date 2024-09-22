@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
 import { type Article, type MapData, type MarkerData } from "$lib/types";
 import { store } from '../store.svelte';
+import { v4 as uuidv4 } from 'uuid';
 
 const supabaseUrl = "https://ybazluanarelyccrfuuc.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYXpsdWFuYXJlbHljY3JmdXVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM1NDgyMTYsImV4cCI6MjAzOTEyNDIxNn0.hUbetjxp4zUMXS4C7wosekpD8CtJwpPU0jOOLyAxzt8";
@@ -164,8 +165,8 @@ export default {
         all_fetched_from_project = true;
     },
 
-    async create_and_show_article() {
-        const response = await supabase.from('article').insert({ project_id: store.project_id }).select().single();
+    async create_and_show_article(title: string = "Untitled") {
+        const response = await supabase.from('article').insert({ project_id: store.project_id, title: title }).select().single();
         const { data } = response
         if (response.error) {
             console.error(response);
@@ -217,6 +218,34 @@ export default {
         }
     },
 
+    async insert_new_map(image: string, title: string) {
+        await this.create_and_show_article(title);
+        const response = await supabase.from('map').insert({ article_id: store.article.id, image: image, title: title, project_id: store.project_id }).select().single()
+        if (response.error) {
+            console.error(response);
+        } else { return response.data }
+    },
+
+    async upload_image(file: File) {
+        const image_id = uuidv4();
+        const { error } = await supabase.storage
+            .from('project')
+            .upload(`${store.project_id}/maps/${image_id}`, file);
+        if (error) {
+            console.log(error);
+            return;
+        }
+        return image_id;
+    },
+
+    async create_new_map(image_file: File, title: string) {
+        let image_id = await this.upload_image(image_file);
+        if (!image_id) { return null; }
+        let data = await this.insert_new_map(image_id, title);
+        if (!data) { return null; }
+        return data
+    },
+
     async delete_marker(marker_id: number | null) {
         if (marker_id === null) {
             return;
@@ -252,7 +281,6 @@ export default {
         return access;
     }
 }
-
 // const load_map = async (map_id: number) {
 //get_map
 // set global map to map

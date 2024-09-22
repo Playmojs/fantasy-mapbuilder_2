@@ -9,7 +9,7 @@
 	import { page } from '$app/stores';
 	import dtb from '$lib/dtb';
 	import { onDestroy } from 'svelte';
-
+	import MapOption from '../../../../components/MapOption.svelte';
 
 	let unsubscribe = page.subscribe(async (value) => {
 		const map_id = +value.params.map_id;
@@ -39,3 +39,4 @@
 {/if}
 <Toolbar />
 <Modal close={() => (store.modal_data = null)} modal_data={store.modal_data} />
+<MapOption close={() => (store.edit_map_window = null)} />
