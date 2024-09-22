@@ -24,9 +24,9 @@ export type ModalEntity = {
 	func: () => void;
 }
 
-export type ModalData = {
-	entities: ModalEntity[];
-};
+export type ModalData =
+	{ [modal_tab: string]: ModalEntity[]; }
+	;
 
 export const add_map: ModalEntity =
 {

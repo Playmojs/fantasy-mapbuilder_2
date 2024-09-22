@@ -6,19 +6,19 @@
 	import { fade } from 'svelte/transition';
 	import { assert, assert_unreachable } from '$lib/utils';
 
-	export let map_id: number | null;
-	export let article_id: number | null;
+	let { map_id = null, article_id = null }: { map_id: number | null; article_id: number | null } =
+		$props();
 
-	let image: string;
-	let title: string;
+	let intermediate_image = $state<string>('');
+	let title = $state<string>('');
+	let default_img: string = '';
 
 	async function get_data() {
 		assert(map_id === null || article_id === null, 'Both map id and article id are not null');
 		let response;
-		let default_img: string = '';
 		if (map_id !== null) {
 			response = await dtb.get_map(store.project_id, map_id);
-			default_img = '/assets/article_icon.png';
+			default_img = '/assets/map_icon.png';
 		} else if (article_id !== null) {
 			response = await dtb.get_article(store.project_id, article_id);
 			default_img = '/assets/article_icon.png';
@@ -26,9 +26,16 @@
 
 		if (response) {
 			title = response.title;
-			image = response.image ?? default_img;
+			intermediate_image = response.image ?? default_img;
 		}
 	}
+
+	let image = $state<string>('');
+	$effect(() => {
+		image = store.map_image_public_urls[intermediate_image]
+			? URL.createObjectURL(store.map_image_public_urls[intermediate_image])
+			: default_img;
+	});
 
 	get_data();
 </script>

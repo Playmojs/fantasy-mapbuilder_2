@@ -16,7 +16,7 @@
 		await dtb.fetch_all_from_project(store.project_id);
 		const maps = Object.entries(store.map_cache).map(([_, map]) => {
 			return {
-				image: map.image,
+				image: URL.createObjectURL(store.map_image_public_urls[map.image]),
 				title: map.title,
 				func: () => {
 					store.map.parent_id = map.id;
@@ -31,7 +31,7 @@
 	async function parent_func(event: MouseEvent | TouchEvent, parent_id: number | null) {
 		if (parent_id === null && store.edit_mode) {
 			store.modal_data = {
-				entities: [add_map].concat(await getMaps())
+				Maps: [add_map].concat(await getMaps())
 			};
 		}
 		if (parent_id !== null && (!store.edit_mode || event.ctrlKey)) {
@@ -53,7 +53,7 @@
 
 	async function changeParentMap() {
 		store.modal_data = {
-			entities: [remove_map, add_map].concat(await getMaps())
+			Maps: [remove_map, add_map].concat(await getMaps())
 		};
 	}
 
@@ -61,8 +61,7 @@
 	$effect(() => {
 		if (store.map.parent_image && store.map_image_public_urls[store.map.parent_image]) {
 			image_source = URL.createObjectURL(store.map_image_public_urls[store.map.parent_image]);
-		}
-		else{
+		} else {
 			image_source = '/assets/parent_plus.png';
 		}
 	});

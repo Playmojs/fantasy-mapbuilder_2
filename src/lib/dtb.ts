@@ -53,6 +53,7 @@ export default {
     },
 
     async update_map_image_blob(map_image: string) {
+        if (map_image in store.map_image_public_urls) { return; }
         const filePath = `${store.project_id}/maps/${map_image}`;
         const { data, error } = await supabase.storage.from('project').download(filePath);
         if (error) {
@@ -112,6 +113,7 @@ export default {
                 }
                 if (data) {
                     store.project_images[project.id] = data.image;
+                    this.update_map_image_blob(data.image);
                 }
             })
         }
@@ -144,7 +146,7 @@ export default {
                     console.error(`Couldn't fetch map data, error was: ${error}`);
                 }
                 if (data) {
-                    data.forEach(map => store.map_cache[map.id] = map);
+                    data.forEach(map => { store.map_cache[map.id] = map; this.update_map_image_blob(map.image) });
                 }
             });
         await supabase

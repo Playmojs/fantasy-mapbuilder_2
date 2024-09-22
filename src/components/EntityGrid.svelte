@@ -2,12 +2,13 @@
 	import { type ModalEntity } from '$lib/types';
 	import { store } from '../store.svelte';
 
-	export let modal_entities: ModalEntity[] = [];
+	export let modal_entities: { [modal_tab: string]: ModalEntity[] } = {};
+	export let current_tab = 'Articles';
 </script>
 
 <div id="grid-container">
 	<div id="grid">
-		{#each modal_entities as entity}
+		{#each modal_entities[current_tab] as entity}
 			<div
 				class="entity-item"
 				onclick={() => {

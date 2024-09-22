@@ -4,27 +4,25 @@
 	import Homebar from '../../components/Homebar.svelte';
 	import dtb from '../../lib/dtb';
 	import { store } from '../../store.svelte';
-	import EntityGrid from '../../components/EntityGrid.svelte';
 
 	const get_projects = async () => {
 		await dtb.fetch_all_projects();
 	};
-
 	get_projects();
 
-	let project_markers = $state<ModalEntity[]>([]);
-
-	$effect(() => {
-		project_markers = Object.entries(store.project_cache).map(([_, project]) => {
+	let project_markers = $derived<ModalEntity[]>(
+		Object.entries(store.project_cache).map(([_, project]) => {
 			return {
-				image: store.project_images[project.id],
+				image: store.map_image_public_urls[store.project_images[project.id]]
+					? URL.createObjectURL(store.map_image_public_urls[store.project_images[project.id]])
+					: '/assets/map_icon.png',
 				title: project.name,
 				func: () => {
 					goto(`/projects/${project.id}/${project.head_map_id}`);
 				}
 			};
-		});
-	});
+		})
+	);
 </script>
 
 <main>
@@ -142,26 +140,24 @@
 	}
 
 	@media (max-width: 1500px) {
-	#projects_container {
-		
-		max-height: 50vh;
-		width: 87%;
+		#projects_container {
+			max-height: 50vh;
+			width: 87%;
 
-		padding: 20px 50px;
-	}
+			padding: 20px 50px;
+		}
 	}
 
 	@media (max-width: 1150px) {
-	#grid {
-		grid-template-columns: repeat(auto-fill, minmax(250px, 0.5fr));
-		gap: 25px;
-	}
-	#projects_container {
-		
-		max-height: 50vh;
-		width: 83%;
+		#grid {
+			grid-template-columns: repeat(auto-fill, minmax(250px, 0.5fr));
+			gap: 25px;
+		}
+		#projects_container {
+			max-height: 50vh;
+			width: 83%;
 
-		padding: 20px 50px;
-	}
+			padding: 20px 50px;
+		}
 	}
 </style>

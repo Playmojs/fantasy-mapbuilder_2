@@ -25,7 +25,7 @@ class Store {
     map_cache = $state<{ [id: number]: MapData }>({});
     article_cache = $state<{ [id: number]: Article }>({});
     project_cache = $state<{ [id: number]: Project }>({});
-    project_images = $state<{ [id: number]: string }>({})
+    project_images = $state<{ [id: number]: string }>({});
     map_image_public_urls = $state<{ [image: string]: Blob }>({});
 }
 

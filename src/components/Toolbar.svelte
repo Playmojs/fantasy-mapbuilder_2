@@ -36,44 +36,41 @@
 			'Marker has both article_id and map_id'
 		);
 
-		if (selected_marker.target_map_id !== null) {
-			store.modal_data = {
-				entities: [add_map].concat(
-					Object.entries(store.map_cache).map(([id, map]) => {
-						return {
-							image: map.image,
-							title: map.title,
-							func: () => {
-								if (store.selected_marker === null) {
-									return;
-								}
-								selected_marker.target_map_id = +id;
-								dtb.update_marker(selected_marker);
+		store.modal_data = {
+			Maps: [add_map].concat(
+				Object.entries(store.map_cache).map(([id, map]) => {
+					return {
+						image: URL.createObjectURL(store.map_image_public_urls[map.image]),
+						title: map.title,
+						func: () => {
+							if (store.selected_marker === null) {
+								return;
 							}
-						};
-					})
-				)
-			};
-		} else {
-			store.modal_data = {
-				entities: [add_article].concat(
-					Object.entries(store.article_cache).map(([id, article]) => {
-						return {
-							image: article.image ?? '/assets/article_icon.png',
-							title: article.title,
-							func: () => {
-								if (store.selected_marker === null) {
-									return;
-								}
-								selected_marker.target_article_id = +id;
-								dtb.update_marker(selected_marker);
-								store.article = article;
+							selected_marker.target_article_id = null;
+							selected_marker.target_map_id = +id;
+							dtb.update_marker(selected_marker);
+						}
+					};
+				})
+			),
+			Articles: [add_article].concat(
+				Object.entries(store.article_cache).map(([id, article]) => {
+					return {
+						image: article.image ?? '/assets/article_icon.png',
+						title: article.title,
+						func: () => {
+							if (store.selected_marker === null) {
+								return;
 							}
-						};
-					})
-				)
-			};
-		}
+							selected_marker.target_map_id = null;
+							selected_marker.target_article_id = +id;
+							dtb.update_marker(selected_marker);
+							store.article = article;
+						}
+					};
+				})
+			)
+		};
 	}
 
 	let edit_visible: boolean;
