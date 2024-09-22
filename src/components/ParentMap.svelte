@@ -56,10 +56,20 @@
 			entities: [remove_map, add_map].concat(await getMaps())
 		};
 	}
+
+	let image_source = $state('/assets/parent_plus.png');
+	$effect(() => {
+		if (store.map.parent_image && store.map_image_public_urls[store.map.parent_image]) {
+			image_source = URL.createObjectURL(store.map_image_public_urls[store.map.parent_image]);
+		}
+		else{
+			image_source = '/assets/parent_plus.png';
+		}
+	});
 </script>
 
 <img
-	src={store.map.parent_image ?? '/assets/parent_plus.png'}
+	src={image_source}
 	id="parent_map"
 	class:edit_mode={store.edit_mode}
 	class:hidden={!store.map.parent_image && !store.edit_mode}

@@ -61,8 +61,6 @@
 			image_source = URL.createObjectURL(store.map_image_public_urls[store.map.image]);
 		}
 	});
-	$inspect(store.map.id);
-	$inspect(store.map.image);
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
