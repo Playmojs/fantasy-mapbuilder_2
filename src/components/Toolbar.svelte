@@ -109,68 +109,84 @@
 </script>
 
 <div id="toolbar">
-	<button
-		onclick={() => {
-			goto('/projects');
-		}}
-		style="background-image: url('/assets/home_icon.png');"
-	>
-	</button>
+	<div class="button_group">
+		<button
+			onclick={() => {
+				goto('/projects');
+			}}
+			style="background-image: url('/assets/home_icon.png');"
+		>
+		</button>
+	</div>
+	<div class="button_group"></div>
+	<div class="button_group"></div>
+	<div class="button_group"></div>	
 
-	<button
-		onclick={() => dtb.delete_marker(store.selected_marker)}
-		class:hidden={!store.edit_mode || store.selected_marker === null}
-		style="background-image: url('/assets/delete_marker.png');"
-		title="Delete selected marker"
-	></button>
-	<button
-		onclick={() => {
-			changeMarkerTarget();
-		}}
-		style="background-image: url('/assets/change_marker.png');"
-		title="Set target of selected marker"
-		class:hidden={!store.edit_mode || store.selected_marker === null}
-	></button>
+		
+	<div class="button_group">
+		<button
+			onclick={() => dtb.delete_marker(store.selected_marker)}
+			class:hidden={!store.edit_mode || store.selected_marker === null}
+			style="background-image: url('/assets/delete_marker.png');"
+			title="Delete selected marker"
+		></button>
+		<button
+			onclick={() => {
+				changeMarkerTarget();
+			}}
+			style="background-image: url('/assets/change_marker.png');"
+			title="Set target of selected marker"
+			class:hidden={!store.edit_mode || store.selected_marker === null}
+		></button>
 
-	<button
-		onclick={(_event: MouseEvent) => dtb.create_and_select_marker_in_current_map()}
-		class:hidden={!store.edit_mode}
-		style="background-image: url('/assets/add_marker.png');"
-		title="Add new marker to map"
-	></button>
+		<button
+			onclick={(_event: MouseEvent) => dtb.create_and_select_marker_in_current_map()}
+			class:hidden={!store.edit_mode}
+			style="background-image: url('/assets/add_marker.png');"
+			title="Add new marker to map"
+		></button>
+	</div>
 
-	<button
-		id="edit_content_button"
-		class:edit_mode={store.edit_mode}
-		onclick={toggleEditable}
-		class:hidden={!edit_visible}
-	></button>
-	<button
-		id="increment_text_size_button"
-		onclick={() => {
-			change_text_size(1.1);
-		}}
-		style="background-image: url('/assets/plus.png');"
-		title="Increase text size"
-		class:hidden={store.informatic_minimized}
-	></button>
+	<div class="button_group">
+		<button
+			id="edit_content_button"
+			class:edit_mode={store.edit_mode}
+			onclick={toggleEditable}
+			class:hidden={!edit_visible}
+		></button>
+	</div>
 
-	<button
-		id="decrement_text_size_button"
-		onclick={() => {
-			change_text_size(0.9);
-		}}
-		style="background-image: url('/assets/minus.png');"
-		title="Decrease text size"
-		class:hidden={store.informatic_minimized}
-	></button>
-	<button
-		id="minimize_button"
-		onclick={toggleMinimize}
-		style="background-image: url('/assets/{store.informatic_minimized
-			? 'double_arrow_left'
-			: 'double_arrow_right'}.png');"
-	></button>
+	<div class="button_group">
+		<button
+			id="increment_text_size_button"
+			onclick={() => {
+				change_text_size(1.1);
+			}}
+			style="background-image: url('/assets/plus.png');"
+			title="Increase text size"
+			class:hidden={store.informatic_minimized}
+		></button>
+		
+		<button
+			id="decrement_text_size_button"
+			onclick={() => {
+				change_text_size(0.9);
+			}}
+			style="background-image: url('/assets/minus.png');"
+			title="Decrease text size"
+			class:hidden={store.informatic_minimized}
+		></button>
+	</div>
+
+	<div class="button_group">
+		<button
+			id="minimize_button"
+			onclick={toggleMinimize}
+			style="background-image: url('/assets/{store.informatic_minimized
+				? 'double_arrow_left'
+				: 'double_arrow_right'}.png');"
+		></button>
+	</div>
 </div>
 
 <style>
@@ -178,21 +194,31 @@
 		position: fixed;
 		top: 0;
 		left: 0;
+		right: 0;
 		width: 100%;
 		height: 50px; /* TODO: Define once */
 		background-color: #4b4343;
 		color: white;
 		display: flex;
-		justify-content: flex-end; /* Ensures buttons are at the right end */
+		justify-content:space-around;
 		align-items: center;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 		z-index: 11;
 	}
+
+	.button_group{
+		display: flex;
+		justify-content: center;
+		gap: 10px;
+		align-items: center;
+		height: 100%;
+		width: 5%;
+	}
+
 	#toolbar button {
 		aspect-ratio: 4/3; /* Adjust the size as needed */
 		height: 80%; /* Adjust the size as needed */
 		border: none;
-		padding: 10px;
 		cursor: pointer;
 		background-size: contain;
 		background-position: center center;
