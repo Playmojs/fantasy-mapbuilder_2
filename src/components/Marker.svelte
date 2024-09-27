@@ -91,14 +91,13 @@
 	class="marker"
 	bind:this={marker}
 	style="top: {marker_data?.y}%; left: {marker_data?.x}%"
+	onclick={(event) => {handleClick(event);}}
 	onmousedown={(event) => {
-		handleClick(event);
 		if (store.edit_mode) {
 			toggle_movement_mouse();
 		}
 	}}
 	ontouchstart={(event) => {
-		handleClick(event);
 		if (store.edit_mode) {
 			toggle_movement_touch();
 		}
