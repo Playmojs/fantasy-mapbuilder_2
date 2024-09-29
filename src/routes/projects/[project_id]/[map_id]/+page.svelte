@@ -16,6 +16,9 @@
 		const map = await dtb.get_map(store.project_id, map_id);
 		if (map) {
 			store.map = map;
+			if (map.parent_id !== null) {
+				await dtb.get_map(store.project_id, map.parent_id);
+			}
 		}
 		const article = await dtb.get_article(store.project_id, store.map.article_id);
 		if (article) {

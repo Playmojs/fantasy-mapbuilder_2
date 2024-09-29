@@ -77,8 +77,12 @@
 
 	let image_source = $state('/assets/parent_plus.png');
 	$effect(() => {
-		if (store.map.parent_image && store.map_image_public_urls[store.map.parent_image]) {
-			image_source = URL.createObjectURL(store.map_image_public_urls[store.map.parent_image]);
+		if (store.map.parent_image !== null) {
+			if (store.map_image_public_urls[store.map.parent_image]) {
+				image_source = URL.createObjectURL(store.map_image_public_urls[store.map.parent_image]);
+			} else {
+				image_source = '/assets/map_icon.png';
+			}
 		} else {
 			image_source = '/assets/parent_plus.png';
 		}
