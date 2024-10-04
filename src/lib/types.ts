@@ -26,22 +26,14 @@ export type ModalEntity = {
 
 export type MapOptionsData =
 	{
-		func: (file: File, title: string) => void;
+		func: (file: File | null, title: string) => void;
 		button_title: string;
+		initial_map_title: string;
+		initial_image_blob: Blob | null;
 	};
 
 export type ModalData =
 	{ [modal_tab: string]: ModalEntity[]; };
-
-
-// export const add_map: ModalEntity =
-// {
-// 	image: "/assets/plus.png",
-// 	title: "Add Map",
-// 	func: () => {
-// 		store.show_map_options = true
-// 	}
-// }
 
 export const add_article: ModalEntity =
 {

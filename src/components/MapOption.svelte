@@ -1,45 +1,73 @@
 <script lang="ts">
 	import type { ModalData } from '$lib/types';
-	import { untrack } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { store } from '../store.svelte';
 	import EntityGrid from './EntityGrid.svelte';
 	import dtb, { supabase } from '$lib/dtb';
 	import { gotoMap } from '$lib/goto_map';
+	import { assert_unreachable } from '$lib/utils';
 
-	let map_title: HTMLHeadElement;
+	let map_title = $state<HTMLInputElement>();
 	let { close }: { close: any } = $props();
 
 	const handleClose = (e: Event) => {
 		e.stopPropagation();
 		close();
 	};
-	let title = $state<string>('Title');
-	let file = $state<File | null>(null);
+
+	const handle_submit= async () => {
+		if (!store.edit_map_window || file === null || !map_title) {
+			assert_unreachable("Error trying to submit map")
+			close()
+			return;
+		}
+		store.edit_map_window.func(file instanceof File ? file : null, map_title.value);
+		store.edit_map_window = null;
+		close()
+	}
+
+	const handle_file_change = (e: Event) => {
+		const input = e.target as HTMLInputElement;
+		if (input.files?.[0]) {
+			file = input.files[0]; 
+		} else {
+			file = null;
+		}
+	};
+
+	let file = $state<File | Blob | null>(store.edit_map_window?.initial_image_blob?? null);
+	let file_preview = $derived<string | null>(file !== null? URL.createObjectURL(file):null);
+
+	$effect(()=> {file = store.edit_map_window?.initial_image_blob?? null})
+	$inspect(file)
+
 </script>
 
 <div class="modal" on:click={handleClose} class:hidden={store.edit_map_window === null}>
 	<div class="modal-content" on:click|stopPropagation>
 		<span class="close" on:click={handleClose}>&times;</span>
-		<div id="map_title">
-			<h1 bind:this={map_title} contenteditable="true">{title}</h1>
+		<form id="form" on:submit|preventDefault={handle_submit}>
+			<div id='title'>
+				<label id='title_label'>Map Title: </label>
+				<input id="title_input" value={store.edit_map_window?.initial_map_title} bind:this={map_title} required/>
+			</div>
+			<input
+				class="map_file"
+				type="file"
+				id="fileInput"
+				accept="image/*"
+				on:change={handle_file_change}
+			/>
+			<button disabled={file === null || map_title?.value ===''} type="submit" class="execute_button">{store.edit_map_window?.button_title}
+			</button>
+		</form>
+		<div id="image-preview-section">
+			{#if file_preview}
+				<img src={file_preview} alt="Image Preview" class="image-preview" />
+			{:else}
+				<p class="no-image">No image selected</p>
+			{/if}
 		</div>
-		<input
-			class="input"
-			type="file"
-			id="fileInput"
-			on:change={(e) => (file = (e.target as HTMLInputElement).files?.[0] || null)}
-		/>
-		<button
-			class="execute_button"
-			on:click={async () => {
-				if (!store.edit_map_window || file === null) {
-					return;
-				}
-				store.edit_map_window.func(file, map_title.innerText);
-				store.edit_map_window = null;
-			}}
-			disabled={file === null}>{store.edit_map_window?.button_title}</button
-		>
 	</div>
 </div>
 
@@ -66,29 +94,47 @@
 		background: rgb(47, 47, 47);
 		width: 80%;
 		max-width: 800px;
-		height: 40%;
+		height: 60%;
 		overflow-y: hidden;
 		border-radius: 5px;
 		display: flex;
-		flex-direction: column;
 		justify-content: space-around;
-		align-content: center;
+		align-items: center;
 	}
 
-	#map_title {
+	#form{
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		height: 100%;
+		width: 40%;
+		align-items: center;
+	}
+
+	#title_label {
+		font-size: x-large;
+		margin-right: 15px;
+		color: white;
+	}
+
+	#title_input {
 		position: relative;
 		margin-left: auto;
 		margin-right: auto;
-		color: white;
-		font-size: x-large;
+		color: black;
+		background-color: rgb(120, 120, 120);
+		font-size: large;
 		width: 60%;
 		text-align: center;
+		border-radius: 5px;
 	}
 
-	.input {
+	.map_file {
 		position: relative;
 		margin-left: 10%;
-		width: 40%;
+		width: 60%;
+		color: white;
+		font-size: 1rem;
 	}
 	.execute_button {
 		position: relative;
@@ -108,10 +154,26 @@
 		cursor: pointer;
 		color: white;
 	}
-
-	h1 {
+	#title{
+		font-size: large;
 		font-family: 'Cormorant Garamond', serif;
-		font-weight: bold;
-		font-style: italic;
+	}
+
+	#image-preview-section{
+		position: relative;
+		width: 50%;
+	}
+
+	.image-preview{
+		display: block;
+		height: auto;
+		max-width: 100%;
+		border-radius: 10px;
+	}
+
+	.no-image{
+		color: white;
+		font-size: 1.5rem;
+		text-align: center;
 	}
 </style>

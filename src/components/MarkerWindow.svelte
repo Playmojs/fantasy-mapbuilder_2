@@ -67,6 +67,12 @@
 		padding-bottom: 20px;
 	}
 
+	@media(max-width: 1300px){
+		#marker_window{
+			width: 100px;
+		}
+	}
+
 	#window_content {
 		width: 90%;
 		overflow-y: hidden;

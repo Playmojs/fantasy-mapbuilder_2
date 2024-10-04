@@ -12,7 +12,8 @@
 		title: 'Add Map',
 		func: () => {
 			store.edit_map_window = {
-				func: async (file: File, title: string) => {
+				func: async (file: File | null, title: string) => {
+					if (file === null){return;}
 					const selected_marker = store.markers.find(
 						(marker) => marker.id === store.selected_marker
 					);
@@ -29,10 +30,37 @@
 						gotoMap(response.id);
 					}
 				},
-				button_title: 'Create map'
+				button_title: 'Create map',
+				initial_map_title: '',
+				initial_image_blob: null
 			};
 		}
 	};
+
+	async function open_edit_map_modal(){
+		store.edit_map_window = {
+			func: async(file: File | null, title: string) => {
+				if (file !== null){
+					let image_id = await dtb.upload_image(file)
+					if(!image_id){
+						console.error("Image upload failed");
+						return;
+					}
+					store.map_image_public_urls[image_id] = file;
+					store.map.image = image_id;
+				}
+				console.log(title)
+				store.map.title = title
+				await dtb.update_map(store.map)
+
+
+				return;
+			},
+			button_title: "Update Map",
+			initial_map_title: store.map.title,
+			initial_image_blob: store.map_image_public_urls[store.map.image]??null
+		}
+	}
 
 	function toggleMinimize() {
 		store.informatic_minimized = !store.informatic_minimized;
@@ -120,7 +148,13 @@
 	</div>
 	<div class="button_group"></div>
 	<div class="button_group"></div>
-	<div class="button_group"></div>	
+	<div class="button_group">
+		<button
+			onclick={open_edit_map_modal}
+			class:hidden={!store.edit_mode}
+			style="background-image: url('/assets/map_icon.png');"
+			title="Edit map"></button>
+	</div>	
 
 		
 	<div class="button_group">
