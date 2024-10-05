@@ -6,8 +6,12 @@
 	import dtb, { supabase } from '$lib/dtb';
 	import { gotoMap } from '$lib/goto_map';
 	import { assert_unreachable } from '$lib/utils';
+	
+	function update_title(){
+		if (!file_input){return}
+		map_title = file_input.value;
+	}
 
-	let map_title = $state<HTMLInputElement>();
 	let { close }: { close: any } = $props();
 
 	const handleClose = (e: Event) => {
@@ -16,12 +20,12 @@
 	};
 
 	const handle_submit= async () => {
-		if (!store.edit_map_window || file === null || !map_title) {
+		if (!store.edit_map_window || file === null || map_title === "") {
 			assert_unreachable("Error trying to submit map")
 			close()
 			return;
 		}
-		store.edit_map_window.func(file instanceof File ? file : null, map_title.value);
+		store.edit_map_window.func(file instanceof File ? file : null, map_title);
 		store.edit_map_window = null;
 		close()
 	}
@@ -35,12 +39,14 @@
 		}
 	};
 
+	let file_input: HTMLInputElement;
+	let map_title = $state<string>('')
+
 	let file = $state<File | Blob | null>(store.edit_map_window?.initial_image_blob?? null);
 	let file_preview = $derived<string | null>(file !== null? URL.createObjectURL(file):null);
 
-	$effect(()=> {file = store.edit_map_window?.initial_image_blob?? null})
-	$inspect(file)
-
+	$effect(()=> {file = store.edit_map_window?.initial_image_blob?? null;
+		map_title = store.edit_map_window?.initial_map_title ?? ""})
 </script>
 
 <div class="modal" on:click={handleClose} class:hidden={store.edit_map_window === null}>
@@ -49,7 +55,7 @@
 		<form id="form" on:submit|preventDefault={handle_submit}>
 			<div id='title'>
 				<label id='title_label'>Map Title: </label>
-				<input id="title_input" value={store.edit_map_window?.initial_map_title} bind:this={map_title} required/>
+				<input id="title_input" value={map_title} bind:this={file_input} on:keyup={() => {update_title()}} required/>
 			</div>
 			<input
 				class="map_file"
@@ -58,7 +64,7 @@
 				accept="image/*"
 				on:change={handle_file_change}
 			/>
-			<button disabled={file === null || map_title?.value ===''} type="submit" class="execute_button">{store.edit_map_window?.button_title}
+			<button disabled={file === null || map_title ===''} type="submit" class="execute_button">{store.edit_map_window?.button_title}
 			</button>
 		</form>
 		<div id="image-preview-section">
@@ -141,10 +147,18 @@
 		margin-left: auto;
 		margin-right: auto;
 		background-color: rgb(80, 80, 80);
-		border: none;
+		cursor:pointer;
 		height: 10%;
 		width: 40%;
 		font-size: large;
+		color: white;
+		border-radius: 10%;
+	}
+
+	.execute_button:disabled{
+		cursor:not-allowed;
+		border: none;
+		color: black;
 	}
 
 	.close {
