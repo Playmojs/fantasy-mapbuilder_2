@@ -24,13 +24,17 @@ export type ModalEntity = {
 	func: () => void;
 }
 
-export type MapOptionsData =
-	{
-		func: (file: File | null, title: string) => void;
-		button_title: string;
-		initial_map_title: string;
-		initial_image_blob: Blob | null;
-	};
+export type MapOptionsData = {
+	func: (file: File | null, title: string) => void;
+	button_title: string;
+	initial_map_title: string;
+	initial_image_blob: Blob | null;
+};
+
+export type ConfirmModal = {
+	confirm_function: () => void;
+	text: string;
+}
 
 export type ModalData =
 	{ [modal_tab: string]: ModalEntity[]; };

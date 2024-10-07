@@ -259,6 +259,23 @@ export default {
         }
     },
 
+    async delete_map(map: MapData){
+        // const response = await supabase.from('map').delete().eq('id', map.id).select();
+        // if (response.error){
+        //     console.error(response)
+        // }
+        // if (response.data){
+        //     const file_response = await supabase.storage.from('project').remove([`${store.project_id}/maps/${map.image}`])
+        //     if (file_response.error){
+        //         console.error(file_response)
+        //     }
+        //     if (file_response.data){
+        //         delete store.map_cache[map.id]
+        //         delete store.map_image_public_urls[map.image]
+        //     }
+        // }
+    },
+
     async check_write_access() {
         let access = false;
         if (store.user === null) {

@@ -2,20 +2,21 @@
 	import { onMount } from 'svelte';
 	import { store } from '../store.svelte';
 
-	export let parent_selector = '';
+	let {parent_selector} : {parent_selector: string} = $props()
 
 	let parent: any;
-	let scale = 1;
 	let current_x = 0;
 	let current_y = 0;
 	let start_x = 0;
 	let start_y = 0;
 
 	let initial_distance = 0;
-	let initial_scale = 1;
+	let initial_scale = 1
 
-	const min_scale = 0.5;
-	const max_scale = 5;
+	let scale = initial_scale
+
+	const min_scale = 0.5 * initial_scale;
+	const max_scale = 5 * initial_scale;
 
 	function handle_mouse_down(event: MouseEvent) {
 		event.preventDefault();
@@ -133,6 +134,8 @@
 			parent.style.transform = `translate(${current_x}px, ${current_y}px) scale(${scale})`;
 		}
 	}
+
+	update_transform()
 
 	onMount(() => {
 		parent = document.querySelector(parent_selector);

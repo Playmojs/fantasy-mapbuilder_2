@@ -1,4 +1,4 @@
-import { type Article, type MapData, type MarkerData, type ModalData, type Project, type MapOptionsData } from "$lib/types";
+import { type Article, type MapData, type MarkerData, type ModalData, type Project, type MapOptionsData, type ConfirmModal } from "$lib/types";
 import type { User } from "@supabase/supabase-js";
 import { readable, writable } from "svelte/store";
 
@@ -17,6 +17,7 @@ class Store {
     project_id: number = 0;
     write_access = writable(false);
     edit_map_window = $state<MapOptionsData | null>(null)
+    confirm_modal = $state<ConfirmModal | null>(null)
 
     // From database
     map = $state<MapData>(default_map);

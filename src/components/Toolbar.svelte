@@ -62,6 +62,13 @@
 		}
 	}
 
+	async function confirm_delete_map(){
+		store.confirm_modal = {
+			confirm_function: async() => {return;},
+			text: "(Does not work yet, don't worry) \n Are you sure you want to delete this map (this cannot be undone)?"
+		}
+	}
+
 	function toggleMinimize() {
 		store.informatic_minimized = !store.informatic_minimized;
 	}
@@ -149,6 +156,12 @@
 	<div class="button_group"></div>
 	<div class="button_group"></div>
 	<div class="button_group">
+		<button
+			onclick={confirm_delete_map}
+			class:hidden={!store.edit_mode}
+			style="background-image: url('/assets/delete.png');"
+			title="Delete map"></button>
+
 		<button
 			onclick={open_edit_map_modal}
 			class:hidden={!store.edit_mode}

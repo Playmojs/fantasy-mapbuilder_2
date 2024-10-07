@@ -61,14 +61,15 @@
 			image_source = URL.createObjectURL(store.map_image_public_urls[store.map.image]);
 		}
 	});
+
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
-	<ZoomPan parent_selector="#map-container" />
 	<img id="map" alt="Map" bind:this={map_} src={image_source} />
 	{#each store.markers as marker}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}
+	<ZoomPan parent_selector="#map-container"/>
 </div>
 
 <style>

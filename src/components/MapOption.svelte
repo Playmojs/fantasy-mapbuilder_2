@@ -32,11 +32,7 @@
 
 	const handle_file_change = (e: Event) => {
 		const input = e.target as HTMLInputElement;
-		if (input.files?.[0]) {
-			file = input.files[0]; 
-		} else {
-			file = null;
-		}
+		file = input.files?.[0] ?? store.edit_map_window?.initial_image_blob ?? null 
 	};
 
 	let file_input: HTMLInputElement;
