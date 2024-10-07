@@ -6,17 +6,19 @@
 	import dtb, { supabase } from '$lib/dtb';
 	import { gotoMap } from '$lib/goto_map';
 	import { assert_unreachable } from '$lib/utils';
-	
-	function update_title(){
-		if (!title_input){return}
+
+	function update_title() {
+		if (!title_input) {
+			return;
+		}
 		map_title = title_input.value;
 	}
 
-	function close(){
-		if(file_input){
+	function close() {
+		if (file_input) {
 			file_input.files = null;
 			file_input.value = '';
-	}
+		}
 		store.edit_map_window = null;
 	}
 
@@ -25,30 +27,36 @@
 		close();
 	};
 
-	const handle_submit= async () => {
+	const handle_submit = async () => {
 		if (!store.edit_map_window || !store.edit_map_window.validation_func(file, map_title)) {
-			assert_unreachable("Error trying to submit image")
-			close()
+			assert_unreachable('Error trying to submit image');
+			close();
 			return;
 		}
 		store.edit_map_window.submit_func(file instanceof File ? file : null, map_title);
 		store.edit_map_window = null;
-		close()
-	}
+		close();
+	};
 
 	const handle_file_change = () => {
-		file = file_input.files?.[0] ?? (!store.edit_map_window?.allow_no_file ? store.edit_map_window?.initial_image_blob ?? null : null)
+		file =
+			file_input.files?.[0] ??
+			(!store.edit_map_window?.allow_no_file
+				? store.edit_map_window?.initial_image_blob ?? null
+				: null);
 	};
 
 	let title_input: HTMLInputElement;
 	let file_input: HTMLInputElement;
-	let map_title = $state<string>('')
+	let map_title = $state<string>('');
 
-	let file = $state<File | Blob | null>(store.edit_map_window?.initial_image_blob?? null);
-	let file_preview = $derived<string | null>(file !== null? URL.createObjectURL(file):null);
+	let file = $state<File | Blob | null>(store.edit_map_window?.initial_image_blob ?? null);
+	let file_preview = $derived<string | null>(file !== null ? URL.createObjectURL(file) : null);
 
-	$effect(()=> {file = store.edit_map_window?.initial_image_blob?? null;
-		map_title = store.edit_map_window?.initial_map_title ?? ""})
+	$effect(() => {
+		file = store.edit_map_window?.initial_image_blob ?? null;
+		map_title = store.edit_map_window?.initial_map_title ?? '';
+	});
 </script>
 
 <div class="modal" on:click={handleClose} class:hidden={store.edit_map_window === null}>
@@ -56,9 +64,17 @@
 		<span class="close" on:click={handleClose}>&times;</span>
 		<form id="form" on:submit|preventDefault={handle_submit}>
 			{#if store.edit_map_window?.initial_map_title !== null}
-				<div id='title'>
-					<label id='title_label'>Map Title: </label>
-					<input id="title_input" value={map_title} bind:this={title_input} on:keyup={() => {update_title()}} required/>
+				<div id="title">
+					<label id="title_label">Map Title: </label>
+					<input
+						id="title_input"
+						value={map_title}
+						bind:this={title_input}
+						on:keyup={() => {
+							update_title();
+						}}
+						required
+					/>
 				</div>
 			{/if}
 			<input
@@ -69,7 +85,11 @@
 				on:change={handle_file_change}
 				bind:this={file_input}
 			/>
-			<button disabled={!store.edit_map_window?.validation_func(file, map_title)} type="submit" class="execute_button">{store.edit_map_window?.button_title}
+			<button
+				disabled={!store.edit_map_window?.validation_func(file, map_title)}
+				type="submit"
+				class="execute_button"
+				>{store.edit_map_window?.button_title}
 			</button>
 		</form>
 		<div id="image-preview-section">
@@ -113,7 +133,7 @@
 		align-items: center;
 	}
 
-	#form{
+	#form {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;
@@ -142,8 +162,9 @@
 
 	.map_file {
 		position: relative;
-		margin-left: 10%;
-		width: 60%;
+		margin-left: auto;
+		margin-right: auto;
+		width: fit-content;
 		color: white;
 		font-size: 1rem;
 	}
@@ -152,16 +173,17 @@
 		margin-left: auto;
 		margin-right: auto;
 		background-color: rgb(80, 80, 80);
-		cursor:pointer;
+		cursor: pointer;
 		height: fit-content;
+		padding: 20px;
 		width: 40%;
 		font-size: large;
 		color: white;
 		border-radius: 10%;
 	}
 
-	.execute_button:disabled{
-		cursor:not-allowed;
+	.execute_button:disabled {
+		cursor: not-allowed;
 		border: none;
 		color: black;
 	}
@@ -173,24 +195,24 @@
 		cursor: pointer;
 		color: white;
 	}
-	#title{
+	#title {
 		font-size: large;
 		font-family: 'Cormorant Garamond', serif;
 	}
 
-	#image-preview-section{
+	#image-preview-section {
 		position: relative;
 		width: 50%;
 	}
 
-	.image-preview{
+	.image-preview {
 		display: block;
 		height: auto;
 		max-width: 100%;
 		border-radius: 10px;
 	}
 
-	.no-image{
+	.no-image {
 		color: white;
 		font-size: 1.5rem;
 		text-align: center;

@@ -16,8 +16,8 @@ class Store {
     user = $state<User | null>(null);
     project_id: number = 0;
     write_access = writable(false);
-    edit_map_window = $state<MapOptionsData | null>(null)
-    confirm_modal = $state<ConfirmModal | null>(null)
+    edit_map_window = $state<MapOptionsData | null>(null);
+    confirm_modal = $state<ConfirmModal | null>(null);
 
     // From database
     map = $state<MapData>(default_map);
@@ -29,6 +29,7 @@ class Store {
     project_cache = $state<{ [id: number]: Project }>({});
     project_images = $state<{ [id: number]: string }>({});
     image_public_urls = $state<{ [image: string]: Blob }>({});
+    user_projects = $state<number[]>([])
 }
 
 const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "map.jpg", parent_id: null, parent_image: null, project_id: 0 }

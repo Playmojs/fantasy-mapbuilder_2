@@ -3,12 +3,16 @@
 
 	let main_items: { label: string; href: string }[] = [
 		{ label: 'Home', href: '/' },
-		{ label: 'Projects', href: 'projects' }
+		{ label: 'Browse projects', href: 'projects' }
 	];
 
 	let right_items: { label: string; href: string }[] = $derived(
 		store.user
-			? [{ label: 'Log Out', href: 'logout' }]
+			? [
+					{ label: 'My projects', href: 'my_projects' },
+					{ label: 'User', href: 'user' },
+					{ label: 'Log Out', href: 'logout' }
+				]
 			: [
 					{ label: 'Login', href: 'login' },
 					{ label: 'Sign Up ', href: 'signup' }

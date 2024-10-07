@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
-import { type Article, type Folder, type MapData, type MarkerData } from "$lib/types";
+import { type Article, type Folder, type MapData, type MarkerData, type Project } from "$lib/types";
 import { store } from '../store.svelte';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,6 +14,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 let all_fetched_from_project: boolean = false;
 let all_projects_fetched: boolean = false;
+let my_project_ids_fetched: boolean = false;
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
@@ -31,13 +32,13 @@ supabase.auth.onAuthStateChange((event, session) => {
 });
 
 export default {
-    async get_project(project_id: number){
-        if (project_id in store.project_cache){
+    async get_project(project_id: number) {
+        if (project_id in store.project_cache) {
             return store.project_cache[project_id]
         }
         const response = await supabase.from('project').select().eq('id', project_id).single();
-        if(response.error){console.error(response);}
-        if(response.data){
+        if (response.error) { console.error(response); }
+        if (response.data) {
             store.project_cache[project_id] = response.data;
             return response.data
         }
@@ -98,7 +99,7 @@ export default {
 
     async get_article(project_id: number, article_id: number) {
         if (article_id in store.article_cache) {
-            if(store.article_cache[article_id].image !== null){
+            if (store.article_cache[article_id].image !== null) {
                 this.update_image_blob(store.article_cache[article_id].image, 'articles');
             }
             return store.article_cache[article_id];
@@ -114,7 +115,7 @@ export default {
                     console.error(`Couldn't fetch article data for ${article_id}, error was: ${error}`);
                 }
                 if (data) {
-                    if(data.image !== null){
+                    if (data.image !== null) {
                         this.update_image_blob(data.image, 'articles');
                     }
                     store.article_cache[article_id] = data;
@@ -123,10 +124,10 @@ export default {
             });
     },
 
-    async fetch_project_images() {
+    async fetch_project_images(projects: Project[]) {
         if (all_projects_fetched) { return; }
 
-        for await (const [_, project] of Object.entries(store.project_cache)) {
+        for await (const project of projects) {
             await supabase.from('map').select('image').eq('id', project.head_map_id).single().then(({ data, error }) => {
                 if (error) {
                     console.error(`Couldn't fetch project images, error was: ${error}`);
@@ -147,10 +148,36 @@ export default {
             }
             if (data) {
                 data.forEach(project => { store.project_cache[project.id] = project });
-                this.fetch_project_images();
+                this.fetch_project_images(Object.values(store.project_cache));
             }
         })
         all_projects_fetched = true;
+    },
+
+    async get_my_project_ids() {
+        if (my_project_ids_fetched || store.user === null) { return; }
+        const response = await supabase.from('user_project_access').select('project_id').eq('user_id', store.user.id)
+        if (response.error) {
+            console.error("Error fetching user projects: ", response.error)
+            return;
+        }
+        if (response.data) {
+            store.user_projects = response.data.map((project) => project.project_id)
+            my_project_ids_fetched = true;
+        }
+    },
+
+    async get_projects(project_ids: number[]) {
+        let uncached_projects = project_ids.filter((id) => { return !(id in store.project_cache) })
+        if (uncached_projects.length === 0) { return Object.values(store.project_cache).filter((project) => { project.id in project_ids }); }
+        const response = await supabase.from('project').select('*').in('id', uncached_projects)
+        if (response.error) {
+            console.error("Error fetching user projects: ", response.error)
+        }
+        if (response.data) {
+            response.data.forEach((project) => { store.project_cache[project.id] = project })
+            return Object.values(store.project_cache).filter((project) => { return project.id in project_ids });
+        }
     },
 
     async fetch_all_from_project(project_id: number) {
@@ -209,6 +236,7 @@ export default {
             store.markers.push(data);
         }
     },
+
 
     async update_article(article: Article) {
         store.article_cache[article.id] = article;
@@ -278,17 +306,17 @@ export default {
         }
     },
 
-    async delete_map(map: MapData){
+    async delete_map(map: MapData) {
         const response = await supabase.from('map').delete().eq('id', map.id).select();
-        if (response.error){
+        if (response.error) {
             console.error(response)
         }
-        if (response.data){
+        if (response.data) {
             const file_response = await supabase.storage.from('project').remove([`${store.project_id}/maps/${map.image}`])
-            if (file_response.error){
+            if (file_response.error) {
                 console.error(file_response)
             }
-            if (file_response.data){
+            if (file_response.data) {
                 delete store.map_cache[map.id]
                 delete store.image_public_urls[map.image]
             }
