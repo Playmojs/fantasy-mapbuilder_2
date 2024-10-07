@@ -23,7 +23,6 @@
 					}
 					let response = await dtb.create_new_map(file, title);
 					if (response !== null) {
-						console.log(response.id);
 						selected_marker.target_article_id = null;
 						selected_marker.target_map_id = +response.id;
 						dtb.update_marker(selected_marker);
@@ -71,8 +70,17 @@
 
 	async function confirm_delete_map(){
 		store.confirm_modal = {
-			confirm_function: async() => {return;},
-			text: "(Does not work yet, don't worry) \n Are you sure you want to delete this map (this cannot be undone)?"
+			confirm_function: async() => {
+				dtb.delete_map(store.map)
+				if (store.map.parent_id !== null){gotoMap(store.map.parent_id)}
+				else{
+					let project = await dtb.get_project(store.project_id)
+					if(project){
+						gotoMap(project?.head_map_id)
+					}
+			}
+			},
+			text: "Are you sure you want to delete this map (this cannot be undone)?"
 		}
 	}
 

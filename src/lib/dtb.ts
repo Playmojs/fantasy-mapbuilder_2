@@ -31,6 +31,19 @@ supabase.auth.onAuthStateChange((event, session) => {
 });
 
 export default {
+    async get_project(project_id: number){
+        if (project_id in store.project_cache){
+            return store.project_cache[project_id]
+        }
+        const response = await supabase.from('project').select().eq('id', project_id).single();
+        if(response.error){console.error(response);}
+        if(response.data){
+            store.project_cache[project_id] = response.data;
+            return response.data
+        }
+    },
+
+
     async get_map(project_id: number, map_id: number) {
         if (map_id in store.map_cache) {
             this.update_image_blob(store.map_cache[map_id].image, 'maps');
@@ -266,20 +279,20 @@ export default {
     },
 
     async delete_map(map: MapData){
-        // const response = await supabase.from('map').delete().eq('id', map.id).select();
-        // if (response.error){
-        //     console.error(response)
-        // }
-        // if (response.data){
-        //     const file_response = await supabase.storage.from('project').remove([`${store.project_id}/maps/${map.image}`])
-        //     if (file_response.error){
-        //         console.error(file_response)
-        //     }
-        //     if (file_response.data){
-        //         delete store.map_cache[map.id]
-        //         delete store.image_public_urls[map.image]
-        //     }
-        // }
+        const response = await supabase.from('map').delete().eq('id', map.id).select();
+        if (response.error){
+            console.error(response)
+        }
+        if (response.data){
+            const file_response = await supabase.storage.from('project').remove([`${store.project_id}/maps/${map.image}`])
+            if (file_response.error){
+                console.error(file_response)
+            }
+            if (file_response.data){
+                delete store.map_cache[map.id]
+                delete store.image_public_urls[map.image]
+            }
+        }
     },
 
     async check_write_access() {
