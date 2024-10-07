@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
-import { type Article, type MapData, type MarkerData } from "$lib/types";
+import { type Article, type Folder, type MapData, type MarkerData } from "$lib/types";
 import { store } from '../store.svelte';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -33,7 +33,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 export default {
     async get_map(project_id: number, map_id: number) {
         if (map_id in store.map_cache) {
-            this.update_map_image_blob(store.map_cache[map_id].image);
+            this.update_image_blob(store.map_cache[map_id].image, 'maps');
             return store.map_cache[map_id];
         }
         const response = await supabase
@@ -48,21 +48,21 @@ export default {
         }
         if (data) {
             store.map_cache[map_id] = data;
-            this.update_map_image_blob(store.map_cache[map_id].image);
+            this.update_image_blob(store.map_cache[map_id].image, 'maps');
             return data;
         }
     },
 
-    async update_map_image_blob(map_image: string) {
-        if (map_image in store.map_image_public_urls) { return; }
-        const filePath = `${store.project_id}/maps/${map_image}`;
+    async update_image_blob(image: string, folder: Folder) {
+        if (image in store.image_public_urls) { return; }
+        const filePath = `${store.project_id}/${folder}/${image}`;
         const { data, error } = await supabase.storage.from('project').download(filePath);
         if (error) {
             console.error('Error downloading file:', error.message);
             return;
         }
         if (data) {
-            store.map_image_public_urls[map_image] = data;
+            store.image_public_urls[image] = data;
             return data
         }
     },
@@ -85,6 +85,9 @@ export default {
 
     async get_article(project_id: number, article_id: number) {
         if (article_id in store.article_cache) {
+            if(store.article_cache[article_id].image !== null){
+                this.update_image_blob(store.article_cache[article_id].image, 'articles');
+            }
             return store.article_cache[article_id];
         }
         return await supabase
@@ -98,6 +101,9 @@ export default {
                     console.error(`Couldn't fetch article data for ${article_id}, error was: ${error}`);
                 }
                 if (data) {
+                    if(data.image !== null){
+                        this.update_image_blob(data.image, 'articles');
+                    }
                     store.article_cache[article_id] = data;
                     return data
                 }
@@ -114,7 +120,7 @@ export default {
                 }
                 if (data) {
                     store.project_images[project.id] = data.image;
-                    this.update_map_image_blob(data.image);
+                    this.update_image_blob(data.image, 'maps');
                 }
             })
         }
@@ -147,7 +153,7 @@ export default {
                     console.error(`Couldn't fetch map data, error was: ${error}`);
                 }
                 if (data) {
-                    data.forEach(map => { store.map_cache[map.id] = map; this.update_map_image_blob(map.image) });
+                    data.forEach(map => { store.map_cache[map.id] = map; this.update_image_blob(map.image, 'maps') });
                 }
             });
         await supabase
@@ -226,11 +232,11 @@ export default {
         } else { return response.data }
     },
 
-    async upload_image(file: File) {
+    async upload_image(file: File, folder: Folder) {
         const image_id = uuidv4();
         const { error } = await supabase.storage
             .from('project')
-            .upload(`${store.project_id}/maps/${image_id}`, file);
+            .upload(`${store.project_id}/${folder}/${image_id}`, file);
         if (error) {
             console.log(error);
             return;
@@ -239,7 +245,7 @@ export default {
     },
 
     async create_new_map(image_file: File, title: string) {
-        let image_id = await this.upload_image(image_file);
+        let image_id = await this.upload_image(image_file, 'maps');
         if (!image_id) { return null; }
         let data = await this.insert_new_map(image_id, title);
         if (!data) { return null; }
@@ -271,7 +277,7 @@ export default {
         //     }
         //     if (file_response.data){
         //         delete store.map_cache[map.id]
-        //         delete store.map_image_public_urls[map.image]
+        //         delete store.image_public_urls[map.image]
         //     }
         // }
     },

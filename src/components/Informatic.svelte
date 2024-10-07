@@ -3,6 +3,8 @@
 	import { store } from '../store.svelte';
 	import Editor from './Editor.svelte';
 	import { fly } from 'svelte/transition';
+	import dtb from '$lib/dtb';
+	import edit_mode from '../store';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -63,6 +65,44 @@
 		window.removeEventListener('touchmove', resizeTouch);
 		window.removeEventListener('touchend', stopResize);
 	}
+
+	async function change_article_image(){
+		store.edit_map_window = {
+			submit_func: async(file: File | null, title: string) => {
+				if (file === null){
+					store.article.image = null;
+				}
+				else{
+					let image_id = await dtb.upload_image(file, 'articles')
+					if(!image_id){
+						console.error("Image upload failed");
+						return;
+					}
+					store.image_public_urls[image_id] = file;
+					store.article.image = image_id;
+				}
+				
+				await dtb.update_article(store.article)
+
+				return;
+			},
+			validation_func(file, title) {
+				return (file instanceof File || (file === null && store.article.image !== null))
+			},
+			button_title: "Update Article Image",
+			initial_map_title: null,
+			initial_image_blob: store.article.image !== null ? store.image_public_urls[store.article.image] ?? null : null,
+			allow_no_file: true,
+		}
+	}
+
+	let image_source = $state('');
+	$effect(() => {
+		if (store.article.image && store.image_public_urls[store.article.image]) {
+			image_source = URL.createObjectURL(store.image_public_urls[store.article.image]);
+		}
+	});
+
 </script>
 
 <div
@@ -83,13 +123,17 @@
 	>
 		<h1 bind:this={article_title}>{store.article.title}</h1>
 	</div>
-	<img
+	<div id="image_container" style="height: {store.article.image !== null ? 30 : store.edit_mode ? 10 : 0}%;">
+		{#if store.edit_mode}
+			<button id="edit_image_button" onclick={change_article_image}></button>
+		{/if}
+		<img
 		id="article_image"
-		src={store.article.image}
+		src={image_source}
 		alt="Article image"
 		class:hidden={store.article.image === null}
-	/>
-
+		/>
+	</div>
 	<div
 		id="informatic"
 		class={store.edit_mode ? 'editable' : 'non-editable'}
@@ -207,13 +251,28 @@
 		z-index: 10;
 	}
 
+	#image_container{
+		display: flex;
+		flex-shrink: 0;
+	}
+
+	#edit_image_button{
+		position: relative;
+		background-image: url('/assets/cog.png');
+		background-color: transparent;
+		background-size: contain;
+		background-repeat: no-repeat;
+		border: none;
+		width: 30px;
+		aspect-ratio: 1;
+	}
+
 	#article_image {
 		position: relative;
-		height: 30%;
 		display: block;
+		height: 100%;
 		margin-left: auto;
 		margin-right: auto;
-		flex-shrink: 0;
 		border-radius: 10px;
 	}
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ModalData } from '$lib/types';
-	import { onMount, untrack } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import { store } from '../store.svelte';
 	import EntityGrid from './EntityGrid.svelte';
 	import dtb, { supabase } from '$lib/dtb';
@@ -8,11 +8,17 @@
 	import { assert_unreachable } from '$lib/utils';
 	
 	function update_title(){
-		if (!file_input){return}
-		map_title = file_input.value;
+		if (!title_input){return}
+		map_title = title_input.value;
 	}
 
-	let { close }: { close: any } = $props();
+	function close(){
+		if(file_input){
+			file_input.files = null;
+			file_input.value = '';
+	}
+		store.edit_map_window = null;
+	}
 
 	const handleClose = (e: Event) => {
 		e.stopPropagation();
@@ -20,21 +26,21 @@
 	};
 
 	const handle_submit= async () => {
-		if (!store.edit_map_window || file === null || map_title === "") {
-			assert_unreachable("Error trying to submit map")
+		if (!store.edit_map_window || !store.edit_map_window.validation_func(file, map_title)) {
+			assert_unreachable("Error trying to submit image")
 			close()
 			return;
 		}
-		store.edit_map_window.func(file instanceof File ? file : null, map_title);
+		store.edit_map_window.submit_func(file instanceof File ? file : null, map_title);
 		store.edit_map_window = null;
 		close()
 	}
 
-	const handle_file_change = (e: Event) => {
-		const input = e.target as HTMLInputElement;
-		file = input.files?.[0] ?? store.edit_map_window?.initial_image_blob ?? null 
+	const handle_file_change = () => {
+		file = file_input.files?.[0] ?? (!store.edit_map_window?.allow_no_file ? store.edit_map_window?.initial_image_blob ?? null : null)
 	};
 
+	let title_input: HTMLInputElement;
 	let file_input: HTMLInputElement;
 	let map_title = $state<string>('')
 
@@ -49,18 +55,21 @@
 	<div class="modal-content" on:click|stopPropagation>
 		<span class="close" on:click={handleClose}>&times;</span>
 		<form id="form" on:submit|preventDefault={handle_submit}>
-			<div id='title'>
-				<label id='title_label'>Map Title: </label>
-				<input id="title_input" value={map_title} bind:this={file_input} on:keyup={() => {update_title()}} required/>
-			</div>
+			{#if store.edit_map_window?.initial_map_title !== null}
+				<div id='title'>
+					<label id='title_label'>Map Title: </label>
+					<input id="title_input" value={map_title} bind:this={title_input} on:keyup={() => {update_title()}} required/>
+				</div>
+			{/if}
 			<input
 				class="map_file"
 				type="file"
 				id="fileInput"
 				accept="image/*"
 				on:change={handle_file_change}
+				bind:this={file_input}
 			/>
-			<button disabled={file === null || map_title ===''} type="submit" class="execute_button">{store.edit_map_window?.button_title}
+			<button disabled={!store.edit_map_window?.validation_func(file, map_title)} type="submit" class="execute_button">{store.edit_map_window?.button_title}
 			</button>
 		</form>
 		<div id="image-preview-section">
@@ -144,7 +153,7 @@
 		margin-right: auto;
 		background-color: rgb(80, 80, 80);
 		cursor:pointer;
-		height: 10%;
+		height: fit-content;
 		width: 40%;
 		font-size: large;
 		color: white;

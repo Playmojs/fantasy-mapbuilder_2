@@ -7,6 +7,7 @@
 	import { gotoMap } from '$lib/goto_map';
 	import { type ModalEntity } from '$lib/types';
 	import dtb from '$lib/dtb';
+	import { assert_unreachable } from '$lib/utils';
 
 	onMount(() => {
 		parentMap.addEventListener('click', (event) => parent_func(event, store.map.parent_id));
@@ -17,7 +18,11 @@
 		title: 'Add Map',
 		func: () => {
 			store.edit_map_window = {
-				func: async (file: File, title: string) => {
+				submit_func: async (file: File | null, title: string) => {
+					if(file === null){
+						assert_unreachable("No file selected error"); 
+						return;
+					}
 					let response = await dtb.create_new_map(file, title);
 					if (response !== null) {
 						store.map.parent_id = response.id;
@@ -25,7 +30,13 @@
 						dtb.update_map(store.map);
 					}
 				},
-				button_title: 'Create Map'
+				validation_func(file, title) {
+					return(file !== null && title !== '')
+				},
+				button_title: 'Create Map',
+				initial_image_blob: null,
+				initial_map_title: '',
+				allow_no_file: false,
 			};
 		}
 	};
@@ -34,7 +45,7 @@
 		await dtb.fetch_all_from_project(store.project_id);
 		const maps = Object.entries(store.map_cache).map(([_, map]) => {
 			return {
-				image: URL.createObjectURL(store.map_image_public_urls[map.image]),
+				image: URL.createObjectURL(store.image_public_urls[map.image]),
 				title: map.title,
 				func: () => {
 					store.map.parent_id = map.id;
@@ -78,8 +89,8 @@
 	let image_source = $state('/assets/parent_plus.png');
 	$effect(() => {
 		if (store.map.parent_image !== null) {
-			if (store.map_image_public_urls[store.map.parent_image]) {
-				image_source = URL.createObjectURL(store.map_image_public_urls[store.map.parent_image]);
+			if (store.image_public_urls[store.map.parent_image]) {
+				image_source = URL.createObjectURL(store.image_public_urls[store.map.parent_image]);
 			} else {
 				image_source = '/assets/map_icon.png';
 			}

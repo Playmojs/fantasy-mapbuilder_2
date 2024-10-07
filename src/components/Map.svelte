@@ -57,8 +57,8 @@
 
 	let image_source = $state('');
 	$effect(() => {
-		if (store.map.image && store.map_image_public_urls[store.map.image]) {
-			image_source = URL.createObjectURL(store.map_image_public_urls[store.map.image]);
+		if (store.map.image && store.image_public_urls[store.map.image]) {
+			image_source = URL.createObjectURL(store.image_public_urls[store.map.image]);
 		}
 	});
 

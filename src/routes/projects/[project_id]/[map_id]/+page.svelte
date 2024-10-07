@@ -43,5 +43,5 @@
 {/if}
 <Toolbar />
 <Modal close={() => (store.modal_data = null)} modal_data={store.modal_data} />
-<MapOption close={() => (store.edit_map_window = null)} />
+<MapOption />
 <ConfirmModal close={() => (store.confirm_modal = null)} />

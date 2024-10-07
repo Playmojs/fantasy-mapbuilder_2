@@ -32,8 +32,8 @@
 
 	let image = $state<string>('');
 	$effect(() => {
-		image = store.map_image_public_urls[intermediate_image]
-			? URL.createObjectURL(store.map_image_public_urls[intermediate_image])
+		image = store.image_public_urls[intermediate_image]
+			? URL.createObjectURL(store.image_public_urls[intermediate_image])
 			: default_img;
 	});
 

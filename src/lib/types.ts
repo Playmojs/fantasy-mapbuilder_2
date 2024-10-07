@@ -25,10 +25,12 @@ export type ModalEntity = {
 }
 
 export type MapOptionsData = {
-	func: (file: File | null, title: string) => void;
+	submit_func: (file: File | null, title: string) => void;
+	validation_func: (file: File | Blob | null, title: string) => boolean;
 	button_title: string;
-	initial_map_title: string;
+	initial_map_title: string | null;
 	initial_image_blob: Blob | null;
+	allow_no_file: boolean;
 };
 
 export type ConfirmModal = {
@@ -45,3 +47,5 @@ export const add_article: ModalEntity =
 	title: "Add Article",
 	func: async () => { await dtb.create_and_show_article() }
 }
+
+export type Folder = "maps" | "articles"

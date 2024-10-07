@@ -13,8 +13,8 @@
 	let project_markers = $derived<ModalEntity[]>(
 		Object.entries(store.project_cache).map(([_, project]) => {
 			return {
-				image: store.map_image_public_urls[store.project_images[project.id]]
-					? URL.createObjectURL(store.map_image_public_urls[store.project_images[project.id]])
+				image: store.image_public_urls[store.project_images[project.id]]
+					? URL.createObjectURL(store.image_public_urls[store.project_images[project.id]])
 					: '/assets/map_icon.png',
 				title: project.name,
 				func: () => {
