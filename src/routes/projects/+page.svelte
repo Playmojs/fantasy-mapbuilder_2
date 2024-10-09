@@ -88,17 +88,19 @@
 		text-align: center;
 		background-color: rgb(47, 47, 47);
 		border-radius: 10px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		align-items: center;
+		
 	}
 
 	.image-container {
 		position: relative;
-		margin: auto;
-		margin-top: 5px;
-		margin-bottom: 0px;
 		width: 80%;
 		height: 250px;
 		overflow: hidden;
-		margin-bottom: 0;
+		margin: 10px;
 	}
 
 	.entity-image {
@@ -116,12 +118,14 @@
 	}
 
 	.entity-item p {
+		position: relative;
 		color: white;
 		font-size: 2rem;
-		margin-top: 0px;
 		font-family: 'Cormorant Garamond', serif;
 		font-style: italic;
+		margin: 10px 0px;
 	}
+
 
 	#projects_container::-webkit-scrollbar {
 		width: 12px;
@@ -145,6 +149,9 @@
 			width: 87%;
 
 			padding: 20px 50px;
+		}
+		.image-container{
+			height: 150px;
 		}
 	}
 

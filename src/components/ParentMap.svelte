@@ -56,6 +56,7 @@
 		});
 		return maps;
 	};
+	$inspect(store.map_cache[store.map.id])
 
 	async function parent_func(event: MouseEvent | TouchEvent, parent_id: number | null) {
 		if (parent_id === null && store.edit_mode) {

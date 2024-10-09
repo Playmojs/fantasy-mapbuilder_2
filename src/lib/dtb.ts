@@ -34,7 +34,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 export default {
     async get_project(project_id: number) {
         if (project_id in store.project_cache) {
-            return store.project_cache[project_id]
+            return {...store.project_cache[project_id]};
         }
         const response = await supabase.from('project').select().eq('id', project_id).single();
         if (response.error) { console.error(response); }
@@ -48,7 +48,7 @@ export default {
     async get_map(project_id: number, map_id: number) {
         if (map_id in store.map_cache) {
             this.update_image_blob(store.map_cache[map_id].image, 'maps');
-            return store.map_cache[map_id];
+            return {...store.map_cache[map_id]};
         }
         const response = await supabase
             .from('map')
@@ -102,7 +102,7 @@ export default {
             if (store.article_cache[article_id].image !== null) {
                 this.update_image_blob(store.article_cache[article_id].image, 'articles');
             }
-            return store.article_cache[article_id];
+            return {...store.article_cache[article_id]};
         }
         return await supabase
             .from('article')
@@ -262,6 +262,9 @@ export default {
         const response = await supabase.from('map').upsert(map).select().single()
         if (response.error) {
             console.error(response);
+        }
+        if(response.data){
+            store.map_cache[response.data.id] = response.data;
         }
     },
 

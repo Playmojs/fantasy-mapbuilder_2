@@ -18,9 +18,8 @@
 		})
 	);
 
-	let project_markers = $derived<ModalEntity[]>(
-		my_projects.map((project) => {
-			return {
+	let project_markers = $derived<{[id: number]: ModalEntity}>(
+		Object.fromEntries(my_projects.map((project) => [project.id, {
 				image: store.image_public_urls[store.project_images[project.id]]
 					? URL.createObjectURL(store.image_public_urls[store.project_images[project.id]])
 					: '/assets/map_icon.png',
@@ -28,9 +27,9 @@
 				func: () => {
 					goto(`/projects/${project.id}/${project.head_map_id}`);
 				}
-			};
-		})
-	);
+			}]
+		)
+	))
 
 	$effect(() => {
 		if (store.user) {
@@ -45,7 +44,7 @@
 	<h1 id="title">My Projects</h1>
 	<div id="projects_container">
 		<div id="grid">
-			{#each project_markers as entity}
+			{#each Object.entries(project_markers) as [id, entity]}
 				<div
 					class="entity-item"
 					onclick={() => {
@@ -57,7 +56,9 @@
 						<img class="entity-image" src={entity.image} alt={entity.title} />
 					</div>
 					<p>{entity.title}</p>
+					<button id="edit_project" onclick={(e: Event)=>{goto(`/projects/${id}/home`); e.stopPropagation();}}></button>
 				</div>
+				
 			{/each}
 		</div>
 	</div>
@@ -113,21 +114,24 @@
 	}
 
 	.entity-item {
+		position: relative;
 		cursor: pointer;
 		text-align: center;
 		background-color: rgb(47, 47, 47);
 		border-radius: 10px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		align-items: center;
+		
 	}
 
 	.image-container {
 		position: relative;
-		margin: auto;
-		margin-top: 5px;
-		margin-bottom: 0px;
 		width: 80%;
 		height: 250px;
 		overflow: hidden;
-		margin-bottom: 0;
+		margin: 10px;
 	}
 
 	.entity-image {
@@ -145,11 +149,25 @@
 	}
 
 	.entity-item p {
+		position: relative;
 		color: white;
 		font-size: 2rem;
-		margin-top: 0px;
 		font-family: 'Cormorant Garamond', serif;
 		font-style: italic;
+		margin: 10px 0px;
+	}
+
+	#edit_project{
+		position: absolute;
+		top: 10px;
+		height: 20px;
+		right: 10px;
+		aspect-ratio: 1;
+		background-color: transparent;
+		background-image: url('/assets/cog.png');
+		background-size: contain;
+		background-repeat: no-repeat;
+		border: none;
 	}
 
 	#projects_container::-webkit-scrollbar {
@@ -174,6 +192,9 @@
 			width: 87%;
 
 			padding: 20px 50px;
+		}
+		.image-container{
+			height: 150px;
 		}
 	}
 

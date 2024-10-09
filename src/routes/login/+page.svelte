@@ -3,6 +3,7 @@
 	import { supabase } from '$lib/dtb';
 	import { goto } from '$app/navigation';
 	import { store } from '../../store.svelte';
+	import { page } from '$app/stores';
 
 	let email = $state('');
 	let password = $state('');
@@ -32,6 +33,15 @@
 
 	function redirectToSignup() {
 		goto('/signup');
+	}
+
+	async function change_password(){
+		const response = await supabase.auth.resetPasswordForEmail(email, {
+  		redirectTo: `${$page.url.origin}`,
+	})
+		if(response.error){
+			console.error("Failed to reset password: ", response.error)
+		}
 	}
 </script>
 
