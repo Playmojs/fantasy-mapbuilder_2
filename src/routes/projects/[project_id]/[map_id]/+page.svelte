@@ -13,6 +13,7 @@
 	import ConfirmModal from '../../../../components/ConfirmModal.svelte';
 
 	let unsubscribe = page.subscribe(async (value) => {
+		store.markers = [];
 		const map_id = +value.params.map_id;
 		const map = await dtb.get_map(store.project_id, map_id);
 		if (map) {
