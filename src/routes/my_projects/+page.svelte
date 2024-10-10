@@ -36,11 +36,12 @@
 			get_projects();
 		}
 	});
+
 </script>
 
 <main>
 	<Homebar />
-	<button id="add_project_button">New Project</button>
+	<button id="add_project_button" onclick={()=>{goto(`/projects/new_project`);}}>New Project</button>
 	<h1 id="title">My Projects</h1>
 	<div id="projects_container">
 		<div id="grid">

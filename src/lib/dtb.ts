@@ -211,8 +211,8 @@ export default {
         all_fetched_from_project = true;
     },
 
-    async create_and_show_article(title: string = "Untitled") {
-        const response = await supabase.from('article').insert({ project_id: store.project_id, title: title }).select().single();
+    async create_and_show_article(project_id: number, title: string = "Untitled") {
+        const response = await supabase.from('article').insert({ project_id: project_id, title: title }).select().single();
         const { data } = response
         if (response.error) {
             console.error(response);
@@ -220,6 +220,7 @@ export default {
         if (data) {
             store.article_cache[data.id] = data;
             store.article = data;
+            return data;
         }
     },
 
@@ -281,19 +282,23 @@ export default {
         }
     },
 
-    async insert_new_map(image: string, title: string) {
-        await this.create_and_show_article(title);
-        const response = await supabase.from('map').insert({ article_id: store.article.id, image: image, title: title, project_id: store.project_id }).select().single()
+    async insert_new_map(project_id: number, image: string, title: string) {
+        let article = await this.create_and_show_article(project_id, title);
+        if(!article){
+            console.error('Failed to create article, could not produce map'); 
+            return
+        }
+        const response = await supabase.from('map').insert({ article_id: article.id, image: image, title: title, project_id: project_id }).select().single()
         if (response.error) {
             console.error(response);
         } else { return response.data }
     },
 
-    async upload_image(file: File, folder: Folder) {
+    async upload_image(project_id: number, file: File, folder: Folder) {
         const image_id = uuidv4();
         const { error } = await supabase.storage
             .from('project')
-            .upload(`${store.project_id}/${folder}/${image_id}`, file);
+            .upload(`${project_id}/${folder}/${image_id}`, file);
         if (error) {
             console.log(error);
             return;
@@ -301,12 +306,33 @@ export default {
         return image_id;
     },
 
-    async create_new_map(image_file: File, title: string) {
-        let image_id = await this.upload_image(image_file, 'maps');
+    async create_new_map(project_id: number, image_file: File, title: string) {
+        let image_id = await this.upload_image(project_id, image_file, 'maps');
         if (!image_id) { return null; }
-        let data = await this.insert_new_map(image_id, title);
+        let data = await this.insert_new_map(project_id, image_id, title);
         if (!data) { return null; }
         return data
+    },
+
+    async create_new_project(project_title: string, head_map_title: string, head_map_file: File)
+    {
+        let {error, data} = await supabase.from('project').insert({name: project_title}).select().single()
+        if(error || data === null){
+            console.error("Failed to create project"); 
+            return;
+        }
+        let map = await this.create_new_map(data.id, head_map_file, head_map_title)
+        if(map===null){
+            console.error("Failed to create map and project");
+            return;
+        }
+        data.head_map_id = map.id;
+        let response = await supabase.from('project').upsert(data).select().single()
+        if(response.error){
+            console.error("Failed to update project");
+            return
+        }
+        return response.data;
     },
 
     async delete_marker(marker_id: number | null) {
@@ -361,8 +387,3 @@ export default {
         return access;
     }
 }
-// const load_map = async (map_id: number) {
-//get_map
-// set global map to map
-// for all neighboring stuff load if not in cache
-// }

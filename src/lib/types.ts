@@ -45,7 +45,7 @@ export const add_article: ModalEntity =
 {
 	image: "/assets/plus.png",
 	title: "Add Article",
-	func: async () => { await dtb.create_and_show_article() }
+	func: async () => { await dtb.create_and_show_article(store.project_id) }
 }
 
 export type Folder = "maps" | "articles"

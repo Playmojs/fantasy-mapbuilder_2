@@ -21,7 +21,7 @@
 						assert_unreachable("Selected marker doesn't exist");
 						return;
 					}
-					let response = await dtb.create_new_map(file, title);
+					let response = await dtb.create_new_map(store.project_id, file, title);
 					if (response !== null) {
 						selected_marker.target_article_id = null;
 						selected_marker.target_map_id = +response.id;
@@ -44,7 +44,7 @@
 		store.edit_map_window = {
 			submit_func: async(file: File | null, title: string) => {
 				if (file !== null){
-					let image_id = await dtb.upload_image(file, 'maps')
+					let image_id = await dtb.upload_image(store.project_id, file, 'maps')
 					if(!image_id){
 						console.error("Image upload failed");
 						return;

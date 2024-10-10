@@ -18,7 +18,7 @@
 						assert_unreachable("No file selected error"); 
 						return;
 					}
-					let response = await dtb.create_new_map(file, title);
+					let response = await dtb.create_new_map(store.project_id, file, title);
 					if (response !== null) {
 						main_map = response
 					}
