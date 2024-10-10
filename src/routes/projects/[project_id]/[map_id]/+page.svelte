@@ -12,7 +12,14 @@
 	import MapOption from '../../../../components/MapOption.svelte';
 	import ConfirmModal from '../../../../components/ConfirmModal.svelte';
 
+	function reset_modals(){
+		store.modal_data = null;
+		store.edit_map_window = null;
+		store.confirm_modal = null;
+	}
+
 	let unsubscribe = page.subscribe(async (value) => {
+		reset_modals()
 		store.markers = [];
 		const map_id = +value.params.map_id;
 		const map = await dtb.get_map(store.project_id, map_id);

@@ -4,6 +4,7 @@
 	import { assert_unreachable } from "$lib/utils";
 	import ConfirmModal from "../../../../components/ConfirmModal.svelte";
 	import Homebar from "../../../../components/Homebar.svelte";
+	import MapOption from "../../../../components/MapOption.svelte";
 	import Modal from "../../../../components/Modal.svelte";
 	import { store } from "../../../../store.svelte";
 
@@ -126,6 +127,7 @@
     </div>
 </main>
 <Modal close={() => (store.modal_data = null)} modal_data={store.modal_data} />
+<MapOption />
 <ConfirmModal close={() => (store.confirm_modal = null)} />
 
 <style>
