@@ -23,7 +23,7 @@
 						assert_unreachable("No file selected error"); 
 						return;
 					}
-					let response = await dtb.create_new_map(file, title);
+					let response = await dtb.create_new_map(store.project_id, file, title);
 					if (response !== null) {
 						store.map.parent_id = response.id;
 						store.map.parent_image = response.image;
@@ -89,12 +89,12 @@
 
 	let image_source = $state('/assets/parent_plus.png');
 	$effect(() => {
-		if (store.map.parent_image !== null) {
-			if (store.image_public_urls[store.map.parent_image]) {
-				image_source = URL.createObjectURL(store.image_public_urls[store.map.parent_image]);
-			} else {
-				image_source = '/assets/map_icon.png';
-			}
+		if (store.map.parent_id !== null) {
+			dtb.get_map(store.project_id, store.map.parent_id);
+			let parent_image = store.image_public_urls[store.map_cache[store.map.parent_id].image]
+		
+			image_source = parent_image ? URL.createObjectURL(parent_image) : '/assets/map_icon.png';
+			
 		} else {
 			image_source = '/assets/parent_plus.png';
 		}
@@ -108,7 +108,7 @@
 		src={image_source}
 		id="parent_map"
 		class:edit_mode={store.edit_mode}
-		class:hidden={(!store.map.parent_image && !store.edit_mode) || minimized}
+		class:hidden={(store.map.parent_id === null && !store.edit_mode) || minimized}
 		bind:this={parentMap}
 		alt="Parent Map"
 	/>
@@ -116,14 +116,14 @@
 		<button
 			id="hide_map"
 			onclick={()=>{minimized=!minimized}}
-			class:hidden={!store.map.parent_image && !store.edit_mode}
+			class:hidden={store.map.parent_id === null && !store.edit_mode}
 			title="Hide parent map"
 			style={`background-image: url(/assets/${minimized ? 'plus' : 'minus'}.png);`}
 		></button>
 		<button
 			id="edit_map"
 			onclick={changeParentMap}
-			class:hidden={!store.edit_mode || !store.map.parent_image || minimized}
+			class:hidden={!store.edit_mode || store.map.parent_id === null || minimized}
 			title="Add parent map"
 		></button>
 </div>
