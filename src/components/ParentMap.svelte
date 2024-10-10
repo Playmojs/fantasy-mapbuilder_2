@@ -99,49 +99,74 @@
 			image_source = '/assets/parent_plus.png';
 		}
 	});
+
+	let minimized = $state<boolean>(false);
 </script>
 
-<img
-	src={image_source}
-	id="parent_map"
-	class:edit_mode={store.edit_mode}
-	class:hidden={!store.map.parent_image && !store.edit_mode}
-	bind:this={parentMap}
-	alt="Parent Map"
-/>
-<button
-	id="edit_map"
-	onclick={changeParentMap}
-	class:hidden={!store.edit_mode || !store.map.parent_image}
-	title="Add parent map"
->
-</button>
+<div id='parent_map_bundle'>
+	<img
+		src={image_source}
+		id="parent_map"
+		class:edit_mode={store.edit_mode}
+		class:hidden={(!store.map.parent_image && !store.edit_mode) || minimized}
+		bind:this={parentMap}
+		alt="Parent Map"
+	/>
+	<div id='parent_map_buttons'>
+		<button
+			id="hide_map"
+			onclick={()=>{minimized=!minimized}}
+			class:hidden={!store.map.parent_image && !store.edit_mode}
+			title="Hide parent map"
+			style={`background-image: url(/assets/${minimized ? 'plus' : 'minus'}.png);`}
+		></button>
+		<button
+			id="edit_map"
+			onclick={changeParentMap}
+			class:hidden={!store.edit_mode || !store.map.parent_image || minimized}
+			title="Add parent map"
+		></button>
+</div>
+</div>
 
 <style>
-	#parent_map {
+	#parent_map_bundle {
 		position: fixed;
 		top: 50px;
-		right: 85%;
+		left: 0px;
 		width: 15%;
-		height: auto;
+		display: flex;
+		justify-content: start;
+	}
+	#parent_map {
+		position: relative;
+		width: 100%;
 		z-index: 10;
 		cursor: pointer;
 	}
 
-	.hidden {
-		display: none;
+	#parent_map_buttons {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: start;
 	}
 
-	#edit_map {
-		position: fixed;
-		left: 14.5%;
-		top: 50px;
-		width: 3%;
-		height: 3%;
-		background: url('/assets/cog.png') no-repeat center center;
+	#parent_map_buttons > button {
+		position: relative;
+		width: 30px;
+		aspect-ratio: 1;
 		background-size: contain;
 		background-color: transparent;
 		border-color: transparent;
 		cursor: pointer;
+	}
+
+	#edit_map {
+		background: url('/assets/cog.png');
+	}
+
+	.hidden {
+		display: none;
 	}
 </style>

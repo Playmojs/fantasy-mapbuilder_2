@@ -27,7 +27,10 @@
 			const article = await dtb.get_article(store.project_id, id);
 			if (article) {
 				store.article = article;
-				store.informatic_minimized = false;
+				if(store.informatic_minimized){
+					store.informatic_minimized = false;
+					store.informatic_opened_by_marker = true;
+				}
 			}
 		} else if (marker_data.target_map_id !== null) {
 			if (!store.edit_mode || event.ctrlKey) {

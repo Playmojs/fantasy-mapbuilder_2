@@ -86,6 +86,7 @@
 
 	function toggleMinimize() {
 		store.informatic_minimized = !store.informatic_minimized;
+		store.informatic_opened_by_marker = false;
 	}
 
 	async function toggleEditable() {
