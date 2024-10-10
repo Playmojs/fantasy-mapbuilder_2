@@ -268,6 +268,19 @@ export default {
         }
     },
 
+    async update_project(project: Project) {
+        if (store.project_cache[project.id] === project) {
+            return;
+        };
+        const response = await supabase.from('project').upsert(project).select().single()
+        if (response.error) {
+            console.error(response);
+        }
+        if(response.data){
+            store.project_cache[response.data.id] = response.data;
+        }
+    },
+
     async insert_new_map(image: string, title: string) {
         await this.create_and_show_article(title);
         const response = await supabase.from('map').insert({ article_id: store.article.id, image: image, title: title, project_id: store.project_id }).select().single()
