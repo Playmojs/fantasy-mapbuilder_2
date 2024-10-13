@@ -1,9 +1,10 @@
 <script lang="ts">
-	import type { ModalData } from '$lib/types';
+	import type { ChooseModalData } from '$lib/types';
 	import { untrack } from 'svelte';
 	import { store } from '../store.svelte';
 	import EntityGrid from './EntityGrid.svelte';
-	let { modal_data = null, close }: { modal_data: ModalData | null; close: any } = $props();
+
+	let { modal_data, close }: { modal_data: ChooseModalData ; close: any } = $props();
 
 	const handleClose = (e: Event) => {
 		e.stopPropagation();
@@ -13,7 +14,7 @@
 	let current_tab = $state<string>();
 
 	$effect(() => {
-		current_tab = store.modal_data ? Object.keys(store.modal_data)[0] : '';
+		current_tab = Object.keys(modal_data)[0];
 	});
 </script>
 
@@ -35,7 +36,7 @@
 		{/if}
 		<span class="close" on:click={handleClose}>&times;</span>
 		{#if modal_data}
-			<EntityGrid modal_entities={modal_data} {current_tab} />
+			<EntityGrid modal_entities={modal_data} {current_tab} {close} />
 		{/if}
 	</div>
 </div>

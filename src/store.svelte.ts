@@ -1,4 +1,4 @@
-import { type Article, type MapData, type MarkerData, type ModalData, type Project, type MapOptionsData, type ConfirmModal } from "$lib/types";
+import { type Article, type MapData, type MarkerData, type Modal, type Project, type UploadModalData, type ConfirmModalData, type ChooseModalData } from "$lib/types";
 import type { User } from "@supabase/supabase-js";
 import { readable, writable } from "svelte/store";
 
@@ -12,13 +12,17 @@ class Store {
     selected_marker = $state<number | null>(null); // TODO: Could this be a MarkerData instead of an id?
     informatic_width = $state(66);
     text_size = $state(150);
-    modal_data = $state<ModalData | null>(null);
+    modal_data = $state<ChooseModalData | null>(null);
     map_transform = $state({ x: 0, y: 0, scale: 1 });
     user = $state<User | null>(null);
     project_id: number = 0;
     write_access = writable(false);
-    edit_map_window = $state<MapOptionsData | null>(null);
-    confirm_modal = $state<ConfirmModal | null>(null);
+    edit_map_window = $state<UploadModalData | null>(null);
+    confirm_modal = $state<ConfirmModalData | null>(null);
+    modals = $state<Modal[]>([])
+    push_modal = (modal: Modal)=>{this.modals = [...this.modals, modal]}
+    pop_modal = () => {this.modals = this.modals.slice(0, -1)} // TODO: I think this copies the list - can this be avoided?
+    map_article_link=$state<number | null>()
 
     // From database
     map = $state<MapData>(default_map);

@@ -16,6 +16,7 @@
 		store.modal_data = null;
 		store.edit_map_window = null;
 		store.confirm_modal = null;
+		store.modals = [];
 	}
 
 	let unsubscribe = page.subscribe(async (value) => {
@@ -50,6 +51,14 @@
 	<Informatic />
 {/if}
 <Toolbar />
-<Modal close={() => (store.modal_data = null)} modal_data={store.modal_data} />
-<MapOption />
-<ConfirmModal close={() => (store.confirm_modal = null)} />
+
+{#each store.modals as modal (modal)}
+  {#if modal.type === 'upload_modal'}
+    <MapOption modal_data={modal.data} close={()=>{store.pop_modal()}} />
+  {:else if modal.type === 'confirm_modal'}
+    <ConfirmModal modal_data={modal.data} close={()=>{store.pop_modal()}}/>
+  {:else if modal.type === 'choose_modal'}
+    <Modal modal_data={modal.data} close={()=>{store.pop_modal()}}/>
+  {/if}
+{/each}
+ 

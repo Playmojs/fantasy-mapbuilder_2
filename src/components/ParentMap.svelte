@@ -5,7 +5,7 @@
 
 	import { store } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
-	import { type ModalEntity } from '$lib/types';
+	import { no_article_link, type ModalEntity, type ChooseModal } from '$lib/types';
 	import dtb from '$lib/dtb';
 	import { assert_unreachable } from '$lib/utils';
 
@@ -13,17 +13,28 @@
 		parentMap.addEventListener('click', (event) => parent_func(event, store.map.parent_id));
 	});
 
+	const get_link_articles = () => {return Object.entries(store.article_cache).map(([id, article]) => {
+			return {
+				image: article.image ?? '/assets/article_icon.png',
+				title: article.title,
+				func: () => {
+					return article.id;
+				}
+			};
+		})
+	}
+
 	const add_map: ModalEntity = {
 		image: '/assets/plus.png',
 		title: 'Add Map',
 		func: () => {
-			store.edit_map_window = {
+			store.push_modal({type: 'upload_modal', data:{
 				submit_func: async (file: File | null, title: string) => {
 					if(file === null){
 						assert_unreachable("No file selected error"); 
 						return;
 					}
-					let response = await dtb.create_new_map(store.project_id, file, title);
+					let response = await dtb.create_new_map(file, title);
 					if (response !== null) {
 						store.map.parent_id = response.id;
 						store.map.parent_image = response.image;
@@ -33,13 +44,17 @@
 				validation_func(file, title) {
 					return(file !== null && title !== '')
 				},
+				link_func(){
+					store.push_modal({type: 'choose_modal', data: {Articles: [no_article_link].concat(get_link_articles())}})
+				},
 				button_title: 'Create Map',
 				initial_image_blob: null,
 				initial_map_title: '',
+				initial_link: null,
 				allow_no_file: false,
-			};
+			}})
 		}
-	};
+	}
 
 	const getMaps = async () => {
 		await dtb.fetch_all_from_project(store.project_id);
@@ -60,9 +75,9 @@
 
 	async function parent_func(event: MouseEvent | TouchEvent, parent_id: number | null) {
 		if (parent_id === null && store.edit_mode) {
-			store.modal_data = {
-				Maps: [add_map].concat(await getMaps())
-			};
+			store.push_modal({type: 'choose_modal', 
+				data: {Maps: [add_map].concat(await getMaps())
+			}})
 		}
 		if (parent_id !== null && (!store.edit_mode || event.ctrlKey)) {
 			gotoMap(parent_id);
@@ -82,9 +97,9 @@
 	};
 
 	async function changeParentMap() {
-		store.modal_data = {
-			Maps: [remove_map, add_map].concat(await getMaps())
-		};
+		store.push_modal({type: 'choose_modal',
+			data: {Maps: [remove_map, add_map].concat(await getMaps())}
+		})
 	}
 
 	let image_source = $state('/assets/parent_plus.png');

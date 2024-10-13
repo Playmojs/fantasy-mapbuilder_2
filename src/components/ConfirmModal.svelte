@@ -1,7 +1,8 @@
 <script lang="ts">
+	import type { ConfirmModalData } from "$lib/types";
 	import { store } from "../store.svelte";
 
-    let { close }: { close: any } = $props();
+    let { modal_data, close }: { modal_data: ConfirmModalData; close: any } = $props();
 
 	const handleClose = (e: Event) => {
 		e.stopPropagation();
@@ -9,8 +10,7 @@
 	};
 
     async function confirm(){
-        if(store.confirm_modal === null){return}
-        store.confirm_modal.confirm_function()
+        modal_data.confirm_function()
         close()
     }
 
@@ -20,9 +20,9 @@
 
 </script>
 
-<div class="modal" on:click={handleClose} class:hidden={store.confirm_modal === null}>
+<div class="modal" on:click={handleClose}>
 	<div class="modal-content" on:click|stopPropagation>
-        <h1>{store.confirm_modal?.text ?? ''}</h1>
+        <h1>{modal_data.text ?? ''}</h1>
         <div id="buttonrow">
             <button on:click={()=>{confirm()}}>Confirm</button>
             <button on:click={()=>{cancel()}}>Cancel</button>

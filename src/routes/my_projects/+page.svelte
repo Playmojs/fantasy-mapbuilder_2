@@ -49,7 +49,6 @@
 					class="entity-item"
 					onclick={() => {
 						entity.func();
-						store.modal_data = null;
 					}}
 				>
 					<div class="image-container">

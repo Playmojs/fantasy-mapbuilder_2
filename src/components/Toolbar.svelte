@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { add_article, type MapOptionsData, type MapData, type ModalEntity } from '$lib/types';
+	import { add_article, no_article_link, type UploadModalData, type MapData, type ModalEntity } from '$lib/types';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 	import { assert, assert_unreachable } from '$lib/utils';
@@ -7,11 +7,23 @@
 	import MapOption from './MapOption.svelte';
 	import { gotoMap } from '$lib/goto_map';
 
+	const get_link_articles = () => {return Object.entries(store.article_cache).map(([id, article]) => {
+			return {
+				image: article.image ?? '/assets/article_icon.png',
+				title: article.title,
+				func: () => {
+					store.map_article_link = article.id
+				}
+			};
+		})
+	}
+
+
 	const add_map: ModalEntity = {
 		image: '/assets/plus.png',
 		title: 'Add Map',
 		func: () => {
-			store.edit_map_window = {
+			store.push_modal({type: 'upload_modal', data:{
 				submit_func: async (file: File | null, title: string) => {
 					if (file === null){return;}
 					const selected_marker = store.markers.find(
@@ -32,16 +44,20 @@
 				validation_func(file, title) {
 					return(file !== null && title !== '')
 				},
+				link_func(){
+					store.push_modal({type: 'choose_modal', data: {Articles: [no_article_link].concat(get_link_articles())}})
+				},
 				button_title: 'Create map',
 				initial_map_title: '',
 				initial_image_blob: null,
+				initial_link: null,
 				allow_no_file: false,
-			};
+			}})
 		}
 	};
 
 	async function open_edit_map_modal(){
-		store.edit_map_window = {
+		store.push_modal({type: 'upload_modal', data: {
 			submit_func: async(file: File | null, title: string) => {
 				if (file !== null){
 					let image_id = await dtb.upload_image(file, 'maps')
@@ -61,15 +77,20 @@
 			validation_func(file, title) {
 				return(file !== null && title !== '' && !(!(file instanceof File) && title === store.map.title))
 			},
+			link_func(){
+				store.push_modal({type: 'choose_modal', data: {Articles: get_link_articles()}})
+			},
 			button_title: "Update Map",
 			initial_map_title: store.map.title,
 			initial_image_blob: store.image_public_urls[store.map.image]??null,
+			initial_link: store.map.article_id,
 			allow_no_file: false,
 		}
+	})
 	}
 
 	async function confirm_delete_map(){
-		store.confirm_modal = {
+		store.push_modal({type: 'confirm_modal', data: {
 			confirm_function: async() => {
 				dtb.delete_map(store.map)
 				if (store.map.parent_id !== null){gotoMap(store.map.parent_id)}
@@ -81,7 +102,7 @@
 			}
 			},
 			text: "Are you sure you want to delete this map (this cannot be undone)?"
-		}
+		}})
 	}
 
 	function toggleMinimize() {
@@ -116,7 +137,7 @@
 			'Marker has both article_id and map_id'
 		);
 
-		store.modal_data = {
+		store.push_modal({type: 'choose_modal', data: {
 			Maps: [add_map].concat(
 				Object.entries(store.map_cache).map(([id, map]) => {
 					return {
@@ -150,7 +171,7 @@
 					};
 				})
 			)
-		};
+		}})
 	}
 
 	let edit_visible: boolean;

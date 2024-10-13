@@ -4,6 +4,7 @@
 
 	export let modal_entities: { [modal_tab: string]: ModalEntity[] } = {};
 	export let current_tab = 'Articles';
+	export let close: () => void;
 </script>
 
 <div id="grid-container">
@@ -12,8 +13,8 @@
 			<div
 				class="entity-item"
 				onclick={() => {
+					close();
 					entity.func();
-					store.modal_data = null;
 				}}
 			>
 				<div class="image-container">

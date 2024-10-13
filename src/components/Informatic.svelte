@@ -67,7 +67,7 @@
 	}
 
 	async function change_article_image(){
-		store.edit_map_window = {
+		store.push_modal({type: 'upload_modal', data:{
 			submit_func: async(file: File | null, title: string) => {
 				if (file === null){
 					store.article.image = null;
@@ -80,21 +80,21 @@
 					}
 					store.image_public_urls[image_id] = file;
 					store.article.image = image_id;
-				}
-				
-				await dtb.update_article(store.article)
-
+				}	
+				await dtb.update_article(store.article);
 				return;
 			},
 			validation_func(file, title) {
 				return (file instanceof File || (file === null && store.article.image !== null))
 			},
+			link_func: null,
 			button_title: "Update Article Image",
 			initial_map_title: null,
 			initial_image_blob: store.article.image !== null ? store.image_public_urls[store.article.image] ?? null : null,
+			initial_link: null,
 			allow_no_file: true,
 		}
-	}
+	})}
 
 	let image_source = $state('');
 	$effect(() => {
