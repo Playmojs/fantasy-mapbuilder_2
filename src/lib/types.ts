@@ -18,18 +18,19 @@ export type MapData = Database["public"]["Tables"]["map"]["Row"];
 export type Article = Database["public"]["Tables"]["article"]["Row"];
 export type Project = Database["public"]["Tables"]["project"]["Row"];
 
-export type ModalEntity = {
+export type ModalEntity<TResult> = {
 	image: string | null;
 	title: string;
-	func: () => void;
+	on_result: () => TResult | void;
+	on_reject?: () => void;
 }
 
 export type ModalType = 'upload_modal' | 'choose_modal' | 'confirm_modal'
 
-export type UploadModalData = {
+export type UploadModalData<TResult> = {
 	submit_func: (file: File | null, title: string) => void;
 	validation_func: (file: File | Blob | null, title: string) => boolean;
-	link_func: (() => void) | null;
+	link_func: (() => Promise<number | null | undefined>) | null;
 	button_title: string;
 	initial_map_title: string | null;
 	initial_image_blob: Blob | null;
@@ -37,9 +38,10 @@ export type UploadModalData = {
 	allow_no_file: boolean;
 };
 
-export type UploadModal = {
-	type: "upload_modal",
-	data: UploadModalData
+export type UploadModal<TResult> = {
+	type: "upload_modal";
+	on_close?: (success: boolean) => void;
+	data: UploadModalData<TResult>;
 }
 
 export type ConfirmModalData = {
@@ -49,30 +51,32 @@ export type ConfirmModalData = {
 
 export type ConfirmModal = {
 	type: "confirm_modal";
+	on_close?: (success: boolean) => void;
 	data: ConfirmModalData;
 }
 
-export type ChooseModalData ={ [modal_tab: string]: ModalEntity[]; };
+export type ChooseModalData<TResult> = { [modal_tab: string]: ModalEntity<TResult>[]; };
 
 
-export type ChooseModal = {
-	type: 'choose_modal',
-	data: ChooseModalData
+export type ChooseModal<TResult> = {
+	type: 'choose_modal';
+	on_close?: (success: boolean, result?: any) => void;
+	data: ChooseModalData<TResult>;
 }
 
-export const add_article: ModalEntity =
+export const add_article: ModalEntity<void> =
 {
 	image: "/assets/plus.png",
 	title: "Add Article",
-	func: async () => { await dtb.create_and_show_article();}
+	on_result: async () => { await dtb.create_and_show_article(); }
 }
 
-export const no_article_link: ModalEntity =
+export const no_article_link: ModalEntity<null | number> =
 {
 	image: "/assets/minus.png",
 	title: "Don't Link To Article",
-	func: () => {store.map_article_link = null;}
+	on_result: () => { return null; }
 }
 
 export type Folder = "maps" | "articles"
-export type Modal = ChooseModal | UploadModal | ConfirmModal
+export type Modal<TResult> = ChooseModal<TResult> | UploadModal<TResult> | ConfirmModal

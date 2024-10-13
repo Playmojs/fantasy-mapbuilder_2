@@ -4,7 +4,15 @@
 	import { store } from '../store.svelte';
 	import EntityGrid from './EntityGrid.svelte';
 
-	let { modal_data, close }: { modal_data: ChooseModalData ; close: any } = $props();
+	let {
+		modal_data,
+		close,
+		on_close
+	}: {
+		modal_data: ChooseModalData<Number | null>;
+		close: any;
+		on_close: ((success: boolean, result?: any) => void) | undefined;
+	} = $props();
 
 	const handleClose = (e: Event) => {
 		e.stopPropagation();
@@ -36,7 +44,7 @@
 		{/if}
 		<span class="close" on:click={handleClose}>&times;</span>
 		{#if modal_data}
-			<EntityGrid modal_entities={modal_data} {current_tab} {close} />
+			<EntityGrid modal_entities={modal_data} {current_tab} {close} {on_close} />
 		{/if}
 	</div>
 </div>

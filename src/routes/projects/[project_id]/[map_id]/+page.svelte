@@ -9,10 +9,10 @@
 	import { page } from '$app/stores';
 	import dtb from '$lib/dtb';
 	import { onDestroy } from 'svelte';
-	import MapOption from '../../../../components/MapOption.svelte';
 	import ConfirmModal from '../../../../components/ConfirmModal.svelte';
+	import MapOption from '../../../../components/MapOption.svelte';
 
-	function reset_modals(){
+	function reset_modals() {
 		store.modal_data = null;
 		store.edit_map_window = null;
 		store.confirm_modal = null;
@@ -20,7 +20,7 @@
 	}
 
 	let unsubscribe = page.subscribe(async (value) => {
-		reset_modals()
+		reset_modals();
 		store.markers = [];
 		const map_id = +value.params.map_id;
 		const map = await dtb.get_map(store.project_id, map_id);
@@ -53,12 +53,28 @@
 <Toolbar />
 
 {#each store.modals as modal (modal)}
-  {#if modal.type === 'upload_modal'}
-    <MapOption modal_data={modal.data} close={()=>{store.pop_modal()}} />
-  {:else if modal.type === 'confirm_modal'}
-    <ConfirmModal modal_data={modal.data} close={()=>{store.pop_modal()}}/>
-  {:else if modal.type === 'choose_modal'}
-    <Modal modal_data={modal.data} close={()=>{store.pop_modal()}}/>
-  {/if}
+	{#if modal.type === 'upload_modal'}
+		<MapOption
+			modal_data={modal.data}
+			close={() => {
+				store.pop_modal();
+			}}
+			on_close={modal.on_close}
+		/>
+	{:else if modal.type === 'confirm_modal'}
+		<ConfirmModal
+			modal_data={modal.data}
+			close={() => {
+				store.pop_modal();
+			}}
+		/>
+	{:else if modal.type === 'choose_modal'}
+		<Modal
+			modal_data={modal.data}
+			close={() => {
+				store.pop_modal();
+			}}
+			on_close={modal.on_close}
+		/>
+	{/if}
 {/each}
- 

@@ -4,16 +4,17 @@
 		no_article_link,
 		type UploadModalData,
 		type MapData,
-		type ModalEntity
+		type ModalEntity,
+		type UploadModal
 	} from '$lib/types';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
-	import MapOption from './MapOption.svelte';
 	import { gotoMap } from '$lib/goto_map';
+	import { push_promise_modal } from '$lib/modal_manager';
 
-	const get_link_articles = () => {
+	const get_link_articles: () => ModalEntity<number>[] = () => {
 		return Object.entries(store.article_cache).map(([id, article]) => {
 			return {
 				image:
@@ -21,55 +22,58 @@
 						? URL.createObjectURL(store.image_public_urls[article.image])
 						: '/assets/article_icon.png',
 				title: article.title,
-				func: () => {
-					store.map_article_link = article.id;
+				on_result: () => {
+					return article.id;
 				}
 			};
 		});
 	};
 
-	const add_map: ModalEntity = {
+	let upload_modal: UploadModal<void> = {
+		type: 'upload_modal',
+		data: {
+			submit_func: async (file: File | null, title: string) => {
+				if (file === null) {
+					return;
+				}
+				const selected_marker = store.markers.find((marker) => marker.id === store.selected_marker);
+				if (selected_marker === undefined) {
+					assert_unreachable("Selected marker doesn't exist");
+					return;
+				}
+				let response = await dtb.create_new_map(file, title);
+				if (response !== null) {
+					selected_marker.target_article_id = null;
+					selected_marker.target_map_id = +response.id;
+					dtb.update_marker(selected_marker);
+					gotoMap(response.id);
+				}
+			},
+			validation_func(file: File | Blob | null, title: string) {
+				return file !== null && title !== '';
+			},
+			link_func: async () => {
+				const result = await push_promise_modal<number | null>({
+					type: 'choose_modal',
+					data: { Articles: [no_article_link].concat(get_link_articles()) }
+				});
+				if (typeof result === 'number' || result === null) {
+					return result;
+				}
+			},
+			button_title: 'Create map',
+			initial_map_title: '',
+			initial_image_blob: null,
+			initial_link: null,
+			allow_no_file: false
+		}
+	};
+
+	const add_map: ModalEntity<void> = {
 		image: '/assets/plus.png',
 		title: 'Add Map',
-		func: () => {
-			store.push_modal({
-				type: 'upload_modal',
-				data: {
-					submit_func: async (file: File | null, title: string) => {
-						if (file === null) {
-							return;
-						}
-						const selected_marker = store.markers.find(
-							(marker) => marker.id === store.selected_marker
-						);
-						if (selected_marker === undefined) {
-							assert_unreachable("Selected marker doesn't exist");
-							return;
-						}
-						let response = await dtb.create_new_map(file, title);
-						if (response !== null) {
-							selected_marker.target_article_id = null;
-							selected_marker.target_map_id = +response.id;
-							dtb.update_marker(selected_marker);
-							gotoMap(response.id);
-						}
-					},
-					validation_func(file, title) {
-						return file !== null && title !== '';
-					},
-					link_func() {
-						store.push_modal({
-							type: 'choose_modal',
-							data: { Articles: [no_article_link].concat(get_link_articles()) }
-						});
-					},
-					button_title: 'Create map',
-					initial_map_title: '',
-					initial_image_blob: null,
-					initial_link: null,
-					allow_no_file: false
-				}
-			});
+		on_result: () => {
+			return push_promise_modal<void>(upload_modal);
 		}
 	};
 
@@ -92,13 +96,19 @@
 
 					return;
 				},
-				validation_func(file, title) {
+				validation_func(file: File | Blob | null, title: string) {
 					return (
 						file !== null && title !== '' && !(!(file instanceof File) && title === store.map.title)
 					);
 				},
-				link_func() {
-					store.push_modal({ type: 'choose_modal', data: { Articles: get_link_articles() } });
+				link_func: async () => {
+					const result = await push_promise_modal<number | null>({
+						type: 'choose_modal',
+						data: { Articles: get_link_articles() }
+					});
+					if (typeof result === 'number' || result === null) {
+						return result;
+					}
 				},
 				button_title: 'Update Map',
 				initial_map_title: store.map.title,
@@ -169,7 +179,7 @@
 						return {
 							image: URL.createObjectURL(store.image_public_urls[map.image]),
 							title: map.title,
-							func: () => {
+							on_result: () => {
 								if (store.selected_marker === null) {
 									return;
 								}
@@ -188,7 +198,7 @@
 									? URL.createObjectURL(store.image_public_urls[article.image])
 									: '/assets/article_icon.png',
 							title: article.title,
-							func: () => {
+							on_result: () => {
 								if (store.selected_marker === null) {
 									return;
 								}

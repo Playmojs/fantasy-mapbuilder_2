@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { UploadModalData} from '$lib/types';
+	import type { UploadModalData } from '$lib/types';
 	import { onDestroy, onMount, untrack } from 'svelte';
 	import { store } from '../store.svelte';
 	import EntityGrid from './EntityGrid.svelte';
@@ -7,7 +7,15 @@
 	import { gotoMap } from '$lib/goto_map';
 	import { assert_unreachable } from '$lib/utils';
 
-	let { modal_data, close }: { modal_data: UploadModalData; close: any } = $props();
+	let {
+		modal_data,
+		close,
+		on_close
+	}: {
+		modal_data: UploadModalData<void>;
+		close: any;
+		on_close: ((success: boolean, result?: any) => void) | undefined;
+	} = $props();
 
 	function update_title() {
 		if (!title_input) {
@@ -28,15 +36,16 @@
 			return;
 		}
 		modal_data.submit_func(file instanceof File ? file : null, map_title);
+		if (on_close !== undefined) {
+			on_close(true, null);
+		}
 		close();
 	};
 
 	const handle_file_change = () => {
 		file =
 			file_input.files?.[0] ??
-			(!modal_data.allow_no_file
-				? modal_data.initial_image_blob ?? null
-				: null);
+			(!modal_data.allow_no_file ? modal_data.initial_image_blob ?? null : null);
 	};
 
 	let title_input: HTMLInputElement;
@@ -46,7 +55,7 @@
 	let file = $state<File | Blob | null>(modal_data.initial_image_blob ?? null);
 	let file_preview = $derived<string | null>(file !== null ? URL.createObjectURL(file) : null);
 
-	store.map_article_link = modal_data.initial_link
+	let link_id = $state<number | null>(modal_data.initial_link);
 	$effect(() => {
 		file = modal_data.initial_image_blob ?? null;
 		map_title = modal_data.initial_map_title ?? '';
@@ -81,8 +90,18 @@
 			/>
 			{#if modal_data.link_func !== null}
 				<div id="link_row">
-					<p>{`Linked article: ${typeof store.map_article_link === 'number' ? store.article_cache[store.map_article_link]?.title : 'unknown'}`}</p>
-					<button id='link_button' type='button' on:click|stopPropagation={modal_data.link_func}>Link Article</button>
+					<p>
+						{`Linked article: ${typeof link_id === 'number' ? store.article_cache[link_id]?.title : 'unknown'}`}
+					</p>
+					<button
+						id="link_button"
+						type="button"
+						on:click|stopPropagation={async () => {
+							if (modal_data.link_func) {
+								link_id = (await modal_data.link_func()) ?? null;
+							}
+						}}>Link Article</button
+					>
 				</div>
 			{/if}
 			<button
@@ -112,10 +131,6 @@
 		height: 100%;
 		background: rgba(0, 0, 0, 0.5);
 		z-index: 1000;
-	}
-
-	.modal.hidden {
-		display: none;
 	}
 
 	.modal-content {
@@ -169,7 +184,7 @@
 		font-size: 1rem;
 	}
 
-	#link_row{
+	#link_row {
 		position: relative;
 		display: flex;
 		justify-content: space-around;
@@ -179,7 +194,7 @@
 		font-size: 1.2rem;
 	}
 
-	#link_button{
+	#link_button {
 		width: 40%;
 		height: fit-content;
 		padding: 10px;

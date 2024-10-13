@@ -18,18 +18,22 @@
 		})
 	);
 
-	let project_markers = $derived<{[id: number]: ModalEntity}>(
-		Object.fromEntries(my_projects.map((project) => [project.id, {
-				image: store.image_public_urls[store.project_images[project.id]]
-					? URL.createObjectURL(store.image_public_urls[store.project_images[project.id]])
-					: '/assets/map_icon.png',
-				title: project.name,
-				func: () => {
-					goto(`/projects/${project.id}/${project.head_map_id}`);
+	let project_markers = $derived<{ [id: number]: ModalEntity }>(
+		Object.fromEntries(
+			my_projects.map((project) => [
+				project.id,
+				{
+					image: store.image_public_urls[store.project_images[project.id]]
+						? URL.createObjectURL(store.image_public_urls[store.project_images[project.id]])
+						: '/assets/map_icon.png',
+					title: project.name,
+					on_result: () => {
+						goto(`/projects/${project.id}/${project.head_map_id}`);
+					}
 				}
-			}]
+			])
 		)
-	))
+	);
 
 	$effect(() => {
 		if (store.user) {
@@ -48,16 +52,21 @@
 				<div
 					class="entity-item"
 					onclick={() => {
-						entity.func();
+						entity.on_result();
 					}}
 				>
 					<div class="image-container">
 						<img class="entity-image" src={entity.image} alt={entity.title} />
 					</div>
 					<p>{entity.title}</p>
-					<button id="edit_project" onclick={(e: Event)=>{goto(`/projects/${id}/home`); e.stopPropagation();}}></button>
+					<button
+						id="edit_project"
+						onclick={(e: Event) => {
+							goto(`/projects/${id}/home`);
+							e.stopPropagation();
+						}}
+					></button>
 				</div>
-				
 			{/each}
 		</div>
 	</div>
@@ -122,7 +131,6 @@
 		flex-direction: column;
 		justify-content: space-around;
 		align-items: center;
-		
 	}
 
 	.image-container {
@@ -156,7 +164,7 @@
 		margin: 10px 0px;
 	}
 
-	#edit_project{
+	#edit_project {
 		position: absolute;
 		top: 10px;
 		height: 20px;
@@ -192,7 +200,7 @@
 
 			padding: 20px 50px;
 		}
-		.image-container{
+		.image-container {
 			height: 150px;
 		}
 	}

@@ -1,10 +1,28 @@
 <script lang="ts">
 	import { type ModalEntity } from '$lib/types';
+	import { assert_unreachable } from '$lib/utils';
 	import { store } from '../store.svelte';
 
-	export let modal_entities: { [modal_tab: string]: ModalEntity[] } = {};
+	export let modal_entities: { [modal_tab: string]: ModalEntity<Number | null | Promise<void>>[] } =
+		{};
 	export let current_tab = 'Articles';
 	export let close: () => void;
+	export let on_close: ((success: boolean, result?: any) => void) | undefined;
+
+	async function handle_entity_click(entity: ModalEntity<Number | null | Promise<void>>) {
+		const result = await entity.on_result();
+		if (result !== undefined) {
+			if (!on_close) {
+				assert_unreachable('On close not defined for promise modal');
+				close();
+				return;
+			}
+			on_close(true, result);
+			close();
+		} else {
+			close();
+		}
+	}
 </script>
 
 <div id="grid-container">
@@ -13,8 +31,7 @@
 			<div
 				class="entity-item"
 				onclick={() => {
-					close();
-					entity.func();
+					handle_entity_click(entity);
 				}}
 			>
 				<div class="image-container">

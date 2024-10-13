@@ -8,12 +8,13 @@
 	import { no_article_link, type ModalEntity, type ChooseModal } from '$lib/types';
 	import dtb from '$lib/dtb';
 	import { assert_unreachable } from '$lib/utils';
+	import { push_promise_modal } from '$lib/modal_manager';
 
 	onMount(() => {
 		parentMap.addEventListener('click', (event) => parent_func(event, store.map.parent_id));
 	});
 
-	const get_link_articles = () => {
+	const get_link_articles: () => ModalEntity<number>[] = () => {
 		return Object.entries(store.article_cache).map(([id, article]) => {
 			return {
 				image:
@@ -21,17 +22,17 @@
 						? URL.createObjectURL(store.image_public_urls[article.image])
 						: '/assets/article_icon.png',
 				title: article.title,
-				func: () => {
+				on_result: () => {
 					return article.id;
 				}
 			};
 		});
 	};
 
-	const add_map: ModalEntity = {
+	const add_map: ModalEntity<void> = {
 		image: '/assets/plus.png',
 		title: 'Add Map',
-		func: () => {
+		on_result: () => {
 			store.push_modal({
 				type: 'upload_modal',
 				data: {
@@ -47,14 +48,17 @@
 							dtb.update_map(store.map);
 						}
 					},
-					validation_func(file, title) {
+					validation_func(file: Blob | File | null, title: string) {
 						return file !== null && title !== '';
 					},
-					link_func() {
-						store.push_modal({
+					link_func: async () => {
+						const result = await push_promise_modal<number | null>({
 							type: 'choose_modal',
 							data: { Articles: [no_article_link].concat(get_link_articles()) }
 						});
+						if (typeof result === 'number' || result === null) {
+							return result;
+						}
 					},
 					button_title: 'Create Map',
 					initial_image_blob: null,
@@ -72,7 +76,7 @@
 			return {
 				image: URL.createObjectURL(store.image_public_urls[map.image]),
 				title: map.title,
-				func: () => {
+				on_result: () => {
 					store.map.parent_id = map.id;
 					store.map.parent_image = map.image;
 					dtb.update_map(store.map);
@@ -91,10 +95,10 @@
 		}
 	}
 
-	let remove_map: ModalEntity = {
+	let remove_map: ModalEntity<void> = {
 		image: '/assets/minus.png',
 		title: 'Remove Map',
-		func: () => {
+		on_result: () => {
 			if (store.map) {
 				store.map.parent_id = null;
 				store.map.parent_image = null;
@@ -114,9 +118,10 @@
 	$effect(() => {
 		if (store.map.parent_id !== null) {
 			dtb.get_map(store.project_id, store.map.parent_id);
-			let parent_image = store.image_public_urls[store.map_cache[store.map.parent_id].image];
 
-			image_source = parent_image ? URL.createObjectURL(parent_image) : '/assets/map_icon.png';
+			image_source = store.image_public_urls[store.map_cache[store.map.parent_id]?.image]
+				? URL.createObjectURL(store.image_public_urls[store.map_cache[store.map.parent_id].image])
+				: '/assets/map_icon.png';
 		} else {
 			image_source = '/assets/parent_plus.png';
 		}
