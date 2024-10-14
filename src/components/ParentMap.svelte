@@ -5,68 +5,32 @@
 
 	import { store } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
-	import { no_article_link, type ModalEntity, type ChooseModal } from '$lib/types';
+	import { type ModalEntity, type ChooseModal, type ChooseModalData } from '$lib/types';
 	import dtb from '$lib/dtb';
-	import { assert_unreachable } from '$lib/utils';
-	import { push_promise_modal } from '$lib/modal_manager';
-
+	import { choose_existing_map, get_new_map_data, push_modal, push_promise_modal } from '$lib/modal_manager';
+	
 	onMount(() => {
 		parentMap.addEventListener('click', (event) => parent_func(event, store.map.parent_id));
 	});
 
-	const get_link_articles: () => ModalEntity<number>[] = () => {
-		return Object.entries(store.article_cache).map(([id, article]) => {
-			return {
-				image:
-					article.image && store.image_public_urls[article.image]
-						? URL.createObjectURL(store.image_public_urls[article.image])
-						: '/assets/article_icon.png',
-				title: article.title,
-				on_result: () => {
-					return article.id;
-				}
-			};
-		});
-	};
+	const choose_parent_map_wrapper = async (entities: ModalEntity<number | null | void>[]) => {
+		const result = await push_promise_modal({type: 'choose_modal', data: {Maps: entities}})
+		if(result === undefined){return}
+		store.map.parent_id = result;
+		dtb.update_map(store.map)
+	}
 
 	const add_map: ModalEntity<void> = {
 		image: '/assets/plus.png',
 		title: 'Add Map',
-		on_result: () => {
-			store.push_modal({
-				type: 'upload_modal',
-				data: {
-					submit_func: async (file: File | null, title: string) => {
-						if (file === null) {
-							assert_unreachable('No file selected error');
-							return;
-						}
-						let response = await dtb.create_new_map(file, title);
-						if (response !== null) {
-							store.map.parent_id = response.id;
-							store.map.parent_image = response.image;
-							dtb.update_map(store.map);
-						}
-					},
-					validation_func(file: Blob | File | null, title: string) {
-						return file !== null && title !== '';
-					},
-					link_func: async () => {
-						const result = await push_promise_modal<number | null>({
-							type: 'choose_modal',
-							data: { Articles: [no_article_link].concat(get_link_articles()) }
-						});
-						if (typeof result === 'number' || result === null) {
-							return result;
-						}
-					},
-					button_title: 'Create Map',
-					initial_image_blob: null,
-					initial_map_title: '',
-					initial_link: null,
-					allow_no_file: false
-				}
-			});
+		on_result: async () => {
+			let map_info = await get_new_map_data()
+			if (map_info === undefined || map_info.file === null || map_info.title === '') {return}
+							
+			let response = await dtb.create_new_map(map_info.file, map_info.title, map_info.article_id);
+			if (response !== null) {
+				return response.id
+			}
 		}
 	};
 
@@ -77,9 +41,7 @@
 				image: URL.createObjectURL(store.image_public_urls[map.image]),
 				title: map.title,
 				on_result: () => {
-					store.map.parent_id = map.id;
-					store.map.parent_image = map.image;
-					dtb.update_map(store.map);
+					return map.id
 				}
 			};
 		});
@@ -88,30 +50,23 @@
 
 	async function parent_func(event: MouseEvent | TouchEvent, parent_id: number | null) {
 		if (parent_id === null && store.edit_mode) {
-			store.push_modal({ type: 'choose_modal', data: { Maps: [add_map].concat(await getMaps()) } });
+			choose_parent_map_wrapper([add_map].concat(await choose_existing_map()))
 		}
 		if (parent_id !== null && (!store.edit_mode || event.ctrlKey)) {
 			gotoMap(parent_id);
 		}
 	}
 
-	let remove_map: ModalEntity<void> = {
+	let remove_map: ModalEntity<null | number | void> = {
 		image: '/assets/minus.png',
 		title: 'Remove Map',
 		on_result: () => {
-			if (store.map) {
-				store.map.parent_id = null;
-				store.map.parent_image = null;
-				dtb.update_map(store.map);
-			}
+			return null
 		}
 	};
 
 	async function changeParentMap() {
-		store.push_modal({
-			type: 'choose_modal',
-			data: { Maps: [remove_map, add_map].concat(await getMaps()) }
-		});
+		choose_parent_map_wrapper([remove_map, add_map].concat(await getMaps()))
 	}
 
 	let image_source = $state('/assets/parent_plus.png');

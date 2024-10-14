@@ -1,60 +1,40 @@
 <script lang="ts">
 	import dtb from '$lib/dtb';
+	import { choose_existing_map, get_new_map_data, pop_modal, push_modal, push_promise_modal } from '$lib/modal_manager';
 	import { type MapData, type Project, type ModalEntity } from '$lib/types';
 	import { assert_unreachable } from '$lib/utils';
 	import ConfirmModal from '../../../../components/ConfirmModal.svelte';
 	import Homebar from '../../../../components/Homebar.svelte';
+	import MapOption from '../../../../components/MapOption.svelte';
 	import Modal from '../../../../components/Modal.svelte';
 	import { store } from '../../../../store.svelte';
 
-	// const add_map: ModalEntity = {
+	let project = $state<Project>();
+	let main_map = $state<MapData>();
+
+	// const add_map: ModalEntity<void> = {
 	// 	image: '/assets/plus.png',
 	// 	title: 'Add Map',
-	// 	func: () => {
-	// 		store.edit_map_window = {
-	// 			submit_func: async (file: File | null, title: string) => {
-	// 				if(file === null){
-	// 					assert_unreachable("No file selected error");
-	// 					return;
-	// 				}
-	// 				let response = await dtb.create_new_map(file, title);
-	// 				if (response !== null) {
-	// 					main_map = response
-	// 				}
-	// 			},
-	// 			validation_func(file, title) {
-	// 				return(file !== null && title !== '')
-	// 			},
-	// 			button_title: 'Create Map',
-	// 			initial_image_blob: null,
-	// 			initial_map_title: '',
-	// 			allow_no_file: false,
-	// 		};
+	// 	on_result: async () => {
+	// 		let map_info = await get_new_map_data()
+	// 		if (map_info === undefined || map_info.file === null || map_info.title === '') {return}
+							
+	// 		let response = await dtb.create_new_map(map_info.file, map_info.title, map_info.article_id);
+	// 		if (response !== null) {
+	// 			return response.id
+	// 		}
 	// 	}
 	// };
 
-	const getMaps = async () => {
-		await dtb.fetch_all_from_project(store.project_id);
-		const maps = Object.entries(store.map_cache).map(([_, map]) => {
-			return {
-				image: URL.createObjectURL(store.image_public_urls[map.image]),
-				title: map.title,
-				func: () => {
-					main_map = map;
-				}
-			};
-		});
-		return maps;
-	};
-
-	async function change_head_map() {
-		// store.modal_data = {
-		// 	Maps: [add_map].concat(await getMaps())
-		// };
+	const change_main_map = async () => {
+		if (!project){return}
+		await dtb.fetch_all_from_project(project.id)
+		const response = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_existing_map()}})
+		if(!response){return}
+		else{
+			main_map = store.map_cache[response]
+		}
 	}
-
-	let project = $state<Project>();
-	let main_map = $state<MapData>();
 
 	async function get_data() {
 		project = await dtb.get_project(store.project_id);
@@ -82,12 +62,12 @@
 		if (!project) {
 			return;
 		}
-		store.confirm_modal = {
+		push_modal({type: 'confirm_modal', data: {
 			text: "(Not yet implemented, don't worry) Are you sure you want to delete?",
 			confirm_function() {
 				console.log('mock-delete');
 			}
-		};
+		}})
 	}
 
 	let project_title = $state<string>('');
@@ -137,7 +117,7 @@
 			</div>
 			<div id="head_map">
 				<p id="head_map_label">{`Main Map: ${main_map?.title ?? ''}`}</p>
-				<button id="change_head_map_button" onclick={change_head_map}>Change</button>
+				<button id="change_head_map_button" onclick={change_main_map}>Change</button>
 			</div>
 			<div id="execute_buttons">
 				<button id="delete_button" onclick={confirm_delete}>Delete Project</button>
@@ -146,6 +126,34 @@
 		</div>
 	</div>
 </main>
+
+{#each store.modals as modal (modal)}
+	{#if modal.type === 'upload_modal'}
+		<MapOption
+			modal_data={modal.data}
+			close={() => {
+				pop_modal();
+			}}
+			on_close={modal.on_close}
+		/>
+	{:else if modal.type === 'confirm_modal'}
+		<ConfirmModal
+			modal_data={modal.data}
+			close={() => {
+				pop_modal();
+			}}
+		/>
+	{:else if modal.type === 'choose_modal'}
+		<Modal
+			modal_data={modal.data}
+			close={() => {
+				pop_modal();
+			}}
+			on_close={modal.on_close}
+		/>
+	{/if}
+{/each}
+
 
 <!-- <Modal close={() => (store.modal_data = null)} modal_data={store.modal_data} />
 <MapOption />

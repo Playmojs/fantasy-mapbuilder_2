@@ -3,13 +3,13 @@
 	import { assert_unreachable } from '$lib/utils';
 	import { store } from '../store.svelte';
 
-	export let modal_entities: { [modal_tab: string]: ModalEntity<Number | null | Promise<void>>[] } =
+	export let modal_entities: { [modal_tab: string]: ModalEntity<any>[] } =
 		{};
 	export let current_tab = 'Articles';
 	export let close: () => void;
 	export let on_close: ((success: boolean, result?: any) => void) | undefined;
 
-	async function handle_entity_click(entity: ModalEntity<Number | null | Promise<void>>) {
+	async function handle_entity_click(entity: ModalEntity<any>) {
 		const result = await entity.on_result();
 		if (result !== undefined) {
 			if (!on_close) {

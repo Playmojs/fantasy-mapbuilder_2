@@ -1,10 +1,6 @@
 <script lang="ts">
 	import type { UploadModalData } from '$lib/types';
-	import { onDestroy, onMount, untrack } from 'svelte';
 	import { store } from '../store.svelte';
-	import EntityGrid from './EntityGrid.svelte';
-	import dtb, { supabase } from '$lib/dtb';
-	import { gotoMap } from '$lib/goto_map';
 	import { assert_unreachable } from '$lib/utils';
 
 	let {
@@ -12,7 +8,7 @@
 		close,
 		on_close
 	}: {
-		modal_data: UploadModalData<void>;
+		modal_data: UploadModalData<any>;
 		close: any;
 		on_close: ((success: boolean, result?: any) => void) | undefined;
 	} = $props();
@@ -35,9 +31,9 @@
 			close();
 			return;
 		}
-		modal_data.submit_func(file instanceof File ? file : null, map_title);
-		if (on_close !== undefined) {
-			on_close(true, null);
+		const result = modal_data.submit_func(file instanceof File ? file : null, map_title, link_id);
+		if (on_close !== undefined && result !== undefined) {
+			on_close(true, result);
 		}
 		close();
 	};

@@ -28,7 +28,7 @@ export type ModalEntity<TResult> = {
 export type ModalType = 'upload_modal' | 'choose_modal' | 'confirm_modal'
 
 export type UploadModalData<TResult> = {
-	submit_func: (file: File | null, title: string) => void;
+	submit_func: (file: File | null, title: string, article_id: number | null) => TResult | void;
 	validation_func: (file: File | Blob | null, title: string) => boolean;
 	link_func: (() => Promise<number | null | undefined>) | null;
 	button_title: string;
@@ -64,19 +64,6 @@ export type ChooseModal<TResult> = {
 	data: ChooseModalData<TResult>;
 }
 
-export const add_article: ModalEntity<void> =
-{
-	image: "/assets/plus.png",
-	title: "Add Article",
-	on_result: async () => { await dtb.create_and_show_article(); }
-}
-
-export const no_article_link: ModalEntity<null | number> =
-{
-	image: "/assets/minus.png",
-	title: "Don't Link To Article",
-	on_result: () => { return null; }
-}
 
 export type Folder = "maps" | "articles"
 export type Modal<TResult> = ChooseModal<TResult> | UploadModal<TResult> | ConfirmModal

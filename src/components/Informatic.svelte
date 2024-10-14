@@ -5,6 +5,7 @@
 	import { fly } from 'svelte/transition';
 	import dtb from '$lib/dtb';
 	import edit_mode from '../store';
+	import { push_modal } from '$lib/modal_manager';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -67,7 +68,7 @@
 	}
 
 	async function change_article_image(){
-		store.push_modal({type: 'upload_modal', data:{
+		push_modal({type: 'upload_modal', data:{
 			submit_func: async(file: File | null, title: string) => {
 				if (file === null){
 					store.article.image = null;

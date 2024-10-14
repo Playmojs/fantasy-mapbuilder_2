@@ -224,7 +224,6 @@ export default {
     },
 
     async create_and_select_marker_in_current_map() {
-        // TODO: How do we determine the type? Hardcoded to Informatic for now
         // TODO: How do we determine the x and y? Hardcoded to 50, 50 for now
         const response = await supabase.from('marker').insert({ owner_map_id: store.map.id, x: 50, y: 50 }).select().single();
         const { data } = response
@@ -281,9 +280,13 @@ export default {
         }
     },
 
-    async insert_new_map(image: string, title: string) {
-        await this.create_and_show_article(title);
-        const response = await supabase.from('map').insert({ article_id: store.article.id, image: image, title: title, project_id: store.project_id }).select().single()
+    async insert_new_map(image: string, title: string, article_id: number | null) {
+        if (article_id === null){
+            await this.create_and_show_article(title);
+            article_id = store.article.id;
+        }
+
+        const response = await supabase.from('map').insert({ article_id: article_id, image: image, title: title, project_id: store.project_id }).select().single()
         if (response.error) {
             console.error(response);
         } else { return response.data }
@@ -301,10 +304,10 @@ export default {
         return image_id;
     },
 
-    async create_new_map(image_file: File, title: string) {
+    async create_new_map(image_file: File, title: string, article_id: number | null) {
         let image_id = await this.upload_image(image_file, 'maps');
         if (!image_id) { return null; }
-        let data = await this.insert_new_map(image_id, title);
+        let data = await this.insert_new_map(image_id, title, article_id);
         if (!data) { return null; }
         return data
     },

@@ -1,7 +1,5 @@
 <script lang="ts">
 	import {
-		add_article,
-		no_article_link,
 		type UploadModalData,
 		type MapData,
 		type ModalEntity,
@@ -12,73 +10,34 @@
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { gotoMap } from '$lib/goto_map';
-	import { push_promise_modal } from '$lib/modal_manager';
-
-	const get_link_articles: () => ModalEntity<number>[] = () => {
-		return Object.entries(store.article_cache).map(([id, article]) => {
-			return {
-				image:
-					article.image && store.image_public_urls[article.image]
-						? URL.createObjectURL(store.image_public_urls[article.image])
-						: '/assets/article_icon.png',
-				title: article.title,
-				on_result: () => {
-					return article.id;
-				}
-			};
-		});
-	};
-
-	let upload_modal: UploadModal<void> = {
-		type: 'upload_modal',
-		data: {
-			submit_func: async (file: File | null, title: string) => {
-				if (file === null) {
-					return;
-				}
-				const selected_marker = store.markers.find((marker) => marker.id === store.selected_marker);
-				if (selected_marker === undefined) {
-					assert_unreachable("Selected marker doesn't exist");
-					return;
-				}
-				let response = await dtb.create_new_map(file, title);
-				if (response !== null) {
-					selected_marker.target_article_id = null;
-					selected_marker.target_map_id = +response.id;
-					dtb.update_marker(selected_marker);
-					gotoMap(response.id);
-				}
-			},
-			validation_func(file: File | Blob | null, title: string) {
-				return file !== null && title !== '';
-			},
-			link_func: async () => {
-				const result = await push_promise_modal<number | null>({
-					type: 'choose_modal',
-					data: { Articles: [no_article_link].concat(get_link_articles()) }
-				});
-				if (typeof result === 'number' || result === null) {
-					return result;
-				}
-			},
-			button_title: 'Create map',
-			initial_map_title: '',
-			initial_image_blob: null,
-			initial_link: null,
-			allow_no_file: false
-		}
-	};
+	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal} from '$lib/modal_manager';
 
 	const add_map: ModalEntity<void> = {
 		image: '/assets/plus.png',
 		title: 'Add Map',
-		on_result: () => {
-			return push_promise_modal<void>(upload_modal);
+		on_result: async () => {
+			const map_info = await get_new_map_data()
+			if (map_info === undefined || map_info.file === null || map_info.title === ''){return}
+			
+			const selected_marker = store.markers.find((marker) => marker.id === store.selected_marker);
+			if (selected_marker === undefined) {
+				assert_unreachable("Selected marker doesn't exist");
+				return;
+			}
+
+			let response = await dtb.create_new_map(map_info.file, map_info.title, map_info.article_id);
+			if (response !== null) {
+				selected_marker.target_article_id = null;
+				selected_marker.target_map_id = +response.id;
+				dtb.update_marker(selected_marker);
+				gotoMap(response.id);
+			}
+			
 		}
 	};
 
 	async function open_edit_map_modal() {
-		store.push_modal({
+		push_modal({
 			type: 'upload_modal',
 			data: {
 				submit_func: async (file: File | null, title: string) => {
@@ -104,7 +63,7 @@
 				link_func: async () => {
 					const result = await push_promise_modal<number | null>({
 						type: 'choose_modal',
-						data: { Articles: get_link_articles() }
+						data: { Articles: choose_article_by_id() }
 					});
 					if (typeof result === 'number' || result === null) {
 						return result;
@@ -120,7 +79,7 @@
 	}
 
 	async function confirm_delete_map() {
-		store.push_modal({
+		push_modal({
 			type: 'confirm_modal',
 			data: {
 				confirm_function: async () => {
@@ -171,7 +130,7 @@
 			'Marker has both article_id and map_id'
 		);
 
-		store.push_modal({
+		push_modal({
 			type: 'choose_modal',
 			data: {
 				Maps: [add_map].concat(

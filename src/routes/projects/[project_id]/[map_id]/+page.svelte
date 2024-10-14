@@ -11,11 +11,9 @@
 	import { onDestroy } from 'svelte';
 	import ConfirmModal from '../../../../components/ConfirmModal.svelte';
 	import MapOption from '../../../../components/MapOption.svelte';
+	import { pop_modal } from '$lib/modal_manager';
 
 	function reset_modals() {
-		store.modal_data = null;
-		store.edit_map_window = null;
-		store.confirm_modal = null;
 		store.modals = [];
 	}
 
@@ -57,7 +55,7 @@
 		<MapOption
 			modal_data={modal.data}
 			close={() => {
-				store.pop_modal();
+				pop_modal();
 			}}
 			on_close={modal.on_close}
 		/>
@@ -65,14 +63,14 @@
 		<ConfirmModal
 			modal_data={modal.data}
 			close={() => {
-				store.pop_modal();
+				pop_modal();
 			}}
 		/>
 	{:else if modal.type === 'choose_modal'}
 		<Modal
 			modal_data={modal.data}
 			close={() => {
-				store.pop_modal();
+				pop_modal();
 			}}
 			on_close={modal.on_close}
 		/>

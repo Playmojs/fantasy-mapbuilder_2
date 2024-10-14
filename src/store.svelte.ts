@@ -12,16 +12,15 @@ class Store {
     selected_marker = $state<number | null>(null); // TODO: Could this be a MarkerData instead of an id?
     informatic_width = $state(66);
     text_size = $state(150);
-    modal_data = $state<ChooseModalData | null>(null);
+    //modal_data = $state<ChooseModalData | null>(null);
     map_transform = $state({ x: 0, y: 0, scale: 1 });
     user = $state<User | null>(null);
     project_id: number = 0;
     write_access = writable(false);
-    edit_map_window = $state<UploadModalData | null>(null);
-    confirm_modal = $state<ConfirmModalData | null>(null);
-    modals = $state<Modal[]>([])
-    push_modal = (modal: Modal)=>{this.modals = [...this.modals, modal]}
-    pop_modal = () => {this.modals = this.modals.slice(0, -1)} // TODO: I think this copies the list - can this be avoided?
+    //edit_map_window = $state<UploadModalData | null>(null);
+    //confirm_modal = $state<ConfirmModalData | null>(null);
+    modals = $state<Modal<any>[]>([])
+
     map_article_link=$state<number | null>()
 
     // From database
