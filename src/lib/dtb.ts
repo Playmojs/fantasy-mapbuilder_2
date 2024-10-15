@@ -220,6 +220,7 @@ export default {
         if (data) {
             store.article_cache[data.id] = data;
             store.article = data;
+            return data;
         }
     },
 
@@ -246,8 +247,6 @@ export default {
     },
 
     async update_marker(marker: MarkerData) {
-        marker.x = Math.round(marker.x);
-        marker.y = Math.round(marker.y);
         const response = await supabase.from('marker').upsert(marker).select().single()
         if (response.error) {
             console.error(response);

@@ -1,6 +1,7 @@
 import { store } from '../store.svelte';
 import dtb from './dtb';
 import type { Modal, ModalEntity, UploadModal } from './types';
+import { assert_unreachable } from './utils';
 
 
 export function push_modal(modal: Modal<void>): void {store.modals = [...store.modals, modal]}
@@ -55,7 +56,20 @@ export const add_article: ModalEntity<void> =
 {
 	image: "/assets/plus.png",
 	title: "Add Article",
-	on_result: async () => { await dtb.create_and_show_article(); }
+	on_result: async () => { 
+        const selected_marker = store.markers.find((marker) => marker.id === store.selected_marker);
+        if (selected_marker === undefined) {
+            assert_unreachable("Selected marker doesn't exist");
+            return;
+        } 
+
+        const response = await dtb.create_and_show_article();
+
+        if (response !== undefined) {
+            selected_marker.target_article_id = +response.id;
+            selected_marker.target_map_id = null;
+            dtb.update_marker(selected_marker);
+        }}
 }
 
 export const choose_no_article: ModalEntity<null | number> =

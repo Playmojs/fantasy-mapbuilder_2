@@ -6,13 +6,16 @@
 	import dtb from '$lib/dtb';
 	import MarkerWindow from './MarkerWindow.svelte';
 	import { assert } from '$lib/utils';
+	import MarkerResizers from './MarkerResizers.svelte';
 
-	export let marker_data: MarkerData;
-	export let get_relative_movement: (x: number, y: number) => { x: number; y: number };
+	let {marker_data, get_relative_movement}: {marker_data: MarkerData, get_relative_movement: (x: number, y: number) => { x: number; y: number }} = $props()
 
 	let marker: HTMLButtonElement;
 	let in_movement: boolean = false;
-	let hover: boolean = false;
+	let hover = $state<boolean>(false);
+
+	let initial_marker_pos: {x: number, y: number};
+	let initial_click_pos: {x: number, y: number};
 
 	async function handleClick(event: MouseEvent | TouchEvent) {
 		assert(
@@ -39,7 +42,9 @@
 		}
 	}
 
-	function toggle_movement_mouse() {
+	function toggle_movement_mouse(e: MouseEvent) {
+		initial_marker_pos = {x: marker_data.x, y: marker_data.y}
+		initial_click_pos = get_relative_movement(e.pageX, e.pageY)
 		if (!in_movement) {
 			window.addEventListener('mousemove', move_marker_mouse);
 			window.addEventListener('mouseup', stop_movement);
@@ -49,7 +54,10 @@
 		}
 	}
 
-	function toggle_movement_touch() {
+	function toggle_movement_touch(e: TouchEvent) {
+		initial_marker_pos = {x: marker_data.x, y: marker_data.y}
+		initial_click_pos = get_relative_movement(e.touches[0].pageX, e.touches[0].pageY)
+
 		if (!in_movement) {
 			window.addEventListener('touchmove', move_marker_touch);
 			window.addEventListener('touchend', stop_movement);
@@ -83,26 +91,30 @@
 	function move_marker(x_px: number, y_px: number) {
 		store.is_panning = false;
 		let rel_pos: { x: number; y: number } = get_relative_movement(x_px, y_px);
-		marker_data.y = rel_pos.y;
-		marker_data.x = rel_pos.x;
-		// marker.style.left = rel_pos.x + '%';
-		// marker.style.top = rel_pos.y + '%';
+		marker_data.y = initial_marker_pos.y + (rel_pos.y-initial_click_pos.y);
+		marker_data.x = initial_marker_pos.x + (rel_pos.x-initial_click_pos.x);
 	}
+
+	$effect(()=>{
+		const marker = store.markers.find((marker) => marker.id === marker_data.id)
+		if(marker_data && marker){marker_data = marker}
+		}
+	)
 </script>
 
 <button
 	class="marker"
 	bind:this={marker}
-	style="top: {marker_data?.y}%; left: {marker_data?.x}%"
+	style="top: {marker_data?.y}%; left: {marker_data?.x}%; width: {marker_data?.width}%; height: {marker_data?.height}%;"
 	onclick={(event) => {handleClick(event);}}
 	onmousedown={(event) => {
 		if (store.edit_mode) {
-			toggle_movement_mouse();
+			toggle_movement_mouse(event);
 		}
 	}}
 	ontouchstart={(event) => {
 		if (store.edit_mode) {
-			toggle_movement_touch();
+			toggle_movement_touch(event);
 		}
 	}}
 	onmouseenter={() => {
@@ -120,21 +132,22 @@
 		alt="Marker"
 		class:hidden={marker_data?.image === null}
 	/>
-	{#if hover}
+	{#if hover && (marker_data?.target_map_id !== null || marker_data?.target_article_id !== null)}
 		<MarkerWindow map_id={marker_data.target_map_id} article_id={marker_data.target_article_id} />
 	{/if}
 </button>
+{#if store.edit_mode && store.selected_marker === marker_data?.id}
+		<MarkerResizers marker_data={marker_data} get_relative_movement={get_relative_movement}/>
+{/if}
 
 <style>
 	.marker {
 		position: absolute;
-		width: 3%;
-		height: 3%;
+		width: 5%;
+		height: 7%;
 		background-color: transparent;
 		border: none;
 		outline: none;
-		width: 50px;
-		height: 50px;
 		border-radius: 50%;
 		cursor: pointer;
 		transform: translate(-50%, -50%);
