@@ -133,7 +133,7 @@
 		class:hidden={marker_data?.image === null}
 	/>
 	{#if hover && (marker_data?.target_map_id !== null || marker_data?.target_article_id !== null)}
-		<MarkerWindow map_id={marker_data.target_map_id} article_id={marker_data.target_article_id} />
+		<MarkerWindow map_id={marker_data.target_map_id} article_id={marker_data.target_article_id} scale={store.map_transform.scale} />
 	{/if}
 </button>
 {#if store.edit_mode && store.selected_marker === marker_data?.id}

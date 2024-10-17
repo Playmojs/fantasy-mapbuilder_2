@@ -6,6 +6,7 @@
 	import dtb from '$lib/dtb';
 	import edit_mode from '../store';
 	import { push_modal } from '$lib/modal_manager';
+	import KeyWordRenderer from './KeyWordRenderer.svelte';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -143,7 +144,7 @@
 		{#if store.edit_mode}
 			<Editor />
 		{:else}
-			<SvelteMarkdown source={store.article.content} />
+			<SvelteMarkdown source={store.article.content} renderers={{link: KeyWordRenderer}}/>
 		{/if}
 	</div>
 </div>

@@ -34,19 +34,6 @@
 		}
 	};
 
-	const getMaps = async () => {
-		await dtb.fetch_all_from_project(store.project_id);
-		const maps = Object.entries(store.map_cache).map(([_, map]) => {
-			return {
-				image: URL.createObjectURL(store.image_public_urls[map.image]),
-				title: map.title,
-				on_result: () => {
-					return map.id
-				}
-			};
-		});
-		return maps;
-	};
 
 	async function parent_func(event: MouseEvent | TouchEvent, parent_id: number | null) {
 		if (parent_id === null && store.edit_mode) {
@@ -66,7 +53,7 @@
 	};
 
 	async function changeParentMap() {
-		choose_parent_map_wrapper([remove_map, add_map].concat(await getMaps()))
+		choose_parent_map_wrapper([remove_map, add_map].concat(await choose_existing_map()))
 	}
 
 	let image_source = $state('/assets/parent_plus.png');
