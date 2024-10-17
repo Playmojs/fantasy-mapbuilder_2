@@ -37,7 +37,7 @@
 				openModal: async(position: any, regex: RegExp)=>{
 					const result: number | void = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_article_by_id()}})
 					if(result === undefined){return}
-					replaceKeywordWithId('map', result, position, regex)
+					replaceKeywordWithId('article', result, position, regex)
 				},
 				regex: /\/article=(\d+)+/i,
 			},
