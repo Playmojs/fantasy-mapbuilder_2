@@ -10,7 +10,7 @@
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { gotoMap } from '$lib/goto_map';
-	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal} from '$lib/modal_manager';
+	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_existing_map} from '$lib/modal_manager';
 
 	const add_map: ModalEntity<void> = {
 		image: '/assets/plus.png',
@@ -96,6 +96,12 @@
 				text: 'Are you sure you want to delete this map (this cannot be undone)?'
 			}
 		});
+	}
+
+	const go_to_map_modal = async () => {
+		const result = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_existing_map()}})
+		if(result === undefined){return}
+		gotoMap(result)
 	}
 
 	function toggleMinimize() {
@@ -187,6 +193,11 @@
 			}}
 			style="background-image: url('/assets/home_icon.png');"
 		>
+		</button>
+		<button
+			onclick={()=>{go_to_map_modal()}}
+			style="background-image: url('/assets/map_icon.png');"
+			>
 		</button>
 	</div>
 	<div class="button_group"></div>
