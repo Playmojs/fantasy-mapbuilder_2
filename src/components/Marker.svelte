@@ -153,11 +153,11 @@
 		transform: translate(-50%, -50%);
 	}
 	.marker:hover {
-		box-shadow: inset 0 0 0 10em rgba(255, 255, 255, 0.4);
+		background-color: rgba(255, 255, 255, 0.4);
 	}
 
 	.marker.edit_mode {
-		box-shadow: inset 0 0 0 10em rgba(255, 255, 255, 0.8);
+		background-color: rgba(255, 255, 255, 0.8);
 	}
 	.marker.selected {
 		border: 2px solid black;
