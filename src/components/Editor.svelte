@@ -97,6 +97,7 @@
 						}
 					});
 				}
+				regex.lastIndex = 0;
 			});
 
 			decorationIds = editor.deltaDecorations(decorationIds, decorations);

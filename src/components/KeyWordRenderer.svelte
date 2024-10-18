@@ -29,6 +29,7 @@
         id = +match[1]
         active_key = key
       }
+      regex.lastIndex = 0;
     })
   })
 </script>
