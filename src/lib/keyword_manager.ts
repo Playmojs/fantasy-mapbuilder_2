@@ -20,7 +20,7 @@ export const keywords: {[key: string] : Keyword} = {
     },
     "article": {
         choose_modal: async()=>{
-            const result: number | void = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_article_by_id()}})
+            const result: number | void = await push_promise_modal({type: 'choose_modal', data: {Articles: await choose_article_by_id()}})
             return result
         },
         regex: /\/article=(\d?)+/g,

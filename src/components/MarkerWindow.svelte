@@ -56,9 +56,8 @@
 		position: inherit;
 		left: 50%;
 		bottom: 100%;
-		background: rgb(47, 47, 47);
+		background: rgb(75, 75, 75);
 		width: 150px;
-		height: auto;
 		max-width: none;
 		color: white;
 		border-radius: 10px;
@@ -77,7 +76,10 @@
 	#window_content {
 		width: 90%;
 		overflow-y: hidden;
-		max-height: 90%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		
 		padding: 5%;
 	}
 

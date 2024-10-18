@@ -1,9 +1,6 @@
 <script lang='ts'>
-	import { gotoMap } from '$lib/goto_map';
-    import { marked } from 'marked';
-	import { store } from '../store.svelte';
-	import MarkerWindow from './MarkerWindow.svelte';
 	import { keywords } from '$lib/keyword_manager';
+	import MarkerWindow from './MarkerWindow.svelte';
   
   // Function to handle `/map` and `/article` cases
   function handleMap(id: number) {
@@ -45,18 +42,28 @@
     }}
     
     >{text}
-    <!-- {#if hover}
+    {#if hover}
+     <div id="marker_wrapper">
 		  <MarkerWindow map_id={active_key == 'map' ? id: null} article_id={active_key == 'article' ? id: null} scale={1}/>
-	  {/if} -->
+      </div>
+	  {/if}
   </a>
 {/if}
 
 
 <style>
   a{
+    position: relative;
     font-style:oblique;
     font-weight: bold;
-    font-size: 1.3rem;
     cursor: pointer;
+  }
+
+  #marker_wrapper{
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    font-size: large;
+    height: fit-content;
   }
 </style>
