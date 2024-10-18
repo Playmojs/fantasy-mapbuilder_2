@@ -3,6 +3,7 @@
     import { marked } from 'marked';
 	import { store } from '../store.svelte';
 	import MarkerWindow from './MarkerWindow.svelte';
+	import { keywords } from '$lib/keyword_manager';
   
   // Function to handle `/map` and `/article` cases
   function handleMap(id: number) {
@@ -15,19 +16,6 @@
 
   const {href, title, text}: {href: string, title: string | undefined, text: string} = $props()
   
-  type Keyword = {
-    regex: RegExp,
-    on_click: (id: number)=> void
-  }
-
-  let keywords: {[key: string]: Keyword} = {
-    'map': {regex: /\/map=(\d+)+/i,
-      on_click: (id: number)=>{gotoMap(id)}
-    },
-    'article': {regex: /\/article=(\d+)+/i,
-      on_click: (id: number)=>{store.article = store.article_cache[id]}
-    }
-  }
 
   let id = $state<number | null>(null)
   let active_key = $state<string>('')
@@ -36,8 +24,8 @@
   $effect(()=>{
     let match: RegExpMatchArray | null;
     id = null
-    Object.entries(keywords).forEach(([key, {regex, on_click}]) => {
-      if ((match = href.match(regex))){
+    Object.entries(keywords).forEach(([key, {regex}]) => {
+      if ((match = regex.exec(href))){
         id = +match[1]
         active_key = key
       }

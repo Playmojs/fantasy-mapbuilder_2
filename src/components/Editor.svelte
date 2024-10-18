@@ -3,16 +3,12 @@
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 	import { choose_article_by_id, choose_existing_map, push_promise_modal } from '$lib/modal_manager';
+	import { keywords } from '$lib/keyword_manager';
 
 	let editorElement = $state<HTMLDivElement>();
 	let editor = $state<any>();
 	let monaco: any;
 	let font_size = $derived(store.text_size / 7);
-
-	type Keyword = {
-		openModal: (position: any, regex: RegExp)=> void;
-		regex: RegExp;
-	}
 
 	onMount(async () => {
 		monaco = await import('monaco-editor');
@@ -24,30 +20,10 @@
 			}
 		};
 
-		const keywords: {[key: string] : Keyword} = {
-			"map": {
-				openModal: async(position: any, regex: RegExp)=>{
-					const result: number | undefined = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_existing_map()}})
-					if(result === undefined){return}
-					replaceKeywordWithId('map', result, position, regex)
-				},
-				regex: /\/map=(\d+)+/i,
-			},
-			"article": {
-				openModal: async(position: any, regex: RegExp)=>{
-					const result: number | void = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_article_by_id()}})
-					if(result === undefined){return}
-					replaceKeywordWithId('article', result, position, regex)
-				},
-				regex: /\/article=(\d+)+/i,
-			},
-		};
-
 		monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
-		
 
 		monaco.languages.registerCompletionItemProvider("markdown", {
-			triggerCharacters: ["["],
+			triggerCharacters: ["]"],
 			provideCompletionItems: function (model: any, position: any) {
 			const text = model.getValueInRange({
 				startLineNumber: position.lineNumber,
@@ -56,19 +32,19 @@
 				endColumn: position.column
 			});
 
-			if (text === "[") {
+			if (text === "]") {
 				return {
 				suggestions: [
 					{
 					label: 'map',
 					kind: monaco.languages.CompletionItemKind.Snippet,
-					insertText: '](/map=)',
+					insertText: '(/map=)',
 					documentation: 'Insert a map link',
 					},
 					{
 					label: 'article',
 					kind: monaco.languages.CompletionItemKind.Snippet,
-					insertText: '](/article=)',
+					insertText: '(/article=)',
 					documentation: 'Insert an article link',
 					}
 				]
@@ -97,20 +73,17 @@
 		
 		let decorationIds: any[] = [];
 
-		function highlightKeywords() {
+		function highlight_keywords() {
 			const model = editor.getModel();
 			const text = model.getValue();
 			let decorations: any[] = [];
 
-			Object.entries(keywords).forEach(([keyword, {openModal, regex}]) => {
-
-				let match = regex.exec(text);
-				console.log(match)
-				if (match !== null) {
+			Object.entries(keywords).forEach(([keyword, {regex}]) => {
+				let match;
+				while (regex.global && (match = regex.exec(text))) {
 					const start = match.index;
 					const end = start + match[0].length;
 
-					// Create decoration for this keyword match
 					decorations.push({
 						range: new monaco.Range(
 							model.getPositionAt(start).lineNumber,
@@ -125,61 +98,46 @@
 					});
 				}
 			});
-			console.log('decorating')
 
-			// Apply decorations and store their IDs
 			decorationIds = editor.deltaDecorations(decorationIds, decorations);
 		}
 
 
-		editor.onMouseDown((event: any) => {
+		editor.onMouseDown(async (event: any) => {
+			if(event.event.ctrlKey){return;}
 			const position = event.target.position;
 			const decorationsAtPosition = editor.getDecorationsInRange(new monaco.Range(
 				position.lineNumber, position.column, position.lineNumber, position.column
 			));
 
 			const clickedKeyword = decorationsAtPosition.find((deco: any) => deco.options.inlineClassName === 'keyword');
-			
+
 			if (clickedKeyword) {
-				Object.entries(keywords).forEach(([keyword, value]) => {
-					const lineContent = editor.getModel().getLineContent(position.lineNumber);
-					const match = lineContent.match(value.regex);
+				Object.entries(keywords).forEach(([keyword, {choose_modal, regex}]) => {
+					const keyword_content = editor.getModel().getValueInRange(clickedKeyword.range);
+					const match = keyword_content.match(regex);
 
 					if (match) {
-						value.openModal(position, value.regex)
+						choose_modal().then((result) => {
+							if (result===undefined){return}
+							update_keyword_id(keyword, result, clickedKeyword.range)
+						})
 					}
 				});
 			}
 		});
 
-		function replaceKeywordWithId(keyword: string, id: number, position: any, regex: RegExp) {
-			const model = editor.getModel();
-			const lineContent = model.getLineContent(position.lineNumber);
-			const match = lineContent.match(regex)
-			console.log(match)
-			const startIndex = match.index;
-			const endIndex = startIndex + match[0].length;
-			
-
-			// Create the replacement text: /keyword[id]{text}
+		function update_keyword_id(keyword: string, id: number, range: any) {
 			const newText = `/${keyword}=${id}`;
-
-			// Replace the existing keyword in the editor
-			const range = new monaco.Range(
-			position.lineNumber, startIndex + 1,  // Start of the keyword
-			position.lineNumber, endIndex + 1     // End of the {text}
-			);
-
 			editor.executeEdits("", [
 			{ range, text: newText, forceMoveMarkers: true }
 			]);
-
-			highlightKeywords();
+			highlight_keywords();
 		}
 
 		editor.onDidChangeModelContent(() => {
 			store.article.content = editor.getValue();
-			highlightKeywords();
+			highlight_keywords();
 		});
 
 		function write_id(id: number) {
