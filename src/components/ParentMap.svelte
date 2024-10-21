@@ -27,7 +27,7 @@
 			let map_info = await get_new_map_data()
 			if (map_info === undefined || map_info.file === null || map_info.title === '') {return}
 							
-			let response = await dtb.create_new_map(map_info.file, map_info.title, map_info.article_id);
+			let response = await dtb.create_new_map(store.project_id, map_info.file, map_info.title, map_info.article_id);
 			if (response !== null) {
 				return response.id
 			}

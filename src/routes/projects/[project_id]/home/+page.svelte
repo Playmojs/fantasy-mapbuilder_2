@@ -12,20 +12,6 @@
 	let project = $state<Project>();
 	let main_map = $state<MapData>();
 
-	// const add_map: ModalEntity<void> = {
-	// 	image: '/assets/plus.png',
-	// 	title: 'Add Map',
-	// 	on_result: async () => {
-	// 		let map_info = await get_new_map_data()
-	// 		if (map_info === undefined || map_info.file === null || map_info.title === '') {return}
-							
-	// 		let response = await dtb.create_new_map(map_info.file, map_info.title, map_info.article_id);
-	// 		if (response !== null) {
-	// 			return response.id
-	// 		}
-	// 	}
-	// };
-
 	const change_main_map = async () => {
 		if (!project){return}
 		await dtb.fetch_all_from_project(project.id)
@@ -39,11 +25,14 @@
 	async function get_data() {
 		project = await dtb.get_project(store.project_id);
 		await dtb.fetch_project_images([store.project_cache[store.project_id]]);
+		if(!project || project.head_map_id === null){return}
+		
 		main_map = await dtb.get_map(
-			store.project_id,
-			store.project_cache[store.project_id].head_map_id
+			project.id,
+			project.head_map_id
 		);
-	}
+	
+}
 	$effect(() => {
 		store.project_id;
 		get_data();
@@ -153,11 +142,6 @@
 		/>
 	{/if}
 {/each}
-
-
-<!-- <Modal close={() => (store.modal_data = null)} modal_data={store.modal_data} />
-<MapOption />
-<ConfirmModal close={() => (store.confirm_modal = null)} /> -->
 
 <style>
 	#project_display {

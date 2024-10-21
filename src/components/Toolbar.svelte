@@ -45,7 +45,7 @@
 			data: {
 				submit_func: async (file: File | null, title: string) => {
 					if (file !== null) {
-						let image_id = await dtb.upload_image(store.project_id, file, 'maps');
+						let image_id = await dtb.upload_image(store.project_id, file, 'maps', null);
 						if (!image_id) {
 							console.error('Image upload failed');
 							return;
@@ -91,9 +91,10 @@
 						gotoMap(store.map.parent_id);
 					} else {
 						let project = await dtb.get_project(store.project_id);
-						if (project) {
+						if (project && project.head_map_id !== null) {
 							gotoMap(project?.head_map_id);
 						}
+						else (goto('/'))
 					}
 				},
 				text: 'Are you sure you want to delete this map (this cannot be undone)?'

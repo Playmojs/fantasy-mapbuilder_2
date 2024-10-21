@@ -47,7 +47,7 @@ export default {
 
     async get_map(project_id: number, map_id: number) {
         if (map_id in store.map_cache) {
-            this.update_image_blob(store.map_cache[map_id].image, 'maps');
+            this.update_image_blob(project_id, store.map_cache[map_id].image, 'maps');
             return { ...store.map_cache[map_id] };
         }
         const response = await supabase
@@ -62,14 +62,14 @@ export default {
         }
         if (data) {
             store.map_cache[map_id] = data;
-            this.update_image_blob(store.map_cache[map_id].image, 'maps');
+            this.update_image_blob(project_id, store.map_cache[map_id].image, 'maps');
             return data;
         }
     },
 
-    async update_image_blob(image: string, folder: Folder) {
+    async update_image_blob(project_id: number, image: string, folder: Folder) {
         if (image in store.image_public_urls) { return; }
-        const filePath = `${store.project_id}/${folder}/${image}`;
+        const filePath = `${project_id}/${folder}/${image}`;
         const { data, error } = await supabase.storage.from('project').download(filePath);
         if (error) {
             console.error('Error downloading file:', error.message);
@@ -100,7 +100,7 @@ export default {
     async get_article(project_id: number, article_id: number) {
         if (article_id in store.article_cache) {
             if (store.article_cache[article_id].image !== null) {
-                this.update_image_blob(store.article_cache[article_id].image, 'articles');
+                this.update_image_blob(project_id, store.article_cache[article_id].image, 'articles');
             }
             return { ...store.article_cache[article_id] };
         }
@@ -116,7 +116,7 @@ export default {
                 }
                 if (data) {
                     if (data.image !== null) {
-                        this.update_image_blob(data.image, 'articles');
+                        this.update_image_blob(project_id, data.image, 'articles');
                     }
                     store.article_cache[article_id] = data;
                     return data
@@ -128,13 +128,14 @@ export default {
         if (all_projects_fetched) { return; }
 
         for await (const project of projects) {
+            if(project.head_map_id === null){continue;}
             await supabase.from('map').select('image').eq('id', project.head_map_id).single().then(({ data, error }) => {
                 if (error) {
                     console.error(`Couldn't fetch project images, error was: ${error}`);
                 }
                 if (data) {
                     store.project_images[project.id] = data.image;
-                    this.update_image_blob(data.image, 'maps');
+                    this.update_image_blob(project.id, data.image, 'maps');
                 }
             })
         }
@@ -193,7 +194,7 @@ export default {
                     console.error(`Couldn't fetch map data, error was: ${error}`);
                 }
                 if (data) {
-                    data.forEach(map => { store.map_cache[map.id] = map; this.update_image_blob(map.image, 'maps') });
+                    data.forEach(map => { store.map_cache[map.id] = map; this.update_image_blob(project_id, map.image, 'maps') });
                 }
             });
         await supabase
@@ -205,7 +206,7 @@ export default {
                     console.error(`Couldn't fetch article data, error was: ${error}`);
                 }
                 if (data) {
-                    data.forEach(article => { store.article_cache[article.id] = article; if (article.image !== null) { this.update_image_blob(article.image, 'articles') } });
+                    data.forEach(article => { store.article_cache[article.id] = article; if (article.image !== null) { this.update_image_blob(project_id, article.image, 'articles') } });
                 }
             });
         all_fetched_from_project = true;
@@ -294,8 +295,8 @@ export default {
         } else { return response.data }
     },
 
-    async upload_image(project_id: number, file: File, folder: Folder) {
-        const image_id = uuidv4();
+    async upload_image(project_id: number, file: File, folder: Folder, image_id: string | null) {
+        if(image_id === null){image_id = uuidv4()}
         const { error } = await supabase.storage
             .from('project')
             .upload(`${project_id}/${folder}/${image_id}`, file);
@@ -307,7 +308,7 @@ export default {
     },
 
     async create_new_map(project_id: number, image_file: File, title: string, article_id: number | null) {
-        let image_id = await this.upload_image(project_id, image_file, 'maps');
+        let image_id = await this.upload_image(project_id, image_file, 'maps', null);
         if (!image_id) { return null; }
         let data = await this.insert_new_map(project_id, image_id, title, article_id);
         if (!data) { return null; }
@@ -316,23 +317,16 @@ export default {
 
     async create_new_project(project_title: string, head_map_title: string, head_map_file: File)
     {
-        let {error, data} = await supabase.from('project').insert({name: project_title}).select().single()
-        if(error || data === null){
-            console.error("Failed to create project"); 
-            return;
+        const image_id = uuidv4();
+        let{error, data} = await supabase.rpc('insert_project_map_article', {project_title: project_title, map_title: head_map_title, map_image: image_id, article_title: head_map_title}).single()
+
+        if(error){
+            console.error(`Failed to upload project, error: ${error.message}`)
         }
-        let map = await this.create_new_map(data.id, head_map_file, head_map_title, null)
-        if(map===null){
-            console.error("Failed to create map and project");
-            return;
+        else if (data){
+            await this.upload_image(data.project_id, head_map_file, 'maps', image_id)
+            return this.get_project(data.project_id)
         }
-        data.head_map_id = map.id;
-        let response = await supabase.from('project').upsert(data).select().single()
-        if(response.error){
-            console.error("Failed to update project");
-            return
-        }
-        return response.data;
     },
 
     async delete_marker(marker_id: number | null) {

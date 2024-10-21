@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import dtb from "$lib/dtb";
-    import {type MapData, type Project, type ModalEntity} from "$lib/types"
+	import { pop_modal, push_modal } from "$lib/modal_manager";
+    import {type MapData, type Project, type ModalEntity, type UploadModalData} from "$lib/types"
 	import { assert_unreachable } from "$lib/utils";
 	import ConfirmModal from "../../../components/ConfirmModal.svelte";
 	import Homebar from "../../../components/Homebar.svelte";
@@ -17,8 +18,8 @@
     }
 
     function open_map_option(){
-        store.edit_map_window = {
-            submit_func: (file: File | null, title: string) => {
+        push_modal({
+            type:'upload_modal', data: {submit_func: (file: File | null, title: string) => {
                 if(file === null){
                     assert_unreachable("No file selected error"); 
                     return;
@@ -29,18 +30,24 @@
             validation_func(file, title) {
                 return(file !== null && title !== '')
             },
+            link_func: null,
+            initial_link: null,
             button_title: 'Choose Map',
             initial_image_blob: main_map_file,
             initial_map_title: main_map_title ?? '',
-            allow_no_file: false,
-        };
-	
+            allow_no_file: false,}
+        })
     }
+
     function valid_project(){return main_map_file===null || main_map_title==='' || project_title === ''}
     async function add_project(){
         if (main_map_file === null || main_map_title === '' || !main_map_title || project_title === ''){return;}
         let project = await dtb.create_new_project(project_title, main_map_title, main_map_file);
         if(project){
+            if(project.head_map_id === null){
+                assert_unreachable("Project set without headmap"); 
+                goto('/');
+            }
             store.project_id = project.id
             store.project_cache[store.project_id] = project;
             goto(`/projects/${project.id}/${project.head_map_id}`)
@@ -88,7 +95,33 @@
         </div>
     </div>
 </main>
-<MapOption />
+
+{#each store.modals as modal (modal)}
+	{#if modal.type === 'upload_modal'}
+		<MapOption
+			modal_data={modal.data}
+			close={() => {
+				pop_modal();
+			}}
+			on_close={modal.on_close}
+		/>
+	{:else if modal.type === 'confirm_modal'}
+		<ConfirmModal
+			modal_data={modal.data}
+			close={() => {
+				pop_modal();
+			}}
+		/>
+	{:else if modal.type === 'choose_modal'}
+		<Modal
+			modal_data={modal.data}
+			close={() => {
+				pop_modal();
+			}}
+			on_close={modal.on_close}
+		/>
+	{/if}
+{/each}
 
 <style>
     #project_display{

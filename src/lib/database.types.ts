@@ -163,19 +163,19 @@ export type Database = {
       project: {
         Row: {
           created_at: string
-          head_map_id: number
+          head_map_id: number | null
           id: number
           name: string
         }
         Insert: {
           created_at?: string
-          head_map_id?: number
+          head_map_id?: number | null
           id?: number
           name: string
         }
         Update: {
           created_at?: string
-          head_map_id?: number
+          head_map_id?: number | null
           id?: number
           name?: string
         }
@@ -223,7 +223,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      insert_project_map_article: {
+        Args: {
+          project_title: string
+          map_title: string
+          map_image: string
+          article_title: string
+        }
+        Returns: {
+          project_id: number
+          map_id: number
+          article_id: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

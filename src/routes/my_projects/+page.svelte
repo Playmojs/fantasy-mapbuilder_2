@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import type { ModalEntity, Project } from '$lib/types';
+	import { assert_unreachable } from '$lib/utils';
 	import Homebar from '../../components/Homebar.svelte';
 	import dtb from '../../lib/dtb';
 	import { store } from '../../store.svelte';
@@ -12,13 +13,14 @@
 	};
 	get_projects();
 
+	
 	let my_projects = $derived<Project[]>(
 		Object.values(store.project_cache).filter((project) => {
-			return project.id in store.user_projects;
+			return store.user_projects.includes(project.id);
 		})
 	);
-
-	let project_markers = $derived<{ [id: number]: ModalEntity }>(
+	
+	let project_markers = $derived<{ [id: number]: ModalEntity<void> }>(
 		Object.fromEntries(
 			my_projects.map((project) => [
 				project.id,
@@ -28,6 +30,7 @@
 						: '/assets/map_icon.png',
 					title: project.name,
 					on_result: () => {
+						if(project.head_map_id === null){assert_unreachable("Trying to go to map with id null")}
 						goto(`/projects/${project.id}/${project.head_map_id}`);
 					}
 				}

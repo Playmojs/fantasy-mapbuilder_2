@@ -75,7 +75,7 @@
 					store.article.image = null;
 				}
 				else{
-					let image_id = await dtb.upload_image(file, 'articles')
+					let image_id = await dtb.upload_image(store.project_id, file, 'articles', null)
 					if(!image_id){
 						console.error("Image upload failed");
 						return;

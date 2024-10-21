@@ -62,7 +62,7 @@ export const add_article: ModalEntity<void> =
             return;
         } 
 
-        const response = await dtb.create_and_show_article();
+        const response = await dtb.create_and_show_article(store.project_id);
 
         if (response !== undefined) {
             selected_marker.target_article_id = +response.id;
