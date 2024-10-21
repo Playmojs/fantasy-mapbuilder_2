@@ -175,7 +175,7 @@
 		right: 10px;
 		aspect-ratio: 1;
 		background-color: transparent;
-		background-image: url('/assets/cog.png');
+		background-image: url('/assets/Wheel.png');
 		background-size: contain;
 		background-repeat: no-repeat;
 		border: none;

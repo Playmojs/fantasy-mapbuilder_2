@@ -222,7 +222,7 @@
 	}
 
 	.image-preview {
-		position: absolute;
+		position: relative;
 		max-width: 100%;
 		border-radius: 10px;
 	}

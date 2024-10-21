@@ -7,8 +7,8 @@
 	let file: File | null = null;
 </script>
 
+<Homebar />
 <main>
-	<Homebar />
 	<h2>Welcome to</h2>
 	<h1>Fantasy Mapbuilder</h1>
 	<div id="description_box">

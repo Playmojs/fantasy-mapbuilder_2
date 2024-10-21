@@ -174,7 +174,7 @@
 							image:
 								article.image && store.image_public_urls[article.image]
 									? URL.createObjectURL(store.image_public_urls[article.image])
-									: '/assets/article_icon.png',
+									: '/assets/Parchment.png',
 							title: article.title,
 							on_result: () => {
 								if (store.selected_marker === null) {
@@ -291,14 +291,15 @@
 			id="minimize_button"
 			onclick={toggleMinimize}
 			style="background-image: url('/assets/{store.informatic_minimized
-				? 'double_arrow_left'
-				: 'double_arrow_right'}.png');"
+				? 'Arrows_left'
+				: 'Arrows_right'}.png');"
 		></button>
 	</div>
 </div>
 
 <style>
 	#toolbar {
+		touch-action: none;
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -308,7 +309,7 @@
 		background-color: #4b4343;
 		color: white;
 		display: flex;
-		justify-content: space-around;
+		justify-content:space-around;
 		align-items: center;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 		z-index: 11;

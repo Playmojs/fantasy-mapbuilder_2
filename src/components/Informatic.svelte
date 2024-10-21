@@ -151,6 +151,7 @@
 
 <style>
 	#informaticWindow {
+		touch-action: none;
 		position: absolute;
 		background-color: rgb(47, 47, 47);
 		top: 50px; /* TODO: Define once */
@@ -194,6 +195,7 @@
 	}
 
 	#informatic {
+		touch-action: none;
 		position: relative;
 		height: 90%;
 		left: 0;
@@ -253,6 +255,12 @@
 		z-index: 10;
 	}
 
+	@media (max-width: 768px) {
+		#resizer {
+			width: 25px;
+		}
+	}
+
 	#image_container{
 		display: flex;
 		flex-shrink: 0;
@@ -260,7 +268,7 @@
 
 	#edit_image_button{
 		position: relative;
-		background-image: url('/assets/cog.png');
+		background-image: url('/assets/Wheel.png');
 		background-color: transparent;
 		background-size: contain;
 		background-repeat: no-repeat;

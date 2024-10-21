@@ -29,7 +29,7 @@ export const choose_article_by_id: () => ModalEntity<number>[] = () => {
             image:
                 article.image && store.image_public_urls[article.image]
                     ? URL.createObjectURL(store.image_public_urls[article.image])
-                    : '/assets/article_icon.png',
+                    : '/assets/Parchment.png',
             title: article.title,
             on_result: () => {
                 return article.id;
@@ -129,7 +129,7 @@ export const choose_map_or_article: () => ChooseModalData<map_or_article> = () =
                 image:
                     article.image && store.image_public_urls[article.image]
                         ? URL.createObjectURL(store.image_public_urls[article.image])
-                        : '/assets/article_icon.png',
+                        : '/assets/Parchment.png',
                 title: article.title,
                 on_result: () => {
                     return {article_id: article.id, map_id: null}

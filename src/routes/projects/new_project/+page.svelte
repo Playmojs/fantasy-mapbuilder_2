@@ -62,8 +62,8 @@
 	let main_map_preview = $derived<string | null>(main_map_file ? URL.createObjectURL(main_map_file) : null)
 </script>
 
+<Homebar/>
 <main>
-    <Homebar/>
     <div id=project_display>
         <div id="image-preview-section">
 			{#if main_map_preview}
@@ -129,12 +129,12 @@
         display: flex;
         justify-content: space-around;
         top: 40px;
-        align-items: center;
+        align-items: start;
     }
 
     #project_form{
         position: relative;
-        margin-top: -20px;
+        margin-top: 100px;
         width: 40%;
         display: flex;
         flex-direction: column;
@@ -208,5 +208,7 @@
 		color: white;
 		font-size: 1.5rem;
 		text-align: center;
+        margin-top: 250px;
+
 	}
 </style>

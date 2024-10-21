@@ -36,6 +36,7 @@
 		if (current_markers) {
 			store.markers = current_markers;
 		}
+		await dtb.fetch_all_from_project(store.project_id)
 	});
 
 	onDestroy(() => {

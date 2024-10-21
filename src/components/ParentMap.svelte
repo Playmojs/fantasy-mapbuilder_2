@@ -134,7 +134,7 @@
 	}
 
 	#edit_map {
-		background: url('/assets/cog.png');
+		background: url('/assets/Wheel.png');
 	}
 
 	.hidden {
