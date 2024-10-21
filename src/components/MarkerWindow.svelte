@@ -5,8 +5,9 @@
 	import { store } from '../store.svelte';
 	import { fade } from 'svelte/transition';
 	import { assert, assert_unreachable } from '$lib/utils';
+	import { untrack } from 'svelte';
 
-	let { map_id = null, article_id = null }: { map_id: number | null; article_id: number | null } =
+	let { map_id = null, article_id = null, scale }: { map_id: number | null; article_id: number | null, scale: number } =
 		$props();
 
 	let intermediate_image = $state<string>('');
@@ -43,7 +44,7 @@
 <div
 	id="marker_window"
 	transition:fade={{ duration: 300 }}
-	style="transform: scale({1 / store.map_transform.scale}) translateX(-50%);"
+	style="transform: scale({1 / scale}) translateX(-50%);"
 >
 	<div id="window_content">
 		<h1>{title}</h1>
@@ -53,18 +54,18 @@
 
 <style>
 	#marker_window {
-		position: fixed;
+		position: inherit;
 		left: 50%;
 		bottom: 100%;
-		background: rgb(47, 47, 47);
+		background: rgb(75, 75, 75);
 		width: 150px;
-		height: auto;
 		max-width: none;
 		color: white;
 		border-radius: 10px;
 		transform-origin: bottom left;
 		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
 		padding-bottom: 20px;
+		z-index: 50;
 	}
 
 	@media(max-width: 1300px){
@@ -76,7 +77,10 @@
 	#window_content {
 		width: 90%;
 		overflow-y: hidden;
-		max-height: 90%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		
 		padding: 5%;
 	}
 

@@ -65,14 +65,20 @@
 		}
 	});
 
+	type transform={x: number; y: number; scale: number}
+	let transf = $state<transform>({x: 0, y: 0, scale: 1})
+
+	function update_scale(){
+		transf={x: 0, y: 50, scale: (window.innerHeight - 50) / map_.naturalHeight / window.innerWidth * map_.naturalWidth};
+	}
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
-	<img id="map" alt="Map" bind:this={map_} src={image_source} />
+	<img id="map" alt="Map" bind:this={map_} src={image_source} onload={()=>{update_scale()}} />
 	{#each store.markers as marker}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}
-	<ZoomPan parent_selector="#map-container"/>
+	<ZoomPan parent_selector="#map-container" transform={transf}/>
 </div>
 
 <style>

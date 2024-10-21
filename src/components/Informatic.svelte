@@ -5,6 +5,8 @@
 	import { fly } from 'svelte/transition';
 	import dtb from '$lib/dtb';
 	import edit_mode from '../store';
+	import { push_modal } from '$lib/modal_manager';
+	import KeyWordRenderer from './KeyWordRenderer.svelte';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -67,7 +69,7 @@
 	}
 
 	async function change_article_image(){
-		store.edit_map_window = {
+		push_modal({type: 'upload_modal', data:{
 			submit_func: async(file: File | null, title: string) => {
 				if (file === null){
 					store.article.image = null;
@@ -80,21 +82,21 @@
 					}
 					store.image_public_urls[image_id] = file;
 					store.article.image = image_id;
-				}
-				
-				await dtb.update_article(store.article)
-
+				}	
+				await dtb.update_article(store.article);
 				return;
 			},
 			validation_func(file, title) {
 				return (file instanceof File || (file === null && store.article.image !== null))
 			},
+			link_func: null,
 			button_title: "Update Article Image",
 			initial_map_title: null,
 			initial_image_blob: store.article.image !== null ? store.image_public_urls[store.article.image] ?? null : null,
+			initial_link: null,
 			allow_no_file: true,
 		}
-	}
+	})}
 
 	let image_source = $state('');
 	$effect(() => {
@@ -142,7 +144,7 @@
 		{#if store.edit_mode}
 			<Editor />
 		{:else}
-			<SvelteMarkdown source={store.article.content} />
+			<SvelteMarkdown source={store.article.content} renderers={{link: KeyWordRenderer}}/>
 		{/if}
 	</div>
 </div>

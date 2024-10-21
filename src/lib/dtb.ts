@@ -34,7 +34,7 @@ supabase.auth.onAuthStateChange((event, session) => {
 export default {
     async get_project(project_id: number) {
         if (project_id in store.project_cache) {
-            return {...store.project_cache[project_id]};
+            return { ...store.project_cache[project_id] };
         }
         const response = await supabase.from('project').select().eq('id', project_id).single();
         if (response.error) { console.error(response); }
@@ -48,7 +48,7 @@ export default {
     async get_map(project_id: number, map_id: number) {
         if (map_id in store.map_cache) {
             this.update_image_blob(store.map_cache[map_id].image, 'maps');
-            return {...store.map_cache[map_id]};
+            return { ...store.map_cache[map_id] };
         }
         const response = await supabase
             .from('map')
@@ -102,7 +102,7 @@ export default {
             if (store.article_cache[article_id].image !== null) {
                 this.update_image_blob(store.article_cache[article_id].image, 'articles');
             }
-            return {...store.article_cache[article_id]};
+            return { ...store.article_cache[article_id] };
         }
         return await supabase
             .from('article')
@@ -202,10 +202,10 @@ export default {
             .eq('project_id', project_id)
             .then(({ data, error }) => {
                 if (error) {
-                    console.error(`Couldn't fetch map data, error was: ${error}`);
+                    console.error(`Couldn't fetch article data, error was: ${error}`);
                 }
                 if (data) {
-                    data.forEach(article => store.article_cache[article.id] = article);
+                    data.forEach(article => { store.article_cache[article.id] = article; if (article.image !== null) { this.update_image_blob(article.image, 'articles') } });
                 }
             });
         all_fetched_from_project = true;
@@ -225,7 +225,6 @@ export default {
     },
 
     async create_and_select_marker_in_current_map() {
-        // TODO: How do we determine the type? Hardcoded to Informatic for now
         // TODO: How do we determine the x and y? Hardcoded to 50, 50 for now
         const response = await supabase.from('marker').insert({ owner_map_id: store.map.id, x: 50, y: 50 }).select().single();
         const { data } = response
@@ -248,8 +247,6 @@ export default {
     },
 
     async update_marker(marker: MarkerData) {
-        marker.x = Math.round(marker.x);
-        marker.y = Math.round(marker.y);
         const response = await supabase.from('marker').upsert(marker).select().single()
         if (response.error) {
             console.error(response);
@@ -264,7 +261,7 @@ export default {
         if (response.error) {
             console.error(response);
         }
-        if(response.data){
+        if (response.data) {
             store.map_cache[response.data.id] = response.data;
         }
     },
@@ -277,18 +274,21 @@ export default {
         if (response.error) {
             console.error(response);
         }
-        if(response.data){
+        if (response.data) {
             store.project_cache[response.data.id] = response.data;
         }
     },
 
-    async insert_new_map(project_id: number, image: string, title: string) {
-        let article = await this.create_and_show_article(project_id, title);
-        if(!article){
-            console.error('Failed to create article, could not produce map'); 
-            return
+       async insert_new_map(project_id: number, image: string, title: string, article_id: number | null) {
+        if (article_id === null){
+            let article = await this.create_and_show_article(project_id, title);
+            if(!article){
+                console.error('Failed to create article, could not produce map'); 
+                return}
+            article_id = store.article.id;
+        
         }
-        const response = await supabase.from('map').insert({ article_id: article.id, image: image, title: title, project_id: project_id }).select().single()
+        const response = await supabase.from('map').insert({ article_id: article_id, image: image, title: title, project_id: project_id }).select().single()
         if (response.error) {
             console.error(response);
         } else { return response.data }
@@ -306,10 +306,10 @@ export default {
         return image_id;
     },
 
-    async create_new_map(project_id: number, image_file: File, title: string) {
+    async create_new_map(project_id: number, image_file: File, title: string, article_id: number | null) {
         let image_id = await this.upload_image(project_id, image_file, 'maps');
         if (!image_id) { return null; }
-        let data = await this.insert_new_map(project_id, image_id, title);
+        let data = await this.insert_new_map(project_id, image_id, title, article_id);
         if (!data) { return null; }
         return data
     },
@@ -321,7 +321,7 @@ export default {
             console.error("Failed to create project"); 
             return;
         }
-        let map = await this.create_new_map(data.id, head_map_file, head_map_title)
+        let map = await this.create_new_map(data.id, head_map_file, head_map_title, null)
         if(map===null){
             console.error("Failed to create map and project");
             return;

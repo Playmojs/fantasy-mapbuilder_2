@@ -1,11 +1,17 @@
 <script lang="ts">
-	import type { ModalData } from '$lib/types';
-	import { onDestroy, onMount, untrack } from 'svelte';
+	import type { UploadModalData } from '$lib/types';
 	import { store } from '../store.svelte';
-	import EntityGrid from './EntityGrid.svelte';
-	import dtb, { supabase } from '$lib/dtb';
-	import { gotoMap } from '$lib/goto_map';
 	import { assert_unreachable } from '$lib/utils';
+
+	let {
+		modal_data,
+		close,
+		on_close
+	}: {
+		modal_data: UploadModalData<any>;
+		close: any;
+		on_close: ((success: boolean, result?: any) => void) | undefined;
+	} = $props();
 
 	function update_title() {
 		if (!title_input) {
@@ -14,56 +20,49 @@
 		map_title = title_input.value;
 	}
 
-	function close() {
-		if (file_input) {
-			file_input.files = null;
-			file_input.value = '';
-		}
-		store.edit_map_window = null;
-	}
-
 	const handleClose = (e: Event) => {
 		e.stopPropagation();
 		close();
 	};
 
 	const handle_submit = async () => {
-		if (!store.edit_map_window || !store.edit_map_window.validation_func(file, map_title)) {
+		if (!modal_data.validation_func(file, map_title)) {
 			assert_unreachable('Error trying to submit image');
 			close();
 			return;
 		}
-		store.edit_map_window.submit_func(file instanceof File ? file : null, map_title);
-		store.edit_map_window = null;
+		const result = modal_data.submit_func(file instanceof File ? file : null, map_title, link_id);
+		if (on_close !== undefined && result !== undefined) {
+			on_close(true, result);
+		}
 		close();
 	};
 
 	const handle_file_change = () => {
 		file =
 			file_input.files?.[0] ??
-			(!store.edit_map_window?.allow_no_file
-				? store.edit_map_window?.initial_image_blob ?? null
-				: null);
+			(!modal_data.allow_no_file ? modal_data.initial_image_blob ?? null : null);
 	};
 
 	let title_input: HTMLInputElement;
 	let file_input: HTMLInputElement;
 	let map_title = $state<string>('');
 
-	let file = $state<File | Blob | null>(store.edit_map_window?.initial_image_blob ?? null);
+	let file = $state<File | Blob | null>(modal_data.initial_image_blob ?? null);
 	let file_preview = $derived<string | null>(file !== null ? URL.createObjectURL(file) : null);
 
+	let link_id = $state<number | null>(modal_data.initial_link);
 	$effect(() => {
-		file = store.edit_map_window?.initial_image_blob ?? null;
-		map_title = store.edit_map_window?.initial_map_title ?? '';
+		file = modal_data.initial_image_blob ?? null;
+		map_title = modal_data.initial_map_title ?? '';
 	});
 </script>
 
-<div class="modal" on:click={handleClose} class:hidden={store.edit_map_window === null}>
+<div class="modal" on:click={handleClose}>
 	<div class="modal-content" on:click|stopPropagation>
 		<span class="close" on:click={handleClose}>&times;</span>
 		<form id="form" on:submit|preventDefault={handle_submit}>
-			{#if store.edit_map_window?.initial_map_title !== null}
+			{#if modal_data?.initial_map_title !== null}
 				<div id="title">
 					<label id="title_label">Map Title: </label>
 					<input
@@ -85,11 +84,27 @@
 				on:change={handle_file_change}
 				bind:this={file_input}
 			/>
+			{#if modal_data.link_func !== null}
+				<div id="link_row">
+					<p>
+						{`Linked article: ${typeof link_id === 'number' ? store.article_cache[link_id]?.title : 'unknown'}`}
+					</p>
+					<button
+						id="link_button"
+						type="button"
+						on:click|stopPropagation={async () => {
+							if (modal_data.link_func) {
+								link_id = (await modal_data.link_func()) ?? null;
+							}
+						}}>Link Article</button
+					>
+				</div>
+			{/if}
 			<button
-				disabled={!store.edit_map_window?.validation_func(file, map_title)}
+				disabled={!modal_data.validation_func(file, map_title)}
 				type="submit"
 				class="execute_button"
-				>{store.edit_map_window?.button_title}
+				>{modal_data?.button_title}
 			</button>
 		</form>
 		<div id="image-preview-section">
@@ -112,10 +127,6 @@
 		height: 100%;
 		background: rgba(0, 0, 0, 0.5);
 		z-index: 1000;
-	}
-
-	.modal.hidden {
-		display: none;
 	}
 
 	.modal-content {
@@ -168,6 +179,25 @@
 		color: white;
 		font-size: 1rem;
 	}
+
+	#link_row {
+		position: relative;
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+		color: white;
+		width: 100%;
+		font-size: 1.2rem;
+	}
+
+	#link_button {
+		width: 40%;
+		height: fit-content;
+		padding: 10px;
+		background-color: rgb(120, 120, 120);
+		border-radius: 10%;
+	}
+
 	.execute_button {
 		position: relative;
 		margin-left: auto;

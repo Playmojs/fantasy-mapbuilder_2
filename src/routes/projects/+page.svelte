@@ -10,14 +10,14 @@
 	};
 	get_projects();
 
-	let project_markers = $derived<ModalEntity[]>(
+	let project_markers = $derived<ModalEntity<void>[]>(
 		Object.entries(store.project_cache).map(([_, project]) => {
 			return {
 				image: store.image_public_urls[store.project_images[project.id]]
 					? URL.createObjectURL(store.image_public_urls[store.project_images[project.id]])
 					: '/assets/map_icon.png',
 				title: project.name,
-				func: () => {
+				on_result: () => {
 					goto(`/projects/${project.id}/${project.head_map_id}`);
 				}
 			};
@@ -25,8 +25,8 @@
 	);
 </script>
 
+<Homebar />
 <main>
-	<Homebar />
 	<h1 id="title">Existing Projects</h1>
 	<div id="projects_container">
 		<div id="grid">
@@ -34,8 +34,7 @@
 				<div
 					class="entity-item"
 					onclick={() => {
-						entity.func();
-						store.modal_data = null;
+						entity.on_result();
 					}}
 				>
 					<div class="image-container">
@@ -53,7 +52,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		width: 100%;
+		align-items: center;
 	}
 
 	#title {
@@ -66,7 +65,6 @@
 	#projects_container {
 		position: relative;
 		width: 90%;
-		left: 3%;
 		top: 30px;
 		max-height: 80vh;
 
@@ -84,6 +82,7 @@
 	}
 
 	.entity-item {
+		position: relative;
 		cursor: pointer;
 		text-align: center;
 		background-color: rgb(47, 47, 47);
@@ -104,7 +103,7 @@
 	}
 
 	.entity-image {
-		position: absolute;
+		position: relative;
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
