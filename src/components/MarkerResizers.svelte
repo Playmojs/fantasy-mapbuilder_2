@@ -98,49 +98,49 @@
 
 </script>
 
-<button id='ne' bind:this={marker_resizer_ne} 
+<button id='ne' bind:this={marker_resizer_ne} class={"ne-sw"}
     onmousedown={(event) => {horizontal = true; vertical = true; toggle_mouse(event);}}
     ontouchstart={(event) => {horizontal = true; vertical = true; toggle_movement_touch(event);}}
     style="top: {marker_data?.y - marker_data?.height / 2}%; left: {marker_data?.x + marker_data?.width / 2}%">
 </button>
 
-<button id='nw' bind:this={marker_resizer_nw} 
+<button id='nw' bind:this={marker_resizer_nw} class={"nw-se"}
     onmousedown={(event) => {horizontal = true; vertical = true; toggle_mouse(event);}}
     ontouchstart={(event) => {horizontal = true; vertical = true; toggle_movement_touch(event);}}
     style="top: {marker_data?.y - marker_data?.height / 2}%; left: {marker_data?.x - marker_data?.width / 2}%">
 </button>
 
-<button id='se' bind:this={marker_resizer_se} 
+<button id='se' bind:this={marker_resizer_se} class={"nw-se"}
     onmousedown={(event) => {horizontal = true; vertical = true; toggle_mouse(event);}}
     ontouchstart={(event) => {horizontal = true; vertical = true; toggle_movement_touch(event);}}
     style="top: {marker_data?.y + marker_data?.height / 2}%; left: {marker_data?.x + marker_data?.width / 2}%">
 </button>
 
-<button id='sw' bind:this={marker_resizer_sw} 
+<button id='sw' bind:this={marker_resizer_sw} class={"ne-sw"}
     onmousedown={(event) => {horizontal = true; vertical = true; toggle_mouse(event);}}
     ontouchstart={(event) => {horizontal = true; vertical = true; toggle_movement_touch(event);}}
     style="top: {marker_data?.y + marker_data?.height / 2}%; left: {marker_data?.x - marker_data?.width / 2}%">
 </button>
 
-<button id='e' bind:this={marker_resizer_e} 
+<button id='e' bind:this={marker_resizer_e} class={'horizontal'}
     onmousedown={(event) => {horizontal = true; vertical = false; toggle_mouse(event);}}
     ontouchstart={(event) => {horizontal = true; vertical = false; toggle_movement_touch(event);}}
     style="top: {marker_data?.y}%; left: {marker_data?.x + marker_data?.width / 2}%">
 </button>
 
-<button id='w' bind:this={marker_resizer_w} 
+<button id='w' bind:this={marker_resizer_w} class={'horizontal'}
     onmousedown={(event) => {horizontal = true; vertical = false; toggle_mouse(event);}}
     ontouchstart={(event) => {horizontal = true; vertical = false; toggle_movement_touch(event);}}
     style="top: {marker_data?.y}%; left: {marker_data?.x - marker_data?.width / 2}%">
 </button>
 
-<button id='n' bind:this={marker_resizer_n} 
+<button id='n' bind:this={marker_resizer_n} class={'vertical'}
     onmousedown={(event) => {horizontal = false; vertical = true; toggle_mouse(event);}}
     ontouchstart={(event) => {horizontal = false; vertical = true; toggle_movement_touch(event);}}
     style="top: {marker_data?.y - marker_data?.height / 2}%; left: {marker_data?.x}%">
 </button>
 
-<button id='s' bind:this={marker_resizer_s} 
+<button id='s' bind:this={marker_resizer_s} class={'vertical'}
     onmousedown={(event) => {horizontal = false; vertical = true; toggle_mouse(event);}}
     ontouchstart={(event) => {horizontal = false; vertical = true; toggle_movement_touch(event);}}
     style="top: {marker_data?.y + marker_data?.height / 2}%; left: {marker_data?.x}%">
@@ -154,6 +154,22 @@
         aspect-ratio: 1;
 		transform: translate(-50%, -50%);
     }
+
+	.ne-sw{
+		cursor: nesw-resize;
+	}
+
+	.nw-se{
+		cursor: nwse-resize;
+	}
+
+	.horizontal{
+		cursor: ew-resize;
+	}
+
+	.vertical{
+		cursor: ns-resize;
+	}
 </style>
 
 	

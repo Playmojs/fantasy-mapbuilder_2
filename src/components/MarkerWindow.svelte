@@ -5,6 +5,7 @@
 	import { store } from '../store.svelte';
 	import { fade } from 'svelte/transition';
 	import { assert, assert_unreachable } from '$lib/utils';
+	import { untrack } from 'svelte';
 
 	let { map_id = null, article_id = null, scale }: { map_id: number | null; article_id: number | null, scale: number } =
 		$props();

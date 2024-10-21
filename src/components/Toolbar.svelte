@@ -3,14 +3,17 @@
 		type UploadModalData,
 		type MapData,
 		type ModalEntity,
-		type UploadModal
+		type UploadModal,
+
+		type ChooseModalData
+
 	} from '$lib/types';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { gotoMap } from '$lib/goto_map';
-	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_existing_map} from '$lib/modal_manager';
+	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article} from '$lib/modal_manager';
 
 	const add_map: ModalEntity<void> = {
 		image: '/assets/plus.png',
@@ -98,10 +101,19 @@
 		});
 	}
 
-	const go_to_map_modal = async () => {
-		const result = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_existing_map()}})
+	const go_to_article_or_map_modal = async () => {
+		await dtb.fetch_all_from_project(store.project_id);
+		const result = await push_promise_modal({type: 'choose_modal', data: choose_map_or_article()})
 		if(result === undefined){return}
-		gotoMap(result)
+		if(result.map_id !== null){
+			gotoMap(result.map_id)
+		}
+		else if (result.article_id !== null){
+			const article = await dtb.get_article(store.project_id, result.article_id)
+			if(article){
+				store.article = article
+			}
+		}
 	}
 
 	function toggleMinimize() {
@@ -195,7 +207,7 @@
 		>
 		</button>
 		<button
-			onclick={()=>{go_to_map_modal()}}
+			onclick={()=>{go_to_article_or_map_modal()}}
 			style="background-image: url('/assets/map_icon.png');"
 			>
 		</button>

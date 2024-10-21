@@ -11,7 +11,7 @@ type Keyword = {
 export const keywords: {[key: string] : Keyword} = {
     "map": {
         choose_modal: async()=>{
-            const result: number | undefined = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_existing_map()}})
+            const result: number | void = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_existing_map()}})
             return result
         },
         regex: /\/map=(\d*)+/g,

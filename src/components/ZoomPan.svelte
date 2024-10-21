@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { store } from '../store.svelte';
 
-	let {parent_selector} : {parent_selector: string} = $props()
+	let {parent_selector, transform} : {parent_selector: string, transform: {x: number, y: number, scale: number}} = $props()
 
 	let parent: any;
 	let current_x = 0;
@@ -12,8 +12,14 @@
 
 	let initial_distance = 0;
 	let initial_scale = 1
-
 	let scale = initial_scale
+
+	$effect(()=> {
+		scale = transform.scale
+		current_x = transform.x
+		current_y = transform.y
+		update_transform()}
+	)
 
 	const min_scale = 0.5 * initial_scale;
 	const max_scale = 5 * initial_scale;

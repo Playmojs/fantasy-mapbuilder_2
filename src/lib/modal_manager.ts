@@ -1,6 +1,6 @@
 import { store } from '../store.svelte';
 import dtb from './dtb';
-import type { Modal, ModalEntity, UploadModal } from './types';
+import type { ChooseModalData, Modal, ModalEntity, UploadModal } from './types';
 import { assert_unreachable } from './utils';
 
 
@@ -38,9 +38,9 @@ export const choose_article_by_id: () => ModalEntity<number>[] = () => {
     });
 };
 
-export const choose_existing_map = async () => {
+export const choose_existing_map: () => Promise<ModalEntity<number>[]> = async () => {
     await dtb.fetch_all_from_project(store.project_id);
-    const maps = Object.entries(store.map_cache).map(([_, map]) => {
+    return Object.entries(store.map_cache).map(([_, map]) => {
         return {
             image: URL.createObjectURL(store.image_public_urls[map.image]),
             title: map.title,
@@ -49,7 +49,6 @@ export const choose_existing_map = async () => {
             }
         };
     });
-    return maps;
 };
 
 export const add_article: ModalEntity<void> =
@@ -107,4 +106,35 @@ export const get_new_map_data: () => Promise<void | {file: File | null, title: s
             allow_no_file: false}};
 
     return push_promise_modal(modal)
+}
+
+export type map_or_article = {
+    article_id: number | null;
+    map_id: number | null;
+}
+
+export const choose_map_or_article: () => ChooseModalData<map_or_article> = () => {
+    return{
+        Maps:  Object.entries(store.map_cache).map(([_, map]) => {
+            return {
+                image: URL.createObjectURL(store.image_public_urls[map.image]),
+                title: map.title,
+                on_result: () => {
+                    return {article_id: null, map_id: map.id}
+                }
+            };
+        }),
+        Articles: Object.entries(store.article_cache).map(([_, article]) => {
+            return {
+                image:
+                    article.image && store.image_public_urls[article.image]
+                        ? URL.createObjectURL(store.image_public_urls[article.image])
+                        : '/assets/article_icon.png',
+                title: article.title,
+                on_result: () => {
+                    return {article_id: article.id, map_id: null}
+                }
+            };
+        })
+    }
 }
