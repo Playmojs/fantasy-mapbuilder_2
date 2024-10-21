@@ -195,7 +195,7 @@
 	}
 
 	#informatic {
-		touch-action: none;
+		touch-action: pan-y;
 		position: relative;
 		height: 90%;
 		left: 0;
