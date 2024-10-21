@@ -32,7 +32,7 @@
 
 	const resizerOnTouchDown = (e: TouchEvent) => {
 		e.preventDefault();
-		windowWidth = window.innerWidth / 100;
+		windowWidth = window.screen.availWidth / 100;
 		originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
 		originalMouseX = e.touches[0].pageX;
 		window.addEventListener('touchmove', resizeTouch);
