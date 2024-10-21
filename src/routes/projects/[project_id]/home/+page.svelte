@@ -147,14 +147,15 @@
 	#project_display {
 		position: relative;
 		display: flex;
+		height: 90%;
 		justify-content: space-around;
 		top: 40px;
-		align-items: center;
+		align-items: start;
 	}
 
 	#project_form {
 		position: relative;
-		margin-top: -20px;
+		margin-top: 100px;
 		width: 40%;
 		display: flex;
 		flex-direction: column;
@@ -221,7 +222,7 @@
 	}
 
 	.image-preview {
-		position: relative;
+		position: absolute;
 		max-width: 100%;
 		border-radius: 10px;
 	}

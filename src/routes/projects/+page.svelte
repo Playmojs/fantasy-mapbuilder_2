@@ -106,9 +106,8 @@
 
 	.entity-image {
 		position: relative;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+		margin-top: auto;
+
 		max-width: 100%;
 		max-height: 100%;
 

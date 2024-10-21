@@ -46,8 +46,8 @@
 
 </script>
 
+<Homebar />
 <main>
-	<Homebar />
 	<button id="add_project_button" onclick={()=>{goto(`/projects/new_project`);}}>New Project</button>
 	<h1 id="title">My Projects</h1>
 	<div id="projects_container">
@@ -77,13 +77,14 @@
 </main>
 
 <style>
+	
 	main {
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		width: 100%;
+		align-items: center;
 	}
-
+	
 	#add_project_button {
 		position: absolute;
 		left: 80px;
@@ -97,7 +98,7 @@
 		font-size: 1rem;
 		cursor: pointer;
 	}
-
+	
 	#title {
 		position: relative;
 		margin: auto;
@@ -108,7 +109,6 @@
 	#projects_container {
 		position: relative;
 		width: 90%;
-		left: 3%;
 		top: 30px;
 		max-height: 80vh;
 
@@ -135,6 +135,7 @@
 		flex-direction: column;
 		justify-content: space-around;
 		align-items: center;
+		
 	}
 
 	.image-container {
@@ -146,10 +147,9 @@
 	}
 
 	.entity-image {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+		position: relative;
+		margin-top: auto;
+
 		max-width: 100%;
 		max-height: 100%;
 
