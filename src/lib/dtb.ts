@@ -128,7 +128,6 @@ export default {
         if (all_projects_fetched) { return; }
 
         for await (const project of projects) {
-            if(project.head_map_id === null){continue;}
             await supabase.from('map').select('image').eq('id', project.head_map_id).single().then(({ data, error }) => {
                 if (error) {
                     console.error(`Couldn't fetch project images, error was: ${error}`);

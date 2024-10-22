@@ -30,7 +30,6 @@
 						: '/assets/map_icon.png',
 					title: project.name,
 					on_result: () => {
-						if(project.head_map_id === null){assert_unreachable("Trying to go to map with id null")}
 						goto(`/projects/${project.id}/${project.head_map_id}`);
 					}
 				}

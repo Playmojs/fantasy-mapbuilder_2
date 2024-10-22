@@ -114,11 +114,11 @@
 	}
 
 	function get_min_y() {
-		return Math.min(50, window.innerHeight - parent.clientHeight * scale);
+		return Math.min(0, window.innerHeight - parent.clientHeight * scale);
 	}
 
 	function get_max_y() {
-		return Math.max(50, window.innerHeight - parent.clientHeight * scale);
+		return Math.max(0, window.innerHeight - parent.clientHeight * scale);
 	}
 
 	function get_distance(touch1: Touch, touch2: Touch) {

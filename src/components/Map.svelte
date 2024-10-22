@@ -69,7 +69,7 @@
 	let transf = $state<transform>({x: 0, y: 0, scale: 1})
 
 	function update_scale(){
-		transf={x: 0, y: 50, scale: (window.innerHeight - 50) / map_.naturalHeight / window.innerWidth * map_.naturalWidth};
+		transf={x: 0, y: 0, scale: window.innerHeight / map_.naturalHeight / window.innerWidth * map_.naturalWidth};
 	}
 </script>
 

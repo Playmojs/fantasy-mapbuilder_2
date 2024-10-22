@@ -25,7 +25,7 @@
 	async function get_data() {
 		project = await dtb.get_project(store.project_id);
 		await dtb.fetch_project_images([store.project_cache[store.project_id]]);
-		if(!project || project.head_map_id === null){return}
+		if(!project){return}
 		
 		main_map = await dtb.get_map(
 			project.id,

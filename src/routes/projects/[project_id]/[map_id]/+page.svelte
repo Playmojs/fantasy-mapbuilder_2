@@ -44,12 +44,12 @@
 	});
 </script>
 
+8<Toolbar />
 <Map />
 <ParentMap />
 {#if !store.informatic_minimized}
 	<Informatic />
 {/if}
-<Toolbar />
 
 {#each store.modals as modal (modal)}
 	{#if modal.type === 'upload_modal'}

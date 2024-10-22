@@ -163,19 +163,19 @@ export type Database = {
       project: {
         Row: {
           created_at: string
-          head_map_id: number | null
+          head_map_id: number
           id: number
           name: string
         }
         Insert: {
           created_at?: string
-          head_map_id?: number | null
+          head_map_id?: number
           id?: number
           name: string
         }
         Update: {
           created_at?: string
-          head_map_id?: number | null
+          head_map_id?: number
           id?: number
           name?: string
         }

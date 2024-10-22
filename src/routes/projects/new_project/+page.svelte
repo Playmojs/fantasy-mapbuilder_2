@@ -44,10 +44,6 @@
         if (main_map_file === null || main_map_title === '' || !main_map_title || project_title === ''){return;}
         let project = await dtb.create_new_project(project_title, main_map_title, main_map_file);
         if(project){
-            if(project.head_map_id === null){
-                assert_unreachable("Project set without headmap"); 
-                goto('/');
-            }
             store.project_id = project.id
             store.project_cache[store.project_id] = project;
             goto(`/projects/${project.id}/${project.head_map_id}`)

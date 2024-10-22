@@ -91,8 +91,8 @@
 						gotoMap(store.map.parent_id);
 					} else {
 						let project = await dtb.get_project(store.project_id);
-						if (project && project.head_map_id !== null) {
-							gotoMap(project?.head_map_id);
+						if (project) {
+							gotoMap(project.head_map_id);
 						}
 						else (goto('/'))
 					}
@@ -309,6 +309,7 @@
 		background-color: #4b4343;
 		color: white;
 		display: flex;
+		flex-wrap: wrap;
 		justify-content:space-around;
 		align-items: center;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
