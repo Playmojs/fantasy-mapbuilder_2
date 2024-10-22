@@ -16,7 +16,7 @@
 			return {
 				image: store.image_public_urls[store.project_images[project.id]]
 					? URL.createObjectURL(store.image_public_urls[store.project_images[project.id]])
-					: '/assets/map_icon.png',
+					: '/assets/old_map.png',
 				title: project.name,
 				on_result: () => {
 					goto(`/projects/${project.id}/${project.head_map_id}`);
@@ -54,6 +54,7 @@
 		flex-direction: column;
 		justify-content: flex-start;
 		align-items: center;
+		width: 100%;
 	}
 
 	#title {
@@ -61,6 +62,7 @@
 		margin: auto;
 		color: white;
 		margin-top: 50px;
+		padding-bottom: 30px;
 	}
 
 	#projects_container {
@@ -72,8 +74,9 @@
 		padding: 20px 50px;
 
 		border-radius: 15px;
-		background-color: grey;
+		background-color: rgb(90, 90, 90);
 		overflow-y: auto;
+		box-shadow: inset 10px 5px 5px rgb(40, 40, 40);
 	}
 
 	#grid {
@@ -86,12 +89,13 @@
 		position: relative;
 		cursor: pointer;
 		text-align: center;
-		background-color: rgb(47, 47, 47);
+		background-color: rgb(65, 65, 65);
 		border-radius: 10px;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;
 		align-items: center;
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 		
 	}
 
@@ -105,15 +109,13 @@
 
 	.entity-image {
 		position: relative;
-		margin-top: auto;
+		padding-top: 5px;
 
 		max-width: 100%;
-		max-height: 100%;
+		max-height: 95%;
 
 		border-radius: 15px;
-		border-width: 3px;
-		border-color: rgb(47, 47, 47);
-		border-style: solid;
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 	}
 
 	.entity-item p {
@@ -122,7 +124,7 @@
 		font-size: 2rem;
 		font-family: 'Cormorant Garamond', serif;
 		font-style: italic;
-		margin: 10px 0px;
+		margin: 0px 0px 10px 0px;
 	}
 
 

@@ -189,6 +189,27 @@ export type Database = {
           },
         ]
       }
+      user_info: {
+        Row: {
+          created_at: string
+          id: number
+          user_id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          user_id: string
+          username?: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
       user_project_access: {
         Row: {
           created_at: string

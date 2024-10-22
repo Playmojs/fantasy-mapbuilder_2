@@ -209,7 +209,7 @@
 		</button>
 		<button
 			onclick={()=>{go_to_article_or_map_modal()}}
-			style="background-image: url('/assets/map_icon.png');"
+			style="background-image: url('/assets/old_map.png');"
 			>
 		</button>
 	</div>
@@ -219,14 +219,14 @@
 		<button
 			onclick={confirm_delete_map}
 			class:hidden={!store.edit_mode}
-			style="background-image: url('/assets/delete.png');"
+			style="background-image: url('/assets/old_trashcan.png');"
 			title="Delete map"
 		></button>
 
 		<button
 			onclick={open_edit_map_modal}
 			class:hidden={!store.edit_mode}
-			style="background-image: url('/assets/map_icon.png');"
+			style="background-image: url('/assets/old_map.png');"
 			title="Edit map"
 		></button>
 	</div>
@@ -341,7 +341,7 @@
 	}
 
 	#edit_content_button {
-		background: url('/assets/edit-icon.png');
+		background: url('/assets/quill.png');
 		margin-left: 10%;
 	}
 

@@ -11,6 +11,7 @@
 
 	let project = $state<Project>();
 	let main_map = $state<MapData>();
+	let users = $state<string[]>([])
 
 	const change_main_map = async () => {
 		if (!project){return}
@@ -31,7 +32,9 @@
 			project.id,
 			project.head_map_id
 		);
-	
+		dtb.get_usernames_in_project(project.id).then((data) => {
+			if(data){users = data}})
+		dtb.fetch_all_from_project(project.id)
 }
 	$effect(() => {
 		store.project_id;
@@ -83,15 +86,15 @@
 <main>
 	<Homebar />
 	<div id="project_display">
-		<div id="image-preview-section">
-			{#if main_map_preview}
+		{#if main_map_preview}
+			<div id="image-preview-section">
 				<img src={main_map_preview} alt="Image Preview" class="image-preview" />
-			{:else}
-				<p class="no-image">No image selected</p>
-			{/if}
-		</div>
+			</div>
+		{/if}
 		<div id="project_form">
-			<h1>{`Project #${project?.id}`}</h1>
+			<div>
+				<h1>{`Project #${project?.id}`}</h1>
+			</div>
 			<div id="title">
 				<p id="title_label">Project Title:</p>
 				<input
@@ -107,6 +110,14 @@
 			<div id="head_map">
 				<p id="head_map_label">{`Main Map: ${main_map?.title ?? ''}`}</p>
 				<button id="change_head_map_button" onclick={change_main_map}>Change</button>
+			</div>
+			<div id="users">
+				<p id="users_title">Contributors:</p>
+				<div id='user_list'>
+				{#each users as user}
+					<p class="user_entry">{`${user}`}</p>
+				{/each}
+				</div>
 			</div>
 			<div id="execute_buttons">
 				<button id="delete_button" onclick={confirm_delete}>Delete Project</button>
@@ -155,35 +166,57 @@
 
 	#project_form {
 		position: relative;
-		margin-top: 100px;
+		margin-top: 50px;
 		width: 40%;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;
 		align-items: center;
 		color: white;
+		background-color: rgb(80, 80, 80);
+		padding: 50px 0px;
+		border-radius: 5%;
 		gap: 30px;
+		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
+	}
+
+	#project_form > div{
+		width: 80%;
+		background-color: rgb(70, 70, 70);
+		padding: 0px 5%;
+		border-radius: 10px;
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 	}
 
 	#title {
 		position: relative;
 		display: flex;
-		justify-content: space-around;
+		justify-content: start;
 		font-size: x-large;
 		align-items: center;
+	}
+
+	#title_label{
+		padding-right: 50px;
 	}
 
 	#title_input {
 		position: relative;
 		font-size: large;
 		height: fit-content;
+		padding-left: 5px;
+		height: 30px;
+		font-weight: bold;
+		background-color: rgb(150, 150, 150);
+		box-shadow: inset 2px 2px 2px rgb(40, 40, 40);
+		border-radius: 5px;
 		width: 50%;
 	}
 
 	#head_map {
 		position: relative;
 		display: flex;
-		justify-content: space-around;
+		justify-content: start;
 		gap: 20px;
 		font-size: x-large;
 		align-items: center;
@@ -192,20 +225,53 @@
 	#change_head_map_button {
 		height: fit-content;
 		padding: 5px;
+		margin-left: 100px;
 		color: white;
 		font-size: large;
-		background-color: rgb(80, 80, 80);
+		background-color: rgb(100, 100, 100);
 		border-radius: 10%;
+		cursor: pointer
+	}
+
+	#users{
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: start;
+		gap: 0px;
+	}
+
+	#users_title{
+		font-size: x-large;
+		align-self: left;
+	}
+	#user_list{
+		position: relative;
+		background-color: rgb(50, 50, 50);
+		border-radius: 10px;
+		width: 300px;
+		font-size: 1.1rem;
+		width: 100%;
+		padding-left: 10px;
+		margin-bottom: 10px;
+		margin-top: 0px;
+		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
 	}
 
 	#execute_buttons {
-		gap: 60px;
+		margin-top: 20px;
+		display: flex;
+		justify-content: space-around;
+		background-color: transparent !important;
+		box-shadow: none !important;
 	}
 
 	#execute_buttons > button {
 		padding: 10px;
 		border-radius: 10%;
 		margin: 0px 20px;
+		height: fit-content;
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 	}
 
 	#update_button {
@@ -213,23 +279,22 @@
 	}
 
 	#delete_button {
-		background-color: red;
+		background-color: rgb(200, 20, 20);
 	}
 
 	#image-preview-section {
 		position: relative;
 		width: 50%;
+		height: fit-content;
+		margin-top: auto;
+		margin-bottom: auto;
 	}
 
 	.image-preview {
+		margin-top: 50px;
 		position: relative;
 		max-width: 100%;
 		border-radius: 10px;
-	}
-
-	.no-image {
-		color: white;
-		font-size: 1.5rem;
-		text-align: center;
+		box-shadow: 10px 5px 5px rgb(40, 40, 40);
 	}
 </style>

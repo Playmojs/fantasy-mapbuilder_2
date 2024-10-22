@@ -2,7 +2,6 @@
 	import { goto } from "$app/navigation";
 	import dtb from "$lib/dtb";
 	import { pop_modal, push_modal } from "$lib/modal_manager";
-    import {type MapData, type Project, type ModalEntity, type UploadModalData} from "$lib/types"
 	import { assert_unreachable } from "$lib/utils";
 	import ConfirmModal from "../../../components/ConfirmModal.svelte";
 	import Homebar from "../../../components/Homebar.svelte";
@@ -61,15 +60,13 @@
 <Homebar/>
 <main>
     <div id=project_display>
-        <div id="image-preview-section">
-			{#if main_map_preview}
+        {#if main_map_preview}
+            <div id="image-preview-section">
 				<img src={main_map_preview} alt="Image Preview" class="image-preview" />
-			{:else}
-				<p class="no-image">No image selected</p>
-			{/if}
-		</div>
+            </div>
+		{/if}
         <div id="project_form">
-            <h1>New Project</h1>
+            <div id="header"><h1>New Project</h1></div>
             <div id="title">
                 <p id="title_label">Project Title: </p>
                 <input
@@ -137,28 +134,53 @@
         justify-content: space-around;
         align-items: center;
         color: white;
-        gap: 30px;
+        background-color: rgb(80, 80, 80);
+		padding: 50px 0px;
+		border-radius: 5%;
+		gap: 30px;
+		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
+    }
+
+    #project_form > div{
+		width: 80%;
+		background-color: rgb(70, 70, 70);
+		padding: 0px 5%;
+		border-radius: 10px;
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+	}
+
+    #header{
+        text-align: center;
     }
 
     #title{
         position: relative;
         display: flex;
-        justify-content: space-around;
+        justify-content: start;
         font-size: x-large;
         align-items: center;
+    }
+
+    #title_label{
+        padding-right: 80px;
     }
 
     #title_input{
         position: relative;
         font-size: large;
         height: fit-content;
+        font-weight: bold;
+        height: 30px;
+		background-color: rgb(150, 150, 150);
+        box-shadow: inset 2px 2px 2px rgb(40, 40, 40);
+		border-radius: 5px;
         width: 50%;
     }
 
     #head_map{
         position: relative;
         display: flex;
-        justify-content: space-around;
+        justify-content: start;
         gap: 20px;
         font-size: x-large;
         align-items: center;
@@ -169,17 +191,19 @@
         padding: 5px;
         color: white;
         font-size: large;
-        background-color: rgb(80, 80, 80);
+        background-color: rgb(100, 100, 100);
         border-radius: 10%;
         cursor: pointer;
+        margin-left: 100px;
 
     }
 
     #add_project_button{
         background-color: rgb(20, 150, 20);
-        padding: 10px;
+        padding: 20px 30px;
         border-radius: 10%;
-        margin: 0px 20px;
+        margin: 10px 20px;
+        font-size: large;
         cursor: pointer;
     }
 
@@ -192,19 +216,17 @@
     #image-preview-section {
 		position: relative;
 		width: 50%;
+        height: fit-content;
+        max-height: 80%;
+		margin-top: auto;
+		margin-bottom: auto;
 	}
 
 	.image-preview {
         position: relative;
 		max-width: 100%;
 		border-radius: 10px;
-	}
-
-	.no-image {
-		color: white;
-		font-size: 1.5rem;
-		text-align: center;
-        margin-top: 250px;
-
+        margin-top: 50px;
+		box-shadow: 10px 5px 5px rgb(40, 40, 40);
 	}
 </style>

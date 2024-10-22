@@ -378,5 +378,22 @@ export default {
         }
 
         return access;
+    },
+
+    async get_usernames_in_project(project_id: number): Promise<string[] | undefined> {
+        const {error, data} = await supabase.from('user_project_access').select("user_id").eq('project_id', project_id);
+        if (error){
+            console.error(`Couldn't fetch user ids, error: ${error}`)
+        }
+        if(data){
+            const ids = data.map((id)=> {return id.user_id})
+            const response = await supabase.from('user_info').select('username').in('user_id', ids)
+            if(response.error){
+                console.error(`Couldn't fetch usernames, error: ${response.error}`)
+            }
+            if(response.data){
+                return response.data.map((user_info) => {return user_info.username})
+            }
+        }
     }
 }

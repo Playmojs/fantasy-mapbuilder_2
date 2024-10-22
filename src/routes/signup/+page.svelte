@@ -94,13 +94,13 @@
 		position: absolute;
 		width: 400px;
 		max-width: 50%;
-		background-color: rgb(47, 47, 47);
-		border-color: rgb(100, 100, 100);
-		border-width: 5px;
-		border-style: solid;
+		background-color: rgb(60, 60, 60);
+		box-shadow: 10px 5px 5px rgb(40, 40, 40);
+		user-select: none;
 		border-radius: 20px;
-		padding: 1rem;
-		margin-top: 1rem;
+		padding: 1rem 1rem 0rem 1rem;
+		margin-top: 4rem;
+		gap: 30px;
 
 		font-size: 100%;
 		display: flex;
@@ -121,6 +121,10 @@
 	form {
 		display: flex;
 		flex-direction: column;
+		background-color: rgb(90, 90, 90);
+		padding: 5px 0px;
+		border-radius: 10px;
+		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
 	}
 
 	label {
@@ -128,6 +132,7 @@
 		left: 10%;
 		margin-top: 1rem;
 		color: white;
+		font-size: large;
 	}
 
 	input {
@@ -136,20 +141,24 @@
 		margin: auto;
 		padding: 0.5rem;
 		margin-top: 0.5rem;
+		font-size: large;
+		font-weight: bold;
 		background-color: rgb(80, 80, 80);
+		border-radius: 10px;
+		box-shadow: inset 3px 3px 5px rgb(40, 40, 40);
 	}
 
 	button {
 		position: relative;
-		width: 50%;
-		margin: auto;
-		margin-top: 1.5rem;
-		padding: 0.75rem;
-		background-color: rgb(130, 130, 130);
+		margin: 1.5rem auto 0.5rem auto;
+		padding: 0.75rem 4rem;
+		background-color: rgb(80, 80, 80);
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 		color: white;
 		font-weight: bold;
 		font-size: large;
 		border: none;
+		border-radius: 10px;
 		cursor: pointer;
 		opacity: 0.8;
 	}
@@ -159,6 +168,7 @@
 		opacity: 0.4;
 		cursor: not-allowed;
 		background-color: rgb(60, 60, 60);
+		box-shadow: none;
 	}
 
 	.query {

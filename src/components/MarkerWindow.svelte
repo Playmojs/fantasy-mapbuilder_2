@@ -19,10 +19,10 @@
 		let response;
 		if (map_id !== null) {
 			response = await dtb.get_map(store.project_id, map_id);
-			default_img = '/assets/map_icon.png';
+			default_img = '/assets/old_map.png';
 		} else if (article_id !== null) {
 			response = await dtb.get_article(store.project_id, article_id);
-			default_img = '/assets/article_icon.png';
+			default_img = '/assets/Parchment.png';
 		}
 
 		if (response) {
