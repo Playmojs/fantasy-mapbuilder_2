@@ -29,7 +29,7 @@ export type ModalType = 'upload_modal' | 'choose_modal' | 'confirm_modal'
 
 export type UploadModalData<TResult> = {
 	submit_func: (file: File | null, title: string, article_id: number | null) => TResult | void;
-	validation_func: (file: File | Blob | null, title: string) => boolean;
+	validation_func: (file: File | Blob | null, title: string, article_id: number | null) => boolean;
 	link_func: (() => Promise<number | null | undefined>) | null;
 	button_title: string;
 	initial_map_title: string | null;

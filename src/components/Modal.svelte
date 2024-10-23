@@ -69,9 +69,9 @@
 		position: relative;
 		margin: 5% auto;
 		padding: 20px;
-		background: rgb(47, 47, 47);
+		background: rgb(60, 60, 60);
 		width: 80%;
-		max-width: 800px;
+		max-width: 1000px;
 		max-height: 80%;
 		overflow-y: hidden;
 		border-radius: 5px;
@@ -79,6 +79,11 @@
 
 	.tab_row {
 		height: 50px;
+		display: flex;
+		justify-content: start;
+		align-items: center;
+		gap: 1px;
+		margin-bottom: 8px;
 	}
 
 	.tab {
@@ -88,10 +93,12 @@
 		background-color: rgb(80, 80, 80);
 		color: white;
 		font-size: x-large;
+		box-shadow: 5px 5px 5px rgb(40, 40, 40)
 	}
 
 	.current_tab {
 		background-color: rgb(55, 55, 55);
+		box-shadow: none;
 	}
 	.close {
 		position: absolute;

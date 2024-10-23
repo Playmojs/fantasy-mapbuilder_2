@@ -3,6 +3,8 @@
 	import { store } from '../store.svelte';
 	import { assert_unreachable } from '$lib/utils';
 
+	let button: HTMLButtonElement;
+
 	let {
 		modal_data,
 		close,
@@ -26,7 +28,7 @@
 	};
 
 	const handle_submit = async () => {
-		if (!modal_data.validation_func(file, map_title)) {
+		if (!modal_data.validation_func(file, map_title, link_id)) {
 			assert_unreachable('Error trying to submit image');
 			close();
 			return;
@@ -85,23 +87,24 @@
 				bind:this={file_input}
 			/>
 			{#if modal_data.link_func !== null}
-				<div id="link_row">
-					<p>
-						{`Linked article: ${typeof link_id === 'number' ? store.article_cache[link_id]?.title : 'unknown'}`}
-					</p>
+				<div id="link_row" on:click={() => {button.click()}}>
 					<button
 						id="link_button"
 						type="button"
+						bind:this={button}
 						on:click|stopPropagation={async () => {
 							if (modal_data.link_func) {
 								link_id = (await modal_data.link_func()) ?? null;
 							}
 						}}>Link Article</button
 					>
+					<p id='link_title'>
+						{`Article: ${typeof link_id === 'number' ? store.article_cache[link_id]?.title : 'unknown'}`}
+					</p>
 				</div>
 			{/if}
 			<button
-				disabled={!modal_data.validation_func(file, map_title)}
+				disabled={!modal_data.validation_func(file, map_title, link_id)}
 				type="submit"
 				class="execute_button"
 				>{modal_data?.button_title}
@@ -135,8 +138,9 @@
 		padding: 20px;
 		background: rgb(47, 47, 47);
 		width: 80%;
-		max-width: 800px;
-		height: 60%;
+		max-width: 1000px;
+		height: fit-content;
+		top: 10%;
 		overflow-y: hidden;
 		border-radius: 5px;
 		display: flex;
@@ -148,9 +152,22 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;
+		gap: 50px;
 		height: 100%;
 		width: 40%;
 		align-items: center;
+		padding: 40px 20px 30px 20px;
+		background-color: rgb(90, 90, 90);
+		border-radius: 15px;
+		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
+	}
+
+	#title {
+		background-color: rgb(60, 60, 60);
+		border-radius: 10px;
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+		padding: 10px 0px 10px 15px;
+		width: 90%;
 	}
 
 	#title_label {
@@ -164,55 +181,87 @@
 		margin-left: auto;
 		margin-right: auto;
 		color: black;
-		background-color: rgb(120, 120, 120);
-		font-size: large;
-		width: 60%;
+		font-family: 'Cormorant Garamond';
+		background-color: rgb(140, 140, 140);
+		font-size: 1.4rem;
+		width: 50%;
 		text-align: center;
 		border-radius: 5px;
+		box-shadow: inset 2px 2px 5px rgb(40, 40, 40);
 	}
 
 	.map_file {
 		position: relative;
 		margin-left: auto;
 		margin-right: auto;
-		width: fit-content;
+		width: 90%;
 		color: white;
-		font-size: 1rem;
+		font-family: 'Cormorant Garamond';
+		font-size: 1.4rem;
+		background-color: rgb(60, 60, 60);
+		padding: 10px 0px 10px 15px;
+		border-radius: 10px;
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+	}
+
+	.map_file::file-selector-button{
+		font-family: 'Cormorant Garamond';
+		border-radius: 5px;
+		font-size: 1.2rem;
+		margin-right: 15px;
+		padding: 5px 15px;
+		width: 40%;
+		background-color: rgb(130, 130, 130);
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 	}
 
 	#link_row {
 		position: relative;
 		display: flex;
-		justify-content: space-around;
+		justify-content: start;
 		align-items: center;
 		color: white;
-		width: 100%;
-		font-size: 1.2rem;
+		width: 90%;
+		font-size: 1.4rem;
+		background-color: rgb(60, 60, 60);
+		padding: 10px 0px 10px 15px;
+		border-radius: 10px;
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 	}
 
 	#link_button {
+		font-family: 'Cormorant Garamond';
+		border-radius: 5px;
+		font-size: 1.2rem;
+		padding: 7px 15px;
+		margin-right: 15px;
 		width: 40%;
-		height: fit-content;
-		padding: 10px;
-		background-color: rgb(120, 120, 120);
-		border-radius: 10%;
+		background-color: rgb(130, 130, 130);
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+	}
+
+	#link_title{
+		margin: 0px;
 	}
 
 	.execute_button {
 		position: relative;
 		margin-left: auto;
 		margin-right: auto;
-		background-color: rgb(80, 80, 80);
+		background-color: rgb(60, 60, 60);
 		cursor: pointer;
 		height: fit-content;
-		padding: 20px;
-		width: 40%;
+		padding: 15px 0px;
+		width: 60%;
 		font-size: large;
 		color: white;
-		border-radius: 10%;
+		border-radius: 10px;
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 	}
 
 	.execute_button:disabled {
+		background-color: rgb(80, 80, 80);
+		box-shadow: none;
 		cursor: not-allowed;
 		border: none;
 		color: black;
@@ -225,8 +274,9 @@
 		cursor: pointer;
 		color: white;
 	}
+
 	#title {
-		font-size: large;
+		font-size: 1.2rem;
 		font-family: 'Cormorant Garamond', serif;
 	}
 

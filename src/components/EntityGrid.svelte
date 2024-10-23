@@ -45,20 +45,24 @@
 
 <style>
 	#grid-container {
-		max-height: calc(100vh - 200px);
-		overflow-y: auto;
+		max-height: calc(100vh - 300px);
+		overflow-y: scroll;
 		padding-right: 15px;
 	}
 
 	#grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 		gap: 20px;
 	}
 
 	.entity-item {
 		cursor: pointer;
 		text-align: center;
+		background-color: rgb(50, 50, 50);
+		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+		padding: 10px 10px;
+		border-radius: 10px;
 	}
 
 	.image-container {
@@ -79,6 +83,8 @@
 
 	.entity-item p {
 		color: white;
+		font-size: large;
+		margin: 10px 0px 0px 0px;
 	}
 
 	#grid-container::-webkit-scrollbar {

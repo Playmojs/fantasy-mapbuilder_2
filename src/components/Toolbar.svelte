@@ -58,9 +58,9 @@
 
 					return;
 				},
-				validation_func(file: File | Blob | null, title: string) {
+				validation_func(file: File | Blob | null, title, article_id) {
 					return (
-						file !== null && title !== '' && !(!(file instanceof File) && title === store.map.title)
+						file !== null && title !== '' && article_id !== null && (file instanceof File || title !== store.map.title || article_id !== store.map.article_id)
 					);
 				},
 				link_func: async () => {
