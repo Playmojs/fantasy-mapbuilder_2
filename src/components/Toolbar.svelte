@@ -204,7 +204,7 @@
 			onclick={() => {
 				goto('/projects');
 			}}
-			style="background-image: url('/assets/home_icon.png');"
+			style="background-image: url('/assets/house.png');"
 		>
 		</button>
 		<button
@@ -306,7 +306,7 @@
 		right: 0;
 		width: 100%;
 		height: 50px; /* TODO: Define once */
-		background-color: #4b4343;
+		background-color: #333;
 		color: white;
 		display: flex;
 		flex-wrap: wrap;
@@ -332,7 +332,7 @@
 		cursor: pointer;
 		background-size: contain;
 		background-position: center center;
-		background-color: #4b4343;
+		background-color: transparent;
 		background-repeat: no-repeat;
 	}
 

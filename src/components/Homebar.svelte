@@ -41,13 +41,11 @@
 		right: 0;
 		background-color: #333;
 		height: 40px;
-		padding: 1rem 2rem;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding-right: 100px;
-		padding-left: 100px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		padding: 1rem 4rem 1rem 4rem;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
 		z-index: 1000;
 	}
 
@@ -66,7 +64,8 @@
 	}
 
 	a {
-		color: white;
+		color: rgb(220, 220, 220);
+		text-shadow: 5px 5px 5px rgb(10, 10, 10);
 		text-decoration: none;
 		font-weight: bold;
 		font-size: 1.2rem;

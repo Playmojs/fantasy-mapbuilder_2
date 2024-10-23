@@ -31,18 +31,22 @@
 	h1 {
 		font-size: 7rem;
 		margin: auto;
-		color: white;
+		color: rgb(178, 151, 0);
 		font-family: 'Cormorant Garamond', serif;
 		font-weight: bold;
 		font-style: italic;
-		margin-top: 10px;
+		text-shadow: 10px 10px 10px rgb(5, 5, 5);
+		text-decoration: underline solid rgba(67, 128, 41, 0.6);
+		text-decoration-thickness: 6px;
+		text-underline-offset: 35px;
 	}
 
 	h2 {
 		padding-top: 50px;
 		font-size: 4rem;
 		margin: auto;
-		color: white;
+		color: rgb(178, 151, 0);
+		text-shadow: 5px 5px 5px rgb(10, 10, 10);
 		font-family: 'Cormorant Garamond', serif;
 	}
 
@@ -50,11 +54,13 @@
 		width: 500px;
 		margin: auto;
 		margin-top: 100px;
+		padding: 10px 40px;
+		text-shadow: 5px 5px 5px rgb(10, 10, 10);
 	}
 
 	h3 {
 		font-size: 2rem;
-		color: white;
+		color: rgb(220, 220, 220);
 		font-family: 'Cormorant Garamond', serif;
 	}
 

@@ -133,12 +133,14 @@
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
-        color: white;
+        color: rgb(220, 220, 220);
+        text-shadow: 3px 3px 3px rgb(40, 40, 40);
         background-color: rgb(80, 80, 80);
 		padding: 50px 0px;
 		border-radius: 5%;
 		gap: 30px;
 		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
+        border: 5px ridge rgb(178, 151, 0);
     }
 
     #project_form > div{
@@ -188,8 +190,8 @@
 
     #set_main_map_button{
         height: fit-content;
-        padding: 5px;
-        color: white;
+        padding: 5px 10px;
+        color: rgb(220, 220, 220);
         font-size: large;
         background-color: rgb(100, 100, 100);
         border-radius: 10%;

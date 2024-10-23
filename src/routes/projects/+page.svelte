@@ -60,9 +60,14 @@
 	#title {
 		position: relative;
 		margin: auto;
-		color: white;
-		margin-top: 50px;
-		padding-bottom: 30px;
+		font-size: 4rem;
+		color: rgb(220, 220, 220);
+		margin: 40px 0px 30px 0px;
+		padding: 20px;
+		font-family: 'Cormorant Garamond';
+		text-decoration: underline solid rgba(67, 128, 41, 0.8);
+		text-underline-offset: 20px;
+		text-shadow: 5px 5px 5px rgb(10, 10, 10);
 	}
 
 	#projects_container {
@@ -76,7 +81,8 @@
 		border-radius: 15px;
 		background-color: rgb(90, 90, 90);
 		overflow-y: auto;
-		box-shadow: inset 10px 5px 5px rgb(40, 40, 40);
+		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
+		border: 5px ridge rgb(178, 151, 0);
 	}
 
 	#grid {
