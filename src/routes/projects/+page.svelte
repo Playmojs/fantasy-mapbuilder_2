@@ -61,7 +61,7 @@
 		position: relative;
 		margin: auto;
 		font-size: 4rem;
-		color: rgb(220, 220, 220);
+		color: var(--main_white);
 		margin: 40px 0px 30px 0px;
 		padding: 20px;
 		font-family: 'Cormorant Garamond';
@@ -82,7 +82,7 @@
 		background-color: rgb(90, 90, 90);
 		overflow-y: auto;
 		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
-		border: 5px ridge rgb(178, 151, 0);
+		border: 5px ridge var(--main_gold);
 	}
 
 	#grid {
@@ -126,7 +126,7 @@
 
 	.entity-item p {
 		position: relative;
-		color: white;
+		color: var(--main_white);
 		font-size: 2rem;
 		font-family: 'Cormorant Garamond', serif;
 		font-style: italic;

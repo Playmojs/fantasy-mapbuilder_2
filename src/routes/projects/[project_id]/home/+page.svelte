@@ -172,13 +172,13 @@
 		flex-direction: column;
 		justify-content: space-around;
 		align-items: center;
-		color: rgb(220, 220, 220);
+		color: var(--main_white);
 		background-color: rgb(80, 80, 80);
 		padding: 50px 0px;
 		border-radius: 5%;
 		gap: 30px;
 		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
-		border: 5px ridge rgb(178, 151, 0);
+		border: 5px ridge var(--main_gold);
 	}
 
 	#project_form > div{
@@ -227,7 +227,7 @@
 		height: fit-content;
 		padding: 5px 10px;
 		margin-left: 100px;
-		color: rgb(220, 220, 220);
+		color: var(--main_white);
 		font-size: large;
 		background-color: rgb(100, 100, 100);
 		border-radius: 10%;

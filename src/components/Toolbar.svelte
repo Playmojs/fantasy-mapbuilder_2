@@ -307,7 +307,7 @@
 		width: 100%;
 		height: 50px; /* TODO: Define once */
 		background-color: #333;
-		color: white;
+		color: var(--main_white);
 		display: flex;
 		flex-wrap: wrap;
 		justify-content:space-around;

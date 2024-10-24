@@ -64,7 +64,7 @@
 	}
 
 	a {
-		color: rgb(220, 220, 220);
+		color: var(--main_white);
 		text-shadow: 5px 5px 5px rgb(10, 10, 10);
 		text-decoration: none;
 		font-weight: bold;

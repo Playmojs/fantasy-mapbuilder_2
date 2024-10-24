@@ -31,7 +31,7 @@
 	h1 {
 		font-size: 7rem;
 		margin: auto;
-		color: rgb(178, 151, 0);
+		color: var(--main_gold);
 		font-family: 'Cormorant Garamond', serif;
 		font-weight: bold;
 		font-style: italic;
@@ -45,7 +45,7 @@
 		padding-top: 50px;
 		font-size: 4rem;
 		margin: auto;
-		color: rgb(178, 151, 0);
+		color: var(--main_gold);
 		text-shadow: 5px 5px 5px rgb(10, 10, 10);
 		font-family: 'Cormorant Garamond', serif;
 	}
@@ -60,7 +60,7 @@
 
 	h3 {
 		font-size: 2rem;
-		color: rgb(220, 220, 220);
+		color: var(--main_white);
 		font-family: 'Cormorant Garamond', serif;
 	}
 

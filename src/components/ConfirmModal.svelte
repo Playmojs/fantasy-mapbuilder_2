@@ -70,7 +70,7 @@
 		top: 10px;
 		right: 10px;
 		cursor: pointer;
-		color: white;
+		color: var(--main_white);
 	}
 
     #buttonrow{
@@ -87,11 +87,11 @@
 		cursor:pointer;
         width: 40%;
 		font-size: large;
-		color: white;
+		color: var(--main_white);
 		border-radius: 10%;
     }
 
     h1{
-        color: white;
+        color: var(--main_white);
     }
 </style>

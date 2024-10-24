@@ -20,7 +20,7 @@
 	}
 	h1 {
 		position: relative;
-		color: white;
+		color: var(--main_white);
 		margin-left: auto;
 		margin-right: auto;
 		top: 100px;

@@ -149,7 +149,7 @@
 <style>
     button{
         position: absolute;
-        background-color: white;
+        background-color: var(--main_white);
         width: 1%;
         aspect-ratio: 1;
 		transform: translate(-50%, -50%);

@@ -60,7 +60,7 @@
 		background: rgb(75, 75, 75);
 		width: 150px;
 		max-width: none;
-		color: white;
+		color: var(--main_white);
 		border-radius: 10px;
 		transform-origin: bottom left;
 		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);

@@ -91,7 +91,7 @@
 		width: 100px;
 		border-radius: 5px;
 		background-color: rgb(80, 80, 80);
-		color: white;
+		color: var(--main_white);
 		font-size: x-large;
 		box-shadow: 5px 5px 5px rgb(40, 40, 40)
 	}
@@ -105,6 +105,6 @@
 		top: 10px;
 		right: 10px;
 		cursor: pointer;
-		color: white;
+		color: var(--main_white);
 	}
 </style>

@@ -187,7 +187,7 @@
 
 <style>
 	#editor {
-		background-color: white;
+		background-color: var(--main_white);
 		color: black;
 	}
 

@@ -91,9 +91,9 @@
 		height: 70px;
 		aspect-ratio: 3;
 		border-radius: 10%;
-		color: rgb(220, 220, 220);
+		color: var(--main_white);
 		text-shadow: 3px 3px 2px rgb(80, 80, 80);
-		background-color: rgb(67, 128, 41);
+		background-color: var(--main_green);
 		border: none;
 		font-size: 2rem;
 		font-family: 'Cormorant Garamond';
@@ -106,7 +106,7 @@
 	#title {
 		position: relative;
 		margin: auto;
-		color: rgb(220, 220, 220);
+		color: var(--main_white);
 		font-size: 4rem;
 		margin: 40px 0px 30px 0px;
 		padding: 20px;
@@ -127,7 +127,7 @@
 		border-radius: 15px;
 		background-color: rgb(90, 90, 90);
 		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
-		border: 5px ridge rgb(178, 151, 0);
+		border: 5px ridge var(--main_gold);
 		overflow-y: auto;
 	}
 
@@ -172,7 +172,7 @@
 
 	.entity-item p {
 		position: relative;
-		color: white;
+		color: var(--main_white);
 		font-size: 2rem;
 		font-family: 'Cormorant Garamond', serif;
 		font-style: italic;

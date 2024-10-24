@@ -173,7 +173,7 @@
 	#title_label {
 		font-size: x-large;
 		margin-right: 15px;
-		color: white;
+		color: var(--main_white);
 	}
 
 	#title_input {
@@ -195,7 +195,7 @@
 		margin-left: auto;
 		margin-right: auto;
 		width: 90%;
-		color: white;
+		color: var(--main_white);
 		font-family: 'Cormorant Garamond';
 		font-size: 1.4rem;
 		background-color: rgb(60, 60, 60);
@@ -220,7 +220,7 @@
 		display: flex;
 		justify-content: start;
 		align-items: center;
-		color: white;
+		color: var(--main_white);
 		width: 90%;
 		font-size: 1.4rem;
 		background-color: rgb(60, 60, 60);
@@ -254,7 +254,7 @@
 		padding: 15px 0px;
 		width: 60%;
 		font-size: large;
-		color: white;
+		color: var(--main_white);
 		border-radius: 10px;
 		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 	}
@@ -272,7 +272,7 @@
 		top: 10px;
 		right: 10px;
 		cursor: pointer;
-		color: white;
+		color: var(--main_white);
 	}
 
 	#title {
@@ -293,7 +293,7 @@
 	}
 
 	.no-image {
-		color: white;
+		color: var(--main_white);
 		font-size: 1.5rem;
 		text-align: center;
 	}

@@ -103,6 +103,8 @@
 		margin-top: 5rem;
 		gap: 30px;
 
+		border: 4px ridge var(--main_gold);
+
 		font-size: 100%;
 		display: flex;
 		flex-direction: column;
@@ -110,10 +112,11 @@
 
 	h1 {
 		position: relative;
-		color: white;
+		color: var(--main_white);
 		text-align: center;
 		padding: 5px 0px;
 		border-radius: 10px;
+		text-shadow: 5px 5px 5px rgb(10, 10, 10)
 	}
 
 	.error {
@@ -134,7 +137,7 @@
 		position: relative;
 		left: 10%;
 		margin-top: 1rem;
-		color: white;
+		color: var(--main_white);
 		font-size: large;
 	}
 
@@ -157,7 +160,7 @@
 		padding: 0.75rem 4rem;
 		background-color: rgb(80, 80, 80);
 		box-shadow: 5px 5px 5px rgb(40, 40, 40);
-		color: white;
+		color: var(--main_white);
 		font-weight: bold;
 		font-size: large;
 		border: none;
@@ -176,7 +179,7 @@
 
 	.query {
 		position: relative;
-		color: white;
+		color: var(--main_white);
 		bottom: 5px;
 		font-size: large;
 		margin-left: 20px;

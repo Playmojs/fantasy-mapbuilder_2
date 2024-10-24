@@ -82,7 +82,7 @@
 	}
 
 	.entity-item p {
-		color: white;
+		color: var(--main_white);
 		font-size: large;
 		margin: 10px 0px 0px 0px;
 	}

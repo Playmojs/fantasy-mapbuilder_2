@@ -210,12 +210,12 @@
 
 	.non-editable {
 		background-color: rgb(47, 47, 47);
-		color: white;
+		color: var(--main_white);
 		white-space: normal;
 	}
 
 	.editable {
-		background-color: white;
+		background-color: var(--main_white);
 		color: black;
 		white-space: pre-wrap;
 	}
