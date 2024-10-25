@@ -3,6 +3,7 @@ import type { Database } from './database.types';
 import { type Article, type Folder, type MapData, type MarkerData, type Project } from "$lib/types";
 import { store } from '../store.svelte';
 import { v4 as uuidv4 } from 'uuid';
+import { push_article } from './article_stack';
 
 const supabaseUrl = "https://ybazluanarelyccrfuuc.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYXpsdWFuYXJlbHljY3JmdXVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM1NDgyMTYsImV4cCI6MjAzOTEyNDIxNn0.hUbetjxp4zUMXS4C7wosekpD8CtJwpPU0jOOLyAxzt8";
@@ -219,7 +220,7 @@ export default {
         }
         if (data) {
             store.article_cache[data.id] = data;
-            store.article_history.push(data.id)
+            push_article(data.id, false)
             return data;
         }
     },

@@ -7,6 +7,7 @@
 	import MarkerWindow from './MarkerWindow.svelte';
 	import { assert } from '$lib/utils';
 	import MarkerResizers from './MarkerResizers.svelte';
+	import { push_article } from '$lib/article_stack';
 
 	let {marker_data, get_relative_movement}: {marker_data: MarkerData, get_relative_movement: (x: number, y: number) => { x: number; y: number }} = $props()
 
@@ -29,7 +30,7 @@
 					: store.map.article_id;
 			const article = await dtb.get_article(store.project_id, id);
 			if (article) {
-				store.article_history.push(article.id)
+				push_article(article.id, false)
 				if(store.informatic_minimized){
 					store.informatic_minimized = false;
 					store.informatic_opened_by_marker = true;

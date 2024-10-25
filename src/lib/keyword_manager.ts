@@ -1,4 +1,5 @@
 import { store } from "../store.svelte";
+import { push_article } from "./article_stack";
 import { gotoMap } from "./goto_map";
 import { choose_article_by_id, choose_existing_map, push_promise_modal } from "./modal_manager";
 
@@ -24,6 +25,6 @@ export const keywords: {[key: string] : Keyword} = {
             return result
         },
         regex: /\/article=(\d*)+/g,
-        on_click: (id: number)=>{store.article_history.push(id)}
+        on_click: (id: number)=>{push_article(id, false)}
     },
 };

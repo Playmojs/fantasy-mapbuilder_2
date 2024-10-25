@@ -71,18 +71,18 @@
 	#marker_window {
 		position: relative;
 
-		background: rgb(75, 75, 75);
-		width: 95%;
+		background: rgb(60, 60, 60);
 		height: 95%;
+		padding-bottom: 20px;
 		color: var(--main_white);
-		margin: auto;
+		margin: 0px 2.5%;
 		top: 10px;
 		border-radius: 10px;
 		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
 	}
 
 	@media(max-width: 1300px){
-		#marker_window{
+		#border{
 			width: 100px;
 		}
 	}
@@ -93,18 +93,17 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		
-		padding: 5%;
+		padding-left: 5%;
 	}
 
 	#window_content img {
 		position: relative;
-		display: block;
 		max-width: 100%;
 		height: auto;
 	}
 
 	h1 {
+		position: relative;
 		font-family: 'Cormorant Garamond', serif;
 		font-weight: bold;
 		font-style: italic;

@@ -12,6 +12,7 @@
 	import ConfirmModal from '../../../../components/ConfirmModal.svelte';
 	import MapOption from '../../../../components/MapOption.svelte';
 	import { pop_modal } from '$lib/modal_manager';
+	import { push_article } from '$lib/article_stack';
 
 	function reset_modals() {
 		store.modals = [];
@@ -30,7 +31,7 @@
 		}
 		const article = await dtb.get_article(store.project_id, store.map.article_id);
 		if (article) {
-			store.article_history.push(article.id);
+			push_article(article.id, false);
 		}
 		const current_markers = await dtb.get_markers(store.map.id);
 		if (current_markers) {

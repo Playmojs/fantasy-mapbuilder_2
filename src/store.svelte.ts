@@ -35,6 +35,7 @@ class Store {
     user_projects = $state<number[]>([]);
 
     article_history = $state<number[]>([]);
+    undone_articles = $state<number[]>([]); 
     article = $derived.by<Article>(() => {const id = this.article_history.at(-1); return (id === undefined || !this.article_cache[id]) ? default_article : this.article_cache[id]});
 }
 

@@ -4,6 +4,7 @@
 	import ZoomPan from './ZoomPan.svelte';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
+	import { push_article } from '$lib/article_stack';
 
 	let mapContainer: HTMLDivElement;
 	let map_: HTMLImageElement;
@@ -36,7 +37,7 @@
 		}
 		const article = await dtb.get_article(store.project_id, store.map.article_id);
 		if (article) {
-			store.article_history.push(article.id);
+			push_article(article.id, true);
 			if (store.informatic_opened_by_marker){
 				store.informatic_minimized = true;
 			}

@@ -7,6 +7,7 @@
 	import edit_mode from '../store';
 	import { push_modal } from '$lib/modal_manager';
 	import KeyWordRenderer from './KeyWordRenderer.svelte';
+	import { pop_article, undo_article_pop} from '$lib/article_stack';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -111,6 +112,9 @@
 		}
 	})
 
+	function change_text_size(factor: number) {
+		store.text_size = store.text_size * factor;
+	}
 </script>
 
 <div
@@ -121,6 +125,50 @@
 >
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 
+	<div id='button_bar'>
+
+		<button
+			id="undo_article_button"
+			onclick={() => {
+				pop_article();
+			}}
+			style="background-image: url('/assets/arrow_back.png');"
+			title="Go to last Article"
+			aria-label='Undo Button'
+			disabled={store.article_history.length <= 1}
+		></button>	
+		
+		<button
+			id="redo_article_button"
+			onclick={() => {
+				undo_article_pop();
+			}}
+			disabled={store.undone_articles.length === 0}
+			style="background-image: url('/assets/arrow_forward.png');"
+			title="Go to next Article"
+			aria-label='Redo Button'
+		></button>
+
+		<button
+			id="increment_text_size_button"
+			onclick={() => {
+				change_text_size(1.1);
+			}}
+			style="background-image: url('/assets/fantasy-plus.png');"
+			title="Increase text size"
+			aria-label='Increase Text Size Button'
+		></button>
+
+		<button
+			id="decrement_text_size_button"
+			onclick={() => {
+				change_text_size(0.9);
+			}}
+			style="background-image: url('/assets/minus.png');"
+			title="Decrease text size"
+			aria-label='Decrease Text Size Button'
+		></button>
+	</div>
 	<div
 		id="article_title"
 		contenteditable={store.edit_mode}
@@ -167,8 +215,41 @@
 		z-index: 10;
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: 1%;
 		padding: 10px;
+	}
+
+	#button_bar{
+		display: flex;
+		gap: 20px;
+		height: 50px;
+		flex-shrink: 0;
+	}
+
+	#button_bar button{
+		position: relative;
+		aspect-ratio: 4/3; 
+		height: 80%;
+		border: none;
+		cursor: pointer;
+		background-size: contain;
+		background-position: center center;
+		background-color: rgb(60, 60, 60);
+		border-radius: 10px;
+		background-repeat: no-repeat;
+		box-shadow: 3px 3px 5px rgb(30, 30, 30);
+	}
+	
+	#redo_article_button:disabled{
+		cursor: default;
+		box-shadow: none;
+		filter: brightness(70%);	
+	}
+
+	#undo_article_button:disabled{
+		cursor:default;
+		box-shadow: none;
+		filter: brightness(70%);
 	}
 
 	#article_title {
@@ -189,6 +270,7 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+
 
 	h1 {
 		margin: 5px;
@@ -269,7 +351,6 @@
 
 	#image_container{
 		display: flex;
-		flex-shrink: 0;
 	}
 
 	#edit_image_button{
@@ -285,7 +366,7 @@
 
 	#article_image {
 		position: relative;
-		display: block;
+		display: block;	
 		height: 100%;
 		margin-left: auto;
 		margin-right: auto;

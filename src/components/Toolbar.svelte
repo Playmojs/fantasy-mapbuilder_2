@@ -14,6 +14,7 @@
 	import { goto } from '$app/navigation';
 	import { gotoMap } from '$lib/goto_map';
 	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article} from '$lib/modal_manager';
+	import { push_article } from '$lib/article_stack';
 
 	const add_map: ModalEntity<void> = {
 		image: '/assets/plus.png',
@@ -112,7 +113,7 @@
 		else if (result.article_id !== null){
 			const article = await dtb.get_article(store.project_id, result.article_id)
 			if(article){
-				store.article_history.push(article.id)
+				push_article(article.id, false);
 			}
 		}
 	}
@@ -130,9 +131,7 @@
 		}
 	}
 
-	function change_text_size(factor: number) {
-		store.text_size = store.text_size * factor;
-	}
+	
 
 	async function changeMarkerTarget() {
 		if (store.selected_marker === null) {
@@ -183,7 +182,7 @@
 								selected_marker.target_map_id = null;
 								selected_marker.target_article_id = +id;
 								dtb.update_marker(selected_marker);
-								store.article_history.push(article.id);
+								push_article(article.id, false);
 							}
 						};
 					})
@@ -261,28 +260,6 @@
 			class:edit_mode={store.edit_mode}
 			onclick={toggleEditable}
 			class:hidden={!edit_visible}
-		></button>
-	</div>
-
-	<div class="button_group">
-		<button
-			id="increment_text_size_button"
-			onclick={() => {
-				change_text_size(1.1);
-			}}
-			style="background-image: url('/assets/fantasy-plus.png');"
-			title="Increase text size"
-			class:hidden={store.informatic_minimized}
-		></button>
-
-		<button
-			id="decrement_text_size_button"
-			onclick={() => {
-				change_text_size(0.9);
-			}}
-			style="background-image: url('/assets/minus.png');"
-			title="Decrease text size"
-			class:hidden={store.informatic_minimized}
 		></button>
 	</div>
 
