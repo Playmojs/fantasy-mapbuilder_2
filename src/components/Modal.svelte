@@ -75,6 +75,7 @@
 		max-height: 80%;
 		overflow-y: hidden;
 		border-radius: 5px;
+		border: 3px ridge var(--main_gold);
 	}
 
 	.tab_row {

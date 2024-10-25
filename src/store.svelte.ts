@@ -26,14 +26,16 @@ class Store {
     // From database
     map = $state<MapData>(default_map);
     markers = $state<MarkerData[]>([]);
-    article = $state<Article>(default_article);
-
+    
     map_cache = $state<{ [id: number]: MapData }>({});
     article_cache = $state<{ [id: number]: Article }>({});
     project_cache = $state<{ [id: number]: Project }>({});
     project_images = $state<{ [id: number]: string }>({});
     image_public_urls = $state<{ [image: string]: Blob }>({});
-    user_projects = $state<number[]>([])
+    user_projects = $state<number[]>([]);
+
+    article_history = $state<number[]>([]);
+    article = $derived.by<Article>(() => {const id = this.article_history.at(-1); return (id === undefined || !this.article_cache[id]) ? default_article : this.article_cache[id]});
 }
 
 const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "map.jpg", parent_id: null, parent_image: null, project_id: 0 }

@@ -58,11 +58,12 @@
 		max-width: 800px;
 		max-height: 80%;
 		overflow-y: hidden;
-		border-radius: 5px;
+		border-radius: 15px;
         display: flex;
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
+		border: 3px ridge var(--main_gold);
 	}
 
 	.close {
@@ -79,19 +80,23 @@
         align-items: center;
         width: 100%;
         height: 40%;
+		margin: 20px 0px;
     }
 
     button{
         position: relative;
 		background-color: rgb(80, 80, 80);
 		cursor:pointer;
-        width: 40%;
+        width: 30%;
 		font-size: large;
 		color: var(--main_white);
 		border-radius: 10%;
+		padding: 7px 0px;
+		box-shadow: 3px 3px 3px rgb(10, 10, 10);
     }
 
     h1{
         color: var(--main_white);
+		text-shadow: 3px 3px 3px rgb(10, 10, 10);
     }
 </style>

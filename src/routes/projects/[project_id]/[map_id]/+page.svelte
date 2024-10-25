@@ -30,7 +30,7 @@
 		}
 		const article = await dtb.get_article(store.project_id, store.map.article_id);
 		if (article) {
-			store.article = article;
+			store.article_history.push(article.id);
 		}
 		const current_markers = await dtb.get_markers(store.map.id);
 		if (current_markers) {

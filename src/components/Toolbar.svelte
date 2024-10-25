@@ -112,7 +112,7 @@
 		else if (result.article_id !== null){
 			const article = await dtb.get_article(store.project_id, result.article_id)
 			if(article){
-				store.article = article
+				store.article_history.push(article.id)
 			}
 		}
 	}
@@ -183,7 +183,7 @@
 								selected_marker.target_map_id = null;
 								selected_marker.target_article_id = +id;
 								dtb.update_marker(selected_marker);
-								store.article = article;
+								store.article_history.push(article.id);
 							}
 						};
 					})
@@ -270,7 +270,7 @@
 			onclick={() => {
 				change_text_size(1.1);
 			}}
-			style="background-image: url('/assets/plus.png');"
+			style="background-image: url('/assets/fantasy-plus.png');"
 			title="Increase text size"
 			class:hidden={store.informatic_minimized}
 		></button>

@@ -23,7 +23,7 @@ export const keywords: {[key: string] : Keyword} = {
             const result: number | void = await push_promise_modal({type: 'choose_modal', data: {Articles: await choose_article_by_id()}})
             return result
         },
-        regex: /\/article=(\d?)+/g,
-        on_click: (id: number)=>{store.article = store.article_cache[id]}
+        regex: /\/article=(\d*)+/g,
+        on_click: (id: number)=>{store.article_history.push(id)}
     },
 };

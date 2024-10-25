@@ -36,7 +36,7 @@
 		}
 		const article = await dtb.get_article(store.project_id, store.map.article_id);
 		if (article) {
-			store.article = article;
+			store.article_history.push(article.id);
 			if (store.informatic_opened_by_marker){
 				store.informatic_minimized = true;
 			}

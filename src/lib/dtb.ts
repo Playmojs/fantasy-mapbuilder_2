@@ -219,7 +219,7 @@ export default {
         }
         if (data) {
             store.article_cache[data.id] = data;
-            store.article = data;
+            store.article_history.push(data.id)
             return data;
         }
     },

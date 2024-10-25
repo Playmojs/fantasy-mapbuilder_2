@@ -41,23 +41,23 @@
 	get_data();
 </script>
 
-<div
-	id="marker_window"
+<div id='border'
 	transition:fade={{ duration: 300 }}
-	style="transform: scale({1 / scale}) translateX(-50%);"
->
-	<div id="window_content">
-		<h1>{title}</h1>
-		<img src={image} alt="MarkerWindow" />
+	style="transform: scale({1 / scale}) translateX(-50%);">
+	<div id="marker_window">
+		<div id="window_content">
+			<h1>{title}</h1>
+			<img src={image} alt="MarkerWindow" />
+		</div>
 	</div>
 </div>
 
 <style>
-	#marker_window {
+	#border {
 		position: inherit;
 		left: 50%;
 		bottom: 100%;
-		background: rgb(75, 75, 75);
+		background: var(--main_gold);
 		width: 150px;
 		max-width: none;
 		color: var(--main_white);
@@ -65,7 +65,20 @@
 		transform-origin: bottom left;
 		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
 		padding-bottom: 20px;
+
 		z-index: 50;
+	}
+	#marker_window {
+		position: relative;
+
+		background: rgb(75, 75, 75);
+		width: 95%;
+		height: 95%;
+		color: var(--main_white);
+		margin: auto;
+		top: 10px;
+		border-radius: 10px;
+		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
 	}
 
 	@media(max-width: 1300px){

@@ -105,6 +105,12 @@
 		}
 	});
 
+	$effect.pre(() => {
+		if (store.edit_mode){
+			dtb.update_article(store.article)
+		}
+	})
+
 </script>
 
 <div

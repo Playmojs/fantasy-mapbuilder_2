@@ -21,7 +21,7 @@
 	}
 
 	const add_map: ModalEntity<void> = {
-		image: '/assets/plus.png',
+		image: '/assets/fantasy-plus.png',
 		title: 'Add Map',
 		on_result: async () => {
 			let map_info = await get_new_map_data()

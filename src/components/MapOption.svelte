@@ -146,6 +146,7 @@
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
+		border: 3px ridge var(--main_gold);
 	}
 
 	#form {
@@ -290,6 +291,7 @@
 		height: auto;
 		max-width: 100%;
 		border-radius: 10px;
+		box-shadow: 5px 5px 5px rgb(10, 10, 10);
 	}
 
 	.no-image {
