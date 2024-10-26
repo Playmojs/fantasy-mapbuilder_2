@@ -241,7 +241,7 @@
 			onclick={() => {
 				changeMarkerTarget();
 			}}
-			style="background-image: url('/assets/change_marker.png');"
+			style="background-image: url('/assets/quill and scroll.png');"
 			title="Set target of selected marker"
 			class:hidden={!store.edit_mode || store.selected_marker === null}
 		></button>
