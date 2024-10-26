@@ -1,148 +1,310 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import edit_mode, { set_informatic } from '../store'
-	import showdown from 'showdown';
-
-	let editable: boolean;
-	$: editable = $edit_mode;
+	import SvelteMarkdown from 'svelte-markdown';
+	import { store } from '../store.svelte';
+	import Editor from './Editor.svelte';
+	import { fly } from 'svelte/transition';
+	import dtb from '$lib/dtb';
+	import edit_mode from '../store';
+	import { push_modal } from '$lib/modal_manager';
+	import KeyWordRenderer from './KeyWordRenderer.svelte';
+	import { pop_article, undo_article_pop} from '$lib/article_stack';
 
 	let informaticWindow: HTMLDivElement;
-	let informatic: HTMLDivElement;
-	let editButton: HTMLImageElement;
-	let resizer: HTMLDivElement;
-	let text: string = '';
+	let article_title: HTMLHeadElement;
 
+	let originalX: number;
+	let originalMouseX: number;
+	let windowWidth: number;
 
-	onMount(() => {
-		if (editButton) {
-			editButton.addEventListener('click', toggleEditable);
+	function updateTitle() {
+		const title: string = article_title.innerText;
+		if (store.article) {
+			store.article.title = title;
 		}
+	}
+	const resizerOnMouseDown = (e: MouseEvent) => {
+		e.preventDefault();
+		windowWidth = window.innerWidth / 100;
+		originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
+		originalMouseX = e.pageX;
+		window.addEventListener('mousemove', resizeMouse);
+		window.addEventListener('mouseup', stopResize);
+	};
 
-		if (resizer) {
-			let originalX: number;
-			let originalY: number;
-			let originalMouseX: number;
-			let originalMouseY: number;
-			let windowWidth: number;
-			let windowHeight: number;
+	const resizerOnTouchDown = (e: TouchEvent) => {
+		e.preventDefault();
+		windowWidth = window.screen.availWidth / 100;
+		originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
+		originalMouseX = e.touches[0].pageX;
+		window.addEventListener('touchmove', resizeTouch);
+		window.addEventListener('touchend', stopResize);
+	};
 
-			resizer.addEventListener('mousedown', (e) => {
-				e.preventDefault();
-				windowWidth = window.innerWidth / 100;
+	function resizeMouse(e: MouseEvent) {
+		resize(e.pageX);
+	}
 
-				originalX = informaticWindow.getBoundingClientRect().left / windowWidth;
-				originalMouseX = e.pageX;
-				window.addEventListener('mousemove', resize);
-				window.addEventListener('mouseup', stopResize);
-			});
+	function resizeTouch(e: TouchEvent) {
+		e.stopPropagation;
+		if (e.touches.length !== 1) {
+			return;
+		}
+		resize(e.touches[0].pageX);
+	}
 
-			function resize(e: MouseEvent) {
-				let newX = originalX + (e.pageX - originalMouseX) / windowWidth;
+	function resize(page_x: number) {
+		let newX = originalX + (page_x - originalMouseX) / windowWidth;
 
-				newX = newX < 92 ? newX : 92;
+		newX = newX < 92 ? (newX < 0 ? 0 : newX) : 92;
 
-				informaticWindow.style.left = `${newX}%`;
-				informaticWindow.style.width = `${100 - newX}%`;
-			}
+		store.informatic_width = newX;
 
-			function stopResize() {
-				window.removeEventListener('mousemove', resize);
-				window.removeEventListener('mouseup', stopResize);
-			}
+		informaticWindow.style.left = `${newX}%`;
+	}
+
+	function stopResize() {
+		window.removeEventListener('mousemove', resizeMouse);
+		window.removeEventListener('mouseup', stopResize);
+		window.removeEventListener('touchmove', resizeTouch);
+		window.removeEventListener('touchend', stopResize);
+	}
+
+	async function change_article_image(){
+		push_modal({type: 'upload_modal', data:{
+			submit_func: async(file: File | null, title: string) => {
+				if (file === null){
+					store.article.image = null;
+				}
+				else{
+					let image_id = await dtb.upload_image(store.project_id, file, 'articles', null)
+					if(!image_id){
+						console.error("Image upload failed");
+						return;
+					}
+					store.image_public_urls[image_id] = file;
+					store.article.image = image_id;
+				}	
+				await dtb.update_article(store.article);
+				return;
+			},
+			validation_func(file, title) {
+				return (file instanceof File || (file === null && store.article.image !== null))
+			},
+			link_func: null,
+			button_title: "Update Article Image",
+			initial_map_title: null,
+			initial_image_blob: store.article.image !== null ? store.image_public_urls[store.article.image] ?? null : null,
+			initial_link: null,
+			allow_no_file: true,
+		}
+	})}
+
+	let image_source = $state('');
+	$effect(() => {
+		if (store.article.image && store.image_public_urls[store.article.image]) {
+			image_source = URL.createObjectURL(store.image_public_urls[store.article.image]);
 		}
 	});
 
-	const set_informatic_text = (new_text: string) => {
-		if (!editable){
-			text = new_text;
-			update_informatic(editable)
+	$effect.pre(() => {
+		if (store.edit_mode){
+			dtb.update_article(store.article)
 		}
+	})
+
+	function change_text_size(factor: number) {
+		store.text_size = store.text_size * factor;
 	}
-	set_informatic.set(set_informatic_text)
-
-	function toggleEditable() {
-		if (editable) {
-			text = informatic.innerText;
-		}
-		edit_mode.update(edit_mode => !edit_mode);
-
-		update_informatic(!editable)
-	}
-
-	function update_informatic(editable: boolean) {
-		if (editable) {
-			informatic.innerText = text;
-
-		} else {
-			if(informatic){
-				console.log('Update text')
-				let converter = new showdown.Converter();
-				informatic.innerHTML = converter.makeHtml(text);
-
-		}}
-	}
-
 </script>
 
-<div id="informaticWindow" bind:this={informaticWindow} class:edit_mode={editable}>
-	<div id="resizer" bind:this={resizer}></div>
-	<div id="toolbar">
+<div
+	id="informaticWindow"
+	bind:this={informaticWindow}
+	class:edit_mode={store.edit_mode}
+	transition:fly={{ x: 400, duration: 500 }}
+>
+	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
+
+	<div id='button_bar'>
+
+		<button
+			id="undo_article_button"
+			onclick={() => {
+				pop_article();
+			}}
+			style="background-image: url('/assets/arrow_back.png');"
+			title="Go to last Article"
+			aria-label='Undo Button'
+			disabled={store.article_history.length <= 1}
+		></button>	
+		
+		<button
+			id="redo_article_button"
+			onclick={() => {
+				undo_article_pop();
+			}}
+			disabled={store.undone_articles.length === 0}
+			style="background-image: url('/assets/arrow_forward.png');"
+			title="Go to next Article"
+			aria-label='Redo Button'
+		></button>
+
+		<button
+			id="increment_text_size_button"
+			onclick={() => {
+				change_text_size(1.1);
+			}}
+			style="background-image: url('/assets/fantasy-plus.png');"
+			title="Increase text size"
+			aria-label='Increase Text Size Button'
+		></button>
+
+		<button
+			id="decrement_text_size_button"
+			onclick={() => {
+				change_text_size(0.9);
+			}}
+			style="background-image: url('/assets/minus.png');"
+			title="Decrease text size"
+			aria-label='Decrease Text Size Button'
+		></button>
+	</div>
+	<div
+		id="article_title"
+		contenteditable={store.edit_mode}
+		class={store.edit_mode ? 'editable' : 'non-editable'}
+		onblur={() => {
+			updateTitle();
+		}}
+	>
+		<h1 bind:this={article_title}>{store.article.title}</h1>
+	</div>
+	<div id="image_container" style="height: {store.article.image !== null ? 30 : store.edit_mode ? 10 : 0}%;">
+		{#if store.edit_mode}
+			<button id="edit_image_button" onclick={change_article_image}></button>
+		{/if}
 		<img
-			id="edit_content_button"
-			class:editable={editable}
-			src="/assets/edit-icon.png"
-			alt="Edit Content"
-			bind:this={editButton}
+		id="article_image"
+		src={image_source}
+		alt="Article image"
+		class:hidden={store.article.image === null}
 		/>
 	</div>
-	<div id="informatic" class='{editable? 'editable' : 'non-editable'}' bind:this={informatic} contenteditable={editable}>
-		{text}
+	<div
+		id="informatic"
+		class={store.edit_mode ? 'editable' : 'non-editable'}
+		style="font-size: {store.text_size}%;"
+	>
+		{#if store.edit_mode}
+			<Editor />
+		{:else}
+			<SvelteMarkdown source={store.article.content} renderers={{link: KeyWordRenderer}}/>
+		{/if}
 	</div>
 </div>
 
 <style>
 	#informaticWindow {
+		touch-action: none;
 		position: absolute;
 		background-color: rgb(47, 47, 47);
-		top: 0%;
+		top: 50px; /* TODO: Define once */
+		bottom: 0;
 		left: 66%;
-		height: 100%;
-		width: 34%;
+		right: 0%;
 		z-index: 10;
+		display: flex;
+		flex-direction: column;
+		gap: 1%;
+		padding: 10px;
 	}
-	#informaticWindow.edit_mode{
-		top: 7%;
-		height: 93%;
 
+	#button_bar{
+		display: flex;
+		gap: 20px;
+		height: 50px;
+		flex-shrink: 0;
+	}
+
+	#button_bar button{
+		position: relative;
+		aspect-ratio: 4/3; 
+		height: 80%;
+		border: none;
+		cursor: pointer;
+		background-size: contain;
+		background-position: center center;
+		background-color: rgb(60, 60, 60);
+		border-radius: 10px;
+		background-repeat: no-repeat;
+		box-shadow: 3px 3px 5px rgb(30, 30, 30);
+	}
+	
+	#redo_article_button:disabled{
+		cursor: default;
+		box-shadow: none;
+		filter: brightness(70%);	
+	}
+
+	#undo_article_button:disabled{
+		cursor:default;
+		box-shadow: none;
+		filter: brightness(70%);
+	}
+
+	#article_title {
+		position: relative;
+		height: 7%;
+		left: 0;
+		font-size: 150%;
+		text-align: center;
+		border-radius: 10px;
+		font-family: 'Garamond Semibold Italic';
+		white-space: nowrap;
+	}
+
+	#article_title h1 {
+		margin: 0;
+		padding: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+
+	h1 {
+		margin: 5px;
+	}
+
+	@media (max-width: 1080px) {
+		#article_title {
+			height: 15%;
+		}
 	}
 
 	#informatic {
+		touch-action: pan-y;
 		position: relative;
-		top: 30%;
-		height: 60%;
+		height: 90%;
 		left: 0;
 		right: 0;
 		background-color: inherit;
-		font-size: large;
+		font-family: 'Garamond Regular';
 		text-align: justify;
 		overflow-y: scroll;
-		padding: 10px;
-		margin-bottom: 10px;
+		border-radius: 10px;
+		padding-right: 10px;
 	}
 
-	#informatic.non-editable
-	{
+	.non-editable {
 		background-color: rgb(47, 47, 47);
-		color: white;
-		margin: 0px;
+		color: var(--main_white);
 		white-space: normal;
 	}
 
-	#informatic.editable
-	{
-		background-color: white;
+	.editable {
+		background-color: var(--main_white);
 		color: black;
-		margin: 20px;
 		white-space: pre-wrap;
 	}
 
@@ -171,33 +333,6 @@
 		background-color: #888;
 	}
 
-	#toolbar {
-		position: relative;
-		height: 5%;
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: flex-end;
-	}
-
-	#edit_content_button {
-		position: relative;
-		background-color: #555;
-		height: 100%;
-		margin-right: 10px;
-		margin-top: 10px;
-		shape-outside: circle();
-		border-radius: 7%;
-	}
-
-	#edit_content_button:hover {
-		background-color: #888;
-	}
-
-	#edit_content_button.editable {
-		background-color: #111;
-	}
-
 	#resizer {
 		position: absolute;
 		top: 0;
@@ -206,5 +341,89 @@
 		width: 10px;
 		height: 100%;
 		z-index: 10;
+	}
+
+	@media (max-width: 768px) {
+		#resizer {
+			width: 25px;
+		}
+	}
+
+	#image_container{
+		display: flex;
+	}
+
+	#edit_image_button{
+		position: relative;
+		background-image: url('/assets/Wheel.png');
+		background-color: transparent;
+		background-size: contain;
+		background-repeat: no-repeat;
+		border: none;
+		width: 30px;
+		aspect-ratio: 1;
+	}
+
+	#article_image {
+		position: relative;
+		display: block;	
+		height: 100%;
+		margin-left: auto;
+		margin-right: auto;
+		border-radius: 10px;
+	}
+
+	#article_image.hidden {
+		display: none;
+	}
+
+	/* Fonts */
+
+	@font-face {
+		font-family: 'Cormorant Garamond';
+		src: url('/fonts/Cormorant_Garamond/CormorantGaramond-Regular.ttf');
+		font-weight: normal;
+		font-style: normal;
+	}
+
+	@font-face {
+		font-family: 'Cormorant Garamond';
+		src: url('/fonts/Cormorant_Garamond/CormorantGaramond-Bold.ttf');
+		font-weight: bold;
+		font-style: normal;
+	}
+
+	@font-face {
+		font-family: 'Cormorant Garamond';
+		src: url('/fonts/Cormorant_Garamond/CormorantGaramond-Italic.ttf');
+		font-weight: normal;
+		font-style: italic;
+	}
+
+	@font-face {
+		font-family: 'Cormorant Garamond';
+		src: url('/fonts/Cormorant_Garamond/CormorantGaramond-SemiBoldItalic.ttf');
+		font-weight: 600;
+		font-style: italic;
+	}
+
+	:global(p) {
+		font-family: 'Cormorant Garamond', serif;
+	}
+
+	:global(strong) {
+		font-family: 'Cormorant Garamond';
+		font-weight: bold;
+	}
+
+	:global(em) {
+		font-family: 'Cormorant Garamond', serif;
+		font-style: italic;
+	}
+
+	h1 {
+		font-family: 'Cormorant Garamond', serif;
+		font-weight: bold;
+		font-style: italic;
 	}
 </style>

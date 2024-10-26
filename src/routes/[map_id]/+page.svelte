@@ -51,6 +51,7 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	
+	
 	let map_id: number = +$page.params.map_id
 	
 	let current_map: map = maps[map_id];
