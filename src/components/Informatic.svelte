@@ -217,6 +217,10 @@
 		flex-direction: column;
 		gap: 1%;
 		padding: 10px;
+
+		background-image: url('/assets/brickwall_2.jpg');
+		background-position: right;
+		background-size: 500px;
 	}
 
 	#button_bar{
@@ -255,7 +259,11 @@
 	#article_title {
 		position: relative;
 		height: 7%;
-		left: 0;
+		min-width: 400px;
+		max-width: 800px;
+		margin: 0 auto;
+
+		
 		font-size: 150%;
 		text-align: center;
 		border-radius: 10px;
@@ -292,6 +300,8 @@
 		font-family: 'Garamond Regular';
 		text-align: justify;
 		overflow-y: scroll;
+		margin-right: 20px;
+		padding-left: 10px;
 		border-radius: 10px;
 		padding-right: 10px;
 	}
@@ -340,6 +350,7 @@
 		cursor: e-resize;
 		width: 10px;
 		height: 100%;
+		background-color: transparent;
 		z-index: 10;
 	}
 
