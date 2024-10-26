@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 
 	let searchTerm = $state('');
-	let isDropdownVisible = $state(false);
+	let hideDropdown = $state(false);
 	let searchInput: HTMLInputElement;
 	let containerRef: HTMLDivElement;
 
@@ -18,10 +18,9 @@
 
 	const handleKeydown = (event: KeyboardEvent) => {
 		if (event.key === 'Escape') {
-			isDropdownVisible = false;
-		} else if (!isDropdownVisible) {
-			isDropdownVisible = true;
+			hideDropdown = true;
 		}
+
 		if (event.key === 'f' && event.getModifierState('Control')) {
 			event.preventDefault();
 			searchInput?.focus();
@@ -30,7 +29,7 @@
 
 	const handleClickOutside = (event: MouseEvent) => {
 		if (containerRef && !containerRef.contains(event.target as Node)) {
-			isDropdownVisible = false;
+			hideDropdown = true;
 		}
 	};
 
@@ -53,9 +52,10 @@
 		class="search-input"
 		bind:value={searchTerm}
 		bind:this={searchInput}
-		onfocus={() => (isDropdownVisible = true)}
+		onchange={() => (hideDropdown = false)}
+		onfocus={() => (hideDropdown = false)}
 	/>
-	{#if isDropdownVisible && searchTerm.length > 0}
+	{#if !hideDropdown && searchTerm.length > 0}
 		<div class="dropdown-content">
 			<ul class="item-list">
 				{#each Object.values(store.map_cache) as map}
