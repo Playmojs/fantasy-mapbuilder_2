@@ -36,10 +36,10 @@
 			return;
 		}
 		const article = await dtb.get_article(store.project_id, store.map.article_id);
-		if (article) {
-			push_article(article.id, true);
-			if (store.informatic_opened_by_marker){
-				store.informatic_minimized = true;
+		if (article && article.id !== store.article.id) {
+				push_article(article.id, true);
+				if (store.informatic_opened_by_marker){
+					store.informatic_minimized = true;
 			}
 		}
 		store.selected_marker = null;

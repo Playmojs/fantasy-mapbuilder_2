@@ -233,27 +233,29 @@
 			title="Edit map"
 		></button>
 	</div>
-
-	<div class="button_group">
-		<button
-			onclick={() => dtb.delete_marker(store.selected_marker)}
-			class:hidden={!store.edit_mode || store.selected_marker === null}
-			style="background-image: url('/assets/delete_marker.png');"
-			title="Delete selected marker"
-		></button>
+	
+	<div class="button_group" id='plus_and_minus' class:hidden={!store.edit_mode}>
 		<button
 			onclick={() => {
 				changeMarkerTarget();
 			}}
+			disabled={store.selected_marker === null}
 			style="background-image: url('/assets/quill and scroll.png');"
 			title="Set target of selected marker"
-			class:hidden={!store.edit_mode || store.selected_marker === null}
+			class:hidden={!store.edit_mode}
+		></button>
+		<button
+			onclick={() => dtb.delete_marker(store.selected_marker)}
+			class:hidden={!store.edit_mode}
+			disabled={store.selected_marker === null}
+			style="background-image: url('/assets/+ and - -.png');"
+			title="Delete selected marker"
 		></button>
 
 		<button
 			onclick={(_event: MouseEvent) => dtb.create_and_select_marker_in_current_map()}
 			class:hidden={!store.edit_mode}
-			style="background-image: url('/assets/add_marker.png');"
+			style="background-image: url('/assets/+ and - +.png');"
 			title="Add new marker to map"
 		></button>
 	</div>
@@ -291,7 +293,7 @@
 		color: var(--main_white);
 		display: flex;
 		flex-wrap: wrap;
-		justify-content:space-around;
+		justify-content: space-around;
 		align-items: center;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 		z-index: 11;
@@ -303,7 +305,7 @@
 		gap: 10px;
 		align-items: center;
 		height: 100%;
-		width: 5%;
+		width: 150px;
 	}
 
 	#toolbar button {
@@ -319,6 +321,31 @@
 
 	#toolbar button:hover {
 		opacity: 0.8; /* Slight hover effect */
+	}
+
+	#plus_and_minus{
+		height: 80%;
+		width: 200px;
+		flex-shrink: 0;
+		background-image: url('/assets/+ and - both.png');
+		background-repeat: no-repeat;
+		background-size: 100% 100%;
+		background-position: center center;
+		z-index: 10;
+	}
+
+	#plus_and_minus.hidden{
+		background-image: none;
+	}
+
+	#plus_and_minus > button{
+		height: 60%;
+	}
+
+	#toolbar button:disabled{
+		cursor: default;
+		box-shadow: none;
+		opacity: 1;
 	}
 
 	#edit_content_button {

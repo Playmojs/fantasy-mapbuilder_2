@@ -132,7 +132,7 @@
 			onclick={() => {
 				pop_article();
 			}}
-			style="background-image: url('/assets/arrow_back.png');"
+			style="background-image: url('/assets/arrow_left.png');"
 			title="Go to last Article"
 			aria-label='Undo Button'
 			disabled={store.article_history.length <= 1}
@@ -144,7 +144,7 @@
 				undo_article_pop();
 			}}
 			disabled={store.undone_articles.length === 0}
-			style="background-image: url('/assets/arrow_forward.png');"
+			style="background-image: url('/assets/arrow_right.png');"
 			title="Go to next Article"
 			aria-label='Redo Button'
 		></button>
@@ -164,7 +164,7 @@
 			onclick={() => {
 				change_text_size(0.9);
 			}}
-			style="background-image: url('/assets/minus.png');"
+			style="background-image: url('/assets/fantasy_minus.png');"
 			title="Decrease text size"
 			aria-label='Decrease Text Size Button'
 		></button>
@@ -219,8 +219,9 @@
 		padding: 10px;
 
 		background-image: url('/assets/brickwall_2.jpg');
-		background-position: right;
+		background-position: top right;
 		background-size: 500px;
+		box-shadow: inset 5px 0px 5px rgb(20, 20, 20);
 	}
 
 	#button_bar{
@@ -269,6 +270,7 @@
 		border-radius: 10px;
 		font-family: 'Garamond Semibold Italic';
 		white-space: nowrap;
+		background-color: rgba(50, 50, 50, 0.8);
 	}
 
 	#article_title h1 {
@@ -300,7 +302,6 @@
 		font-family: 'Garamond Regular';
 		text-align: justify;
 		overflow-y: scroll;
-		margin-right: 20px;
 		padding-left: 10px;
 		border-radius: 10px;
 		padding-right: 10px;

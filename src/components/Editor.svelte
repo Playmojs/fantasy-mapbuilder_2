@@ -39,7 +39,7 @@
 					label: 'map',
 					kind: monaco.languages.CompletionItemKind.Snippet,
 					insertText: '(/map=)',
-					documentation: 'Insert a map link',
+					documentatiæon: 'Insert a map link',
 					},
 					{
 					label: 'article',
