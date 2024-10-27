@@ -62,7 +62,7 @@
 		searchDomain={Object.values(store.map_cache)
 			.map((entry) => ({
 				title: entry.title,
-				img_src: '/assets/old_map.png',
+				image: '/assets/old_map.png',
 				on_click: () => {
 					hideDropdown = true;
 					gotoMap(entry.id);
@@ -71,7 +71,7 @@
 			.concat(
 				Object.values(store.article_cache).map((entry) => ({
 					title: entry.title,
-					img_src: '/assets/Parchment.png',
+					image: '/assets/Parchment.png',
 					on_click: () => {
 						hideDropdown = true;
 						push_article(entry.id, false);
@@ -98,7 +98,7 @@
 							onclick={() => entry.on_click()}
 						>
 							<span class="item-text">{entry.title}</span>
-							<img src={entry.img_src} alt="Search entry icon" class="item-icon" />
+							<img src={entry.image} alt="Search entry icon" class="item-icon" />
 						</a>
 					</li>
 				{/each}

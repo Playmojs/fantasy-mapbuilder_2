@@ -10,7 +10,7 @@
 		close,
 		on_close
 	}: {
-		modal_data: UploadModalData<any>;
+		modal_data: UploadModalData;
 		close: any;
 		on_close: ((success: boolean, result?: any) => void) | undefined;
 	} = $props();
@@ -28,12 +28,12 @@
 	};
 
 	const handle_submit = async () => {
-		if (!modal_data.validation_func(file, map_title, link_id)) {
+		if (!modal_data.validation_func(file, map_title, link_id.id)) {
 			assert_unreachable('Error trying to submit image');
 			close();
 			return;
 		}
-		const result = modal_data.submit_func(file instanceof File ? file : null, map_title, link_id);
+		const result = modal_data.submit_func(file instanceof File ? file : null, map_title, link_id.id);
 		if (on_close !== undefined && result !== undefined) {
 			on_close(true, result);
 		}
@@ -53,7 +53,7 @@
 	let file = $state<File | Blob | null>(modal_data.initial_image_blob ?? null);
 	let file_preview = $derived<string | null>(file !== null ? URL.createObjectURL(file) : null);
 
-	let link_id = $state<number | null>(modal_data.initial_link);
+	let link_id = $state<{id: number | null}>({id: modal_data.initial_link});
 	$effect(() => {
 		file = modal_data.initial_image_blob ?? null;
 		map_title = modal_data.initial_map_title ?? '';
@@ -94,17 +94,17 @@
 						bind:this={button}
 						on:click|stopPropagation={async () => {
 							if (modal_data.link_func) {
-								link_id = (await modal_data.link_func()) ?? null;
+								await modal_data.link_func(link_id) ?? null;
 							}
 						}}>Link Article</button
 					>
 					<p id='link_title'>
-						{`Article: ${typeof link_id === 'number' ? store.article_cache[link_id]?.title : 'unknown'}`}
+						{`Article: ${typeof link_id.id === 'number' ? store.article_cache[link_id.id]?.title : 'unknown'}`}
 					</p>
 				</div>
 			{/if}
 			<button
-				disabled={!modal_data.validation_func(file, map_title, link_id)}
+				disabled={!modal_data.validation_func(file, map_title, link_id.id)}
 				type="submit"
 				class="execute_button"
 				>{modal_data?.button_title}

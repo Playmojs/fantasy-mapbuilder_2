@@ -75,6 +75,7 @@
 				pop_modal();
 			}}
 			on_close={modal.on_close}
+			use_search={modal.use_search}
 		/>
 	{/if}
 {/each}

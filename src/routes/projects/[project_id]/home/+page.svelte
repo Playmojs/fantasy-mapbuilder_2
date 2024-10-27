@@ -16,10 +16,12 @@
 	const change_main_map = async () => {
 		if (!project){return}
 		await dtb.fetch_all_from_project(project.id)
-		const response = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_existing_map()}})
-		if(!response){return}
+		let value: {id: number | null} = {id: null}
+		const response = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_existing_map(value)}, use_search: true})
+		console.log(value.id);
+		if(value.id===null){return}
 		else{
-			main_map = store.map_cache[response]
+			main_map = store.map_cache[value.id]
 		}
 	}
 
@@ -150,6 +152,7 @@
 				pop_modal();
 			}}
 			on_close={modal.on_close}
+			use_search={modal.use_search}
 		/>
 	{/if}
 {/each}

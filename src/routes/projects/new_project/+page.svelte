@@ -112,6 +112,7 @@
 				pop_modal();
 			}}
 			on_close={modal.on_close}
+            use_search={false}
 		/>
 	{/if}
 {/each}

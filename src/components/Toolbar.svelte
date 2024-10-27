@@ -17,11 +17,12 @@
 	import { push_article } from '$lib/article_stack';
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 
-	const add_map: ModalEntity<void> = {
+	const add_map: ModalEntity = {
 		image: '/assets/plus.png',
 		title: 'Add Map',
-		on_result: async () => {
-			const map_info = await get_new_map_data()
+		on_click: async () => {
+			let map_info: {file: File | null, title: string, article_id: number | null} = {file: null, title: '', article_id: null};
+			await get_new_map_data(map_info)
 			if (map_info === undefined || map_info.file === null || map_info.title === ''){return}
 			
 			const selected_marker = store.markers.find((marker) => marker.id === store.selected_marker);
@@ -65,14 +66,12 @@
 						file !== null && title !== '' && article_id !== null && (file instanceof File || title !== store.map.title || article_id !== store.map.article_id)
 					);
 				},
-				link_func: async () => {
-					const result = await push_promise_modal<number | null>({
+				link_func: async (value) => {
+					await push_promise_modal({
 						type: 'choose_modal',
-						data: { Articles: choose_article_by_id() }
+						data: { Articles: choose_article_by_id(value)},
+						use_search: true
 					});
-					if (typeof result === 'number' || result === null) {
-						return result;
-					}
 				},
 				button_title: 'Update Map',
 				initial_map_title: store.map.title,
@@ -106,13 +105,14 @@
 
 	const go_to_article_or_map_modal = async () => {
 		await dtb.fetch_all_from_project(store.project_id);
-		const result = await push_promise_modal({type: 'choose_modal', data: choose_map_or_article()})
-		if(result === undefined){return}
-		if(result.map_id !== null){
-			gotoMap(result.map_id)
+		let value: {map_id: number| null, article_id: number | null} = {map_id: null, article_id: null}
+		await push_promise_modal({type: 'choose_modal', data: choose_map_or_article(value), use_search: true})
+		if(value.article_id === null && value.map_id === null){return}
+		else if(value.map_id !== null){
+			gotoMap(value.map_id)
 		}
-		else if (result.article_id !== null){
-			const article = await dtb.get_article(store.project_id, result.article_id)
+		else if (value.article_id !== null){
+			const article = await dtb.get_article(store.project_id, value.article_id)
 			if(article){
 				push_article(article.id, false);
 			}
@@ -157,7 +157,7 @@
 						return {
 							image: URL.createObjectURL(store.image_public_urls[map.image]),
 							title: map.title,
-							on_result: () => {
+							on_click: () => {
 								if (store.selected_marker === null) {
 									return;
 								}
@@ -176,7 +176,7 @@
 									? URL.createObjectURL(store.image_public_urls[article.image])
 									: '/assets/Parchment.png',
 							title: article.title,
-							on_result: () => {
+							on_click: () => {
 								if (store.selected_marker === null) {
 									return;
 								}
@@ -188,7 +188,8 @@
 						};
 					})
 				)
-			}
+			},
+			use_search: true
 		});
 	}
 

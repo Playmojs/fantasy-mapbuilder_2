@@ -4,16 +4,14 @@ import type { ChooseModalData, Modal, ModalEntity, UploadModal } from './types';
 import { assert_unreachable } from './utils';
 
 
-export function push_modal(modal: Modal<void>): void {store.modals = [...store.modals, modal]}
+export function push_modal(modal: Modal): void {store.modals = [...store.modals, modal]}
 
 export function pop_modal(): void {store.modals = store.modals.slice(0, -1)} // TODO: I think this copies the list - can this be avoided?
 
-export function push_promise_modal<TResult>(modal: Modal<TResult>): Promise<TResult | void> {
+export function push_promise_modal(modal: Modal): Promise<void> {
     return new Promise((resolve, reject) => {
-        modal.on_close = (success: boolean, result?: TResult) => {
-            if (success && result !== undefined) {
-                resolve(result);
-            } else if (success) {
+        modal.on_close = (success: boolean) => {
+            if (success) {
                 resolve()
             } else {
                 reject();
@@ -23,7 +21,7 @@ export function push_promise_modal<TResult>(modal: Modal<TResult>): Promise<TRes
     });
 };
 
-export const choose_article_by_id: () => ModalEntity<number>[] = () => {
+export const choose_article_by_id: (value: {id: number | null}) => ModalEntity[] = (value) => {
     return Object.entries(store.article_cache).map(([id, article]) => {
         return {
             image:
@@ -31,31 +29,31 @@ export const choose_article_by_id: () => ModalEntity<number>[] = () => {
                     ? URL.createObjectURL(store.image_public_urls[article.image])
                     : '/assets/Parchment.png',
             title: article.title,
-            on_result: () => {
-                return article.id;
+            on_click: () => {
+                value.id = article.id;
             }
         };
     });
 };
 
-export const choose_existing_map: () => Promise<ModalEntity<number>[]> = async () => {
+export const choose_existing_map: (value: {id: number | null}) => Promise<ModalEntity[]> = async (value) => {
     await dtb.fetch_all_from_project(store.project_id);
     return Object.entries(store.map_cache).map(([_, map]) => {
         return {
             image: URL.createObjectURL(store.image_public_urls[map.image]),
             title: map.title,
-            on_result: () => {
-                return map.id
+            on_click: () => {
+                value.id = map.id
             }
         };
     });
 };
 
-export const add_article: ModalEntity<void> =
+export const add_article: ModalEntity =
 {
 	image: "/assets/plus.png",
 	title: "Add Article",
-	on_result: async () => { 
+	on_click: async () => { 
         const selected_marker = store.markers.find((marker) => marker.id === store.selected_marker);
         if (selected_marker === undefined) {
             assert_unreachable("Selected marker doesn't exist");
@@ -71,25 +69,24 @@ export const add_article: ModalEntity<void> =
         }}
 }
 
-export const choose_no_article: ModalEntity<null | number> =
-{
-	image: "/assets/minus.png",
-	title: "Don't Link To Article",
-	on_result: () => { return null; }
-}
-
-export const link_article: () => Promise<number | null | undefined> = async () => {
-    const result = await push_promise_modal<number | null>({
-        type: 'choose_modal',
-        data: { Articles: [choose_no_article].concat(choose_article_by_id()) }
-    });
-    if (typeof result === 'number' || result === null) {
-        return result;
+export const choose_no_article: (value: {id: null | number}) => ModalEntity = (value) => {
+    return{
+        image: "/assets/minus.png",
+        title: "Don't Link To Article",
+        on_click: () => { value.id = null; }
     }
 }
 
-export const get_new_map_data: () => Promise<void | {file: File | null, title: string, article_id: number | null}> = () => {
-    let modal: UploadModal<{file: File | null, title: string, article_id: number | null}> = {type: 'upload_modal',
+export const link_article: (value: {id: number | null}) => Promise<void> = async (value) => {
+    await push_promise_modal({
+        type: 'choose_modal',
+        data: { Articles: [choose_no_article(value)].concat(choose_article_by_id(value))},
+        use_search: true
+    });
+}
+
+export const get_new_map_data: (value: {file: File | null, title: string, article_id: number | null}) => Promise<void> = (value) => {
+    let modal: UploadModal = {type: 'upload_modal',
         data: {
             submit_func: (file: File | null, title: string, article_id: number | null) => {
                 if(file === null || title === ''){return}
@@ -113,14 +110,15 @@ export type map_or_article = {
     map_id: number | null;
 }
 
-export const choose_map_or_article: () => ChooseModalData<map_or_article> = () => {
+export const choose_map_or_article: (value: {map_id: number | null, article_id: number| null}) => ChooseModalData = (value) => {
     return{
         Maps:  Object.entries(store.map_cache).map(([_, map]) => {
             return {
                 image: URL.createObjectURL(store.image_public_urls[map.image]),
                 title: map.title,
-                on_result: () => {
-                    return {article_id: null, map_id: map.id}
+                on_click: () => {
+                    value.map_id = map.id
+                    value.article_id = null
                 }
             };
         }),
@@ -131,8 +129,9 @@ export const choose_map_or_article: () => ChooseModalData<map_or_article> = () =
                         ? URL.createObjectURL(store.image_public_urls[article.image])
                         : '/assets/Parchment.png',
                 title: article.title,
-                on_result: () => {
-                    return {article_id: article.id, map_id: null}
+                on_click: () => {
+                    value.map_id = null;
+                    value.article_id = article.id;
                 }
             };
         })

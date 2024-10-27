@@ -1,17 +1,20 @@
 <script lang="ts">
-	import type { ChooseModalData } from '$lib/types';
+	import type { ChooseModalData, ModalEntity } from '$lib/types';
 	import { untrack } from 'svelte';
 	import { store } from '../store.svelte';
 	import EntityGrid from './EntityGrid.svelte';
+	import SearchInput from './SearchInput.svelte';
 
 	let {
 		modal_data,
 		close,
-		on_close
+		on_close,
+		use_search,
 	}: {
-		modal_data: ChooseModalData<Number | null>;
+		modal_data: ChooseModalData;
 		close: any;
 		on_close: ((success: boolean, result?: any) => void) | undefined;
+		use_search: boolean
 	} = $props();
 
 	const handleClose = (e: Event) => {
@@ -19,32 +22,39 @@
 		close();
 	};
 
-	let current_tab = $state<string>();
+	let current_tab = $state<string>(Object.keys(modal_data)[0]);
+	
+	let search_output = $state<ModalEntity[]>([]);
+	let current_entities = $derived<ModalEntity[]>(use_search ? search_output : modal_data[current_tab])
 
 	$effect(() => {
 		current_tab = Object.keys(modal_data)[0];
 	});
+
 </script>
 
 <div class="modal" on:click={handleClose} class:hidden={!modal_data}>
 	<div class="modal-content" on:click|stopPropagation>
 		{#if modal_data}
-			<div class="tab_row">
-				{#each Object.keys(modal_data) as tab}
-					<button
-						class="tab"
-						class:current_tab={tab === current_tab}
-						disabled={tab === current_tab}
-						on:click={() => {
-							current_tab = tab;
-						}}><strong>{tab}</strong></button
-					>
-				{/each}
-			</div>
+			<div id=modal_head>
+				<div class="tab_row">
+					{#each Object.keys(modal_data) as tab}
+						<button
+							class="tab"
+							class:current_tab={tab === current_tab}
+							disabled={tab === current_tab}
+							on:click={() => {
+								current_tab = tab;
+							}}><strong>{tab}</strong></button
+						>
+					{/each}
+				</div>
+				<SearchInput searchDomain={modal_data[current_tab]} bind:filtered={search_output}/>
+			</div>	
 		{/if}
 		<span class="close" on:click={handleClose}>&times;</span>
-		{#if modal_data}
-			<EntityGrid modal_entities={modal_data} {current_tab} {close} {on_close} />
+		{#if current_entities}
+			<EntityGrid modal_entities={current_entities} {close} {on_close} />
 		{/if}
 	</div>
 </div>
@@ -78,13 +88,20 @@
 		border: 3px ridge var(--main_gold);
 	}
 
+	#modal_head{
+		display: flex;
+		justify-content: space-around;
+		gap: 50%;
+		height: 40px;
+		margin-bottom: 15px;
+		margin-right: 25px;
+	}
+
 	.tab_row {
-		height: 50px;
 		display: flex;
 		justify-content: start;
 		align-items: center;
 		gap: 1px;
-		margin-bottom: 8px;
 	}
 
 	.tab {
