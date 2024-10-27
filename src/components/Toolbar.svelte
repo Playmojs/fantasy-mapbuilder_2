@@ -15,7 +15,7 @@
 	import { gotoMap } from '$lib/goto_map';
 	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article} from '$lib/modal_manager';
 	import { push_article } from '$lib/article_stack';
-	import Search from './Search.svelte';
+	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 
 	const add_map: ModalEntity<void> = {
 		image: '/assets/plus.png',
@@ -214,7 +214,7 @@
 		</button>
 	</div>
 	<div>
-		<Search/>
+		<DropdownMapAndArticleSearch/>
 	</div>
 	<div class="button_group"></div>
 	<div class="button_group"></div>

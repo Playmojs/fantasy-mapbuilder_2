@@ -64,6 +64,12 @@ export type ChooseModal<TResult> = {
 	data: ChooseModalData<TResult>;
 }
 
+export type SearchEntry = {
+	on_click: () => void;
+	title: string;
+	img_src: string;
+}
+
 
 export type Folder = "maps" | "articles"
 export type Modal<TResult> = ChooseModal<TResult> | UploadModal<TResult> | ConfirmModal
