@@ -1,22 +1,25 @@
 <script lang="ts">
 	import type { SearchEntry } from '$lib/types';
 	import { onMount } from 'svelte';
+	import { on } from 'svelte/events';
 
 	let {
 		searchDomain,
 		filtered = $bindable(),
-		oninput
+		oninput,
+		onfocus
 	}: {
 		searchDomain: SearchEntry[];
 		filtered: SearchEntry[];
 		oninput?: (event: Event) => void;
+		onfocus?: () => void;
 	} = $props();
 
 	let searchTerm = $state('');
 	let searchInput: HTMLInputElement;
 
 	const searchFilter = (entry: SearchEntry, term: string) => {
-		return term.length !== 0 && entry.title.toLowerCase().includes(term.toLowerCase());
+		return entry.title.toLowerCase().includes(term.toLowerCase());
 	};
 
 	$effect(() => {
@@ -26,6 +29,9 @@
 	const handleKeydown = (event: KeyboardEvent) => {
 		if (event.key === 'p' && event.getModifierState('Control')) {
 			event.preventDefault();
+			if (onfocus) {
+				onfocus();
+			}
 			searchInput?.focus();
 		}
 	};
@@ -47,6 +53,8 @@
 	bind:value={searchTerm}
 	bind:this={searchInput}
 	{oninput}
+	{onfocus}
+	onclick={onfocus}
 />
 
 <style>

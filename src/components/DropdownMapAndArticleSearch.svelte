@@ -6,13 +6,29 @@
 	import { gotoMap } from '$lib/goto_map';
 	import { push_article } from '$lib/article_stack';
 
-	let hideDropdown = $state(false);
-
+	let hideDropdown = $state(true);
+	let selectedIndex = $state(0);
 	let containerRef: HTMLDivElement;
 
 	const handleKeydown = (event: KeyboardEvent) => {
 		if (event.key === 'Escape') {
 			hideDropdown = true;
+		} else if (event.key === 'ArrowDown') {
+			if (selectedIndex === dropdownItems.length - 1) {
+				selectedIndex = 0;
+			} else {
+				selectedIndex++;
+			}
+			scrollTo(selectedIndex);
+		} else if (event.key === 'ArrowUp') {
+			if (selectedIndex === 0) {
+				selectedIndex = dropdownItems.length - 1;
+			} else {
+				selectedIndex--;
+			}
+			scrollTo(selectedIndex);
+		} else if (event.key === 'Enter') {
+			dropdownItems[selectedIndex].on_click();
 		}
 	};
 
@@ -31,6 +47,12 @@
 			document.removeEventListener('click', handleClickOutside);
 		};
 	});
+
+	const scrollTo = (index: number) => {
+		const items = containerRef.querySelectorAll('.item');
+		const selectedItem = items[index] as HTMLLIElement;
+		selectedItem?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+	};
 
 	let dropdownItems = $state<SearchEntry[]>([]);
 </script>
@@ -59,14 +81,22 @@
 		bind:filtered={dropdownItems}
 		oninput={() => {
 			hideDropdown = false;
+			selectedIndex = 0;
+		}}
+		onfocus={() => {
+			hideDropdown = false;
 		}}
 	></SearchInput>
 	{#if !hideDropdown && dropdownItems.length > 0}
 		<div class="dropdown-content">
 			<ul class="item-list">
-				{#each Object.values(dropdownItems) as entry}
+				{#each Object.values(dropdownItems) as entry, index}
 					<li class="item">
-						<a class="item-link" onclick={() => entry.on_click()}>
+						<a
+							class="item-link"
+							class:selected={index === selectedIndex}
+							onclick={() => entry.on_click()}
+						>
 							<span class="item-text">{entry.title}</span>
 							<img src={entry.img_src} alt="Search entry icon" class="item-icon" />
 						</a>
@@ -121,6 +151,10 @@
 		transition: background-color 0.2s;
 		cursor: pointer;
 		min-height: 44px;
+	}
+
+	.item-link.selected {
+		background-color: #b1d3ff;
 	}
 
 	.item-link:hover {
