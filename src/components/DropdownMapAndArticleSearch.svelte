@@ -27,7 +27,7 @@
 				selectedIndex--;
 			}
 			scrollTo(selectedIndex);
-		} else if (event.key === 'Enter') {
+		} else if (event.key === 'Enter' && !hideDropdown) {
 			dropdownItems[selectedIndex].on_click();
 		}
 	};
