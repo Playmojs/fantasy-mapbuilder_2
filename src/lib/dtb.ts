@@ -209,6 +209,24 @@ export default {
                     data.forEach(article => { store.article_cache[article.id] = article; if (article.image !== null) { this.update_image_blob(project_id, article.image, 'articles') } });
                 }
             });
+        await supabase
+            .from('category')
+            .select('*, article_to_category(article_id), category_to_category!parent_id(child_id)')
+            .eq('project_id', project_id)
+            .then(({data, error}) => {
+                if(error){
+                    console.error(`Couldn't fetch category data, error was: ${error}`)
+                }
+                if(data){
+                    data.forEach(category => {
+                        const {article_to_category, category_to_category, ...category_data} = category
+                        store.category_cache[category.id] = category_data
+                        store.article_category_links[category.id] = article_to_category.map(value => value.article_id)
+                        store.category_links[category.id] = category_to_category.map(value=>value.child_id)
+                    })
+                }
+
+            });
         all_fetched_from_project = true;
     },
 

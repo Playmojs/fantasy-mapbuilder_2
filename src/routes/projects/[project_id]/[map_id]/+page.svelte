@@ -9,11 +9,10 @@
 	import { page } from '$app/stores';
 	import dtb from '$lib/dtb';
 	import { onDestroy } from 'svelte';
-	import ConfirmModal from '../../../../components/ConfirmModal.svelte';
-	import MapOption from '../../../../components/MapOption.svelte';
 	import { pop_modal } from '$lib/modal_manager';
 	import { push_article } from '$lib/article_stack';
 	import { browser } from '$app/environment';
+	import ChooseModal from '../../../../components/ChooseModal.svelte';
 
 	function reset_modals() {
 		store.modals = [];
@@ -54,29 +53,11 @@
 {/if}
 
 {#each store.modals as modal (modal)}
-	{#if modal.type === 'upload_modal'}
-		<MapOption
-			modal_data={modal.data}
-			close={() => {
-				pop_modal();
-			}}
-			on_close={modal.on_close}
-		/>
-	{:else if modal.type === 'confirm_modal'}
-		<ConfirmModal
-			modal_data={modal.data}
-			close={() => {
-				pop_modal();
-			}}
-		/>
-	{:else if modal.type === 'choose_modal'}
 		<Modal
-			modal_data={modal.data}
 			close={() => {
 				pop_modal();
 			}}
-			on_close={modal.on_close}
-			use_search={modal.use_search}
+			modal={modal}
 		/>
-	{/if}
+	
 {/each}

@@ -61,93 +61,72 @@
 	});
 </script>
 
-<div class="modal" on:click={handleClose}>
-	<div class="modal-content" on:click|stopPropagation>
-		<span class="close" on:click={handleClose}>&times;</span>
-		<form id="form" on:submit|preventDefault={handle_submit}>
-			{#if modal_data?.initial_map_title !== null}
-				<div id="title">
-					<label id="title_label">Map Title: </label>
-					<input
-						id="title_input"
-						value={map_title}
-						bind:this={title_input}
-						on:keyup={() => {
-							update_title();
-						}}
-						required
-					/>
-				</div>
-			{/if}
+<div id='map_option_modal'>
+<form id="form" on:submit|preventDefault={handle_submit}>
+	{#if modal_data?.initial_map_title !== null}
+		<div id="title">
+			<label id="title_label">Map Title: </label>
 			<input
-				class="map_file"
-				type="file"
-				id="fileInput"
-				accept="image/*"
-				on:change={handle_file_change}
-				bind:this={file_input}
+				id="title_input"
+				value={map_title}
+				bind:this={title_input}
+				on:keyup={() => {
+					update_title();
+				}}
+				required
 			/>
-			{#if modal_data.link_func !== null}
-				<div id="link_row" on:click={() => {button.click()}}>
-					<button
-						id="link_button"
-						type="button"
-						bind:this={button}
-						on:click|stopPropagation={async () => {
-							if (modal_data.link_func) {
-								await modal_data.link_func(link_id) ?? null;
-							}
-						}}>Link Article</button
-					>
-					<p id='link_title'>
-						{`Article: ${typeof link_id.id === 'number' ? store.article_cache[link_id.id]?.title : 'unknown'}`}
-					</p>
-				</div>
-			{/if}
-			<button
-				disabled={!modal_data.validation_func(file, map_title, link_id.id)}
-				type="submit"
-				class="execute_button"
-				>{modal_data?.button_title}
-			</button>
-		</form>
-		<div id="image-preview-section">
-			{#if file_preview}
-				<img src={file_preview} alt="Image Preview" class="image-preview" />
-			{:else}
-				<p class="no-image">No image selected</p>
-			{/if}
 		</div>
-	</div>
+	{/if}
+	<input
+		class="map_file"
+		type="file"
+		id="fileInput"
+		accept="image/*"
+		on:change={handle_file_change}
+		bind:this={file_input}
+	/>
+	{#if modal_data.link_func !== null}
+		<div id="link_row" on:click={() => {button.click()}}>
+			<button
+				id="link_button"
+				type="button"
+				bind:this={button}
+				on:click|stopPropagation={async () => {
+					if (modal_data.link_func) {
+						await modal_data.link_func(link_id) ?? null;
+					}
+				}}>Link Article</button
+			>
+			<p id='link_title'>
+				{`Article: ${typeof link_id.id === 'number' ? store.article_cache[link_id.id]?.title : 'unknown'}`}
+			</p>
+		</div>
+	{/if}
+	<button
+		disabled={!modal_data.validation_func(file, map_title, link_id.id)}
+		type="submit"
+		class="execute_button"
+		>{modal_data?.button_title}
+	</button>
+</form>
+<div id="image-preview-section">
+	{#if file_preview}
+		<img src={file_preview} alt="Image Preview" class="image-preview" />
+	{:else}
+		<p class="no-image">No image selected</p>
+	{/if}
+</div>
 </div>
 
-<style>
-	.modal {
-		display: block;
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: rgba(0, 0, 0, 0.5);
-		z-index: 1000;
-	}
 
-	.modal-content {
+
+<style>
+	#map_option_modal{
 		position: relative;
-		margin: 5% auto;
-		padding: 20px;
-		background: rgb(47, 47, 47);
-		width: 80%;
-		max-width: 1000px;
-		height: fit-content;
-		top: 10%;
-		overflow-y: hidden;
-		border-radius: 5px;
+		width: 100%;
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
-		border: 3px ridge var(--main_gold);
 	}
 
 	#form {

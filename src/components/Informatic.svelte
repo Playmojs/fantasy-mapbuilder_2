@@ -5,9 +5,10 @@
 	import { fly } from 'svelte/transition';
 	import dtb from '$lib/dtb';
 	import edit_mode from '../store';
-	import { push_modal } from '$lib/modal_manager';
+	import { choose_map_or_article, link_article, push_modal } from '$lib/modal_manager';
 	import KeyWordRenderer from './KeyWordRenderer.svelte';
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
+	import type { ChooseModal, CompositeModal, UploadModal } from '$lib/types';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -69,8 +70,9 @@
 		window.removeEventListener('touchend', stopResize);
 	}
 
-	async function change_article_image(){
-		push_modal({type: 'upload_modal', data:{
+	const article_image_modal: UploadModal = {
+		type: 'upload_modal',
+		data: {
 			submit_func: async(file: File | null, title: string) => {
 				if (file === null){
 					store.article.image = null;
@@ -97,7 +99,29 @@
 			initial_link: null,
 			allow_no_file: true,
 		}
-	})}
+	}
+
+	const test_obj: {map_id: number | null, article_id: number | null} = {map_id: null, article_id: null};
+	
+	
+	async function open_article_options(){
+		const test_modal: ChooseModal = {
+			type: 'choose_modal',
+			data: choose_map_or_article(test_obj),
+			use_search: true,
+		}
+
+		const composite_modal_data: CompositeModal = {
+			type: 'composite_modal',
+			data: {
+				'Article Image': article_image_modal,
+				'Categories': test_modal
+			}
+		}
+
+		push_modal(composite_modal_data)
+	}
+	
 
 	let image_source = $state('');
 	$effect(() => {
@@ -172,7 +196,7 @@
 
 			<button 
 			id="edit_image_button" 
-			onclick={change_article_image}
+			onclick={open_article_options}
 			style="background-image: url('/assets/fantasy_cog.png');"
 			class:hidden={!store.edit_mode}
 			title="Increase text size"

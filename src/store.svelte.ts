@@ -1,4 +1,4 @@
-import { type Article, type MapData, type MarkerData, type Modal, type Project, type UploadModalData, type ConfirmModalData, type ChooseModalData } from "$lib/types";
+import { type Article, type MapData, type MarkerData, type Modal, type Project, type UploadModalData, type ConfirmModalData, type ChooseModalData, type Category } from "$lib/types";
 import type { User } from "@supabase/supabase-js";
 import { readable, writable } from "svelte/store";
 
@@ -19,7 +19,7 @@ class Store {
     write_access = writable(false);
     //edit_map_window = $state<UploadModalData | null>(null);
     //confirm_modal = $state<ConfirmModalData | null>(null);
-    modals = $state<Modal<any>[]>([])
+    modals = $state<Modal[]>([])
 
     map_article_link=$state<number | null>()
 
@@ -30,9 +30,14 @@ class Store {
     map_cache = $state<{ [id: number]: MapData }>({});
     article_cache = $state<{ [id: number]: Article }>({});
     project_cache = $state<{ [id: number]: Project }>({});
+    category_cache = $state<{[id: number]: Category}>({});
+
     project_images = $state<{ [id: number]: string }>({});
     image_public_urls = $state<{ [image: string]: Blob }>({});
     user_projects = $state<number[]>([]);
+
+    article_category_links = $state<{[id: number]: number[]}>({});
+    category_links = $state<{[id: number]: number[]}>({})    
 
     article_history = $state<number[]>([]);
     undone_articles = $state<number[]>([]); 

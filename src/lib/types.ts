@@ -17,6 +17,7 @@ export type MarkerData = Database["public"]["Tables"]["marker"]["Row"];
 export type MapData = Database["public"]["Tables"]["map"]["Row"];
 export type Article = Database["public"]["Tables"]["article"]["Row"];
 export type Project = Database["public"]["Tables"]["project"]["Row"];
+export type Category = Database["public"]["Tables"]["category"]["Row"];
 
 export type ModalEntity = {
 	image: string | null;
@@ -59,7 +60,7 @@ export type ChooseModalData= { [modal_tab: string]: ModalEntity[]; };
 
 export type ChooseModal = {
 	type: 'choose_modal';
-	on_close?: (success: boolean, result?: any) => void;
+	on_close?: (success: boolean) => void;
 	data: ChooseModalData;
 	use_search: boolean;
 }
@@ -70,6 +71,14 @@ export type SearchEntry = {
 	image: string | null;
 }
 
+export type CompositeModalData = {[title: string]: Modal}
+
+export type CompositeModal = {
+	type: 'composite_modal';
+	on_close?: (success: boolean) => void;
+	data: CompositeModalData;
+}
+
 
 export type Folder = "maps" | "articles"
-export type Modal = ChooseModal | UploadModal | ConfirmModal
+export type Modal = ChooseModal | UploadModal | ConfirmModal | CompositeModal

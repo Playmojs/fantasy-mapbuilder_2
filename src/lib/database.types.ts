@@ -44,6 +44,107 @@ export type Database = {
           },
         ]
       }
+      article_to_category: {
+        Row: {
+          article_id: number
+          category_id: number
+          created_at: string
+          id: number
+        }
+        Insert: {
+          article_id: number
+          category_id: number
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          article_id?: number
+          category_id?: number
+          created_at?: string
+          id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_to_category_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "article"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_to_category_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "category"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      category: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+          project_id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+          project_id: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+          project_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "project"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      category_to_category: {
+        Row: {
+          child_id: number
+          created_at: string
+          id: number
+          parent_id: number
+        }
+        Insert: {
+          child_id: number
+          created_at?: string
+          id?: number
+          parent_id: number
+        }
+        Update: {
+          child_id?: number
+          created_at?: string
+          id?: number
+          parent_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "category_to_category_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "category"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "category_to_category_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "category"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       map: {
         Row: {
           article_id: number
