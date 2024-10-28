@@ -90,7 +90,9 @@ export const get_new_map_data: (value: {file: File | null, title: string, articl
         data: {
             submit_func: (file: File | null, title: string, article_id: number | null) => {
                 if(file === null || title === ''){return}
-                else{return {file, title, article_id}}
+                value.file = file;
+                value.title = title;
+                value.article_id = article_id;
             },
             validation_func(file: Blob | File | null, title: string) {
                 return file !== null && title !== '';

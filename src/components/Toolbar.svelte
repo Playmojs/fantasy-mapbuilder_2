@@ -235,7 +235,7 @@
 		></button>
 	</div>
 	
-	<div class="button_group" id='plus_and_minus' class:hidden={!store.edit_mode}>
+	<div class="button_group" id='plus_and_minus' class:transparent={!store.edit_mode}>
 		<button
 			onclick={() => {
 				changeMarkerTarget();
@@ -335,7 +335,7 @@
 		z-index: 10;
 	}
 
-	#plus_and_minus.hidden{
+	#plus_and_minus.transparent{
 		background-image: none;
 	}
 

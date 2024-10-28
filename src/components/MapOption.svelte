@@ -33,9 +33,10 @@
 			close();
 			return;
 		}
-		const result = modal_data.submit_func(file instanceof File ? file : null, map_title, link_id.id);
-		if (on_close !== undefined && result !== undefined) {
-			on_close(true, result);
+		
+		modal_data.submit_func(file instanceof File ? file : null, map_title, link_id.id);
+		if (on_close !== undefined) {
+			on_close(true);
 		}
 		close();
 	};

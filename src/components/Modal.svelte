@@ -30,7 +30,6 @@
 	$effect(() => {
 		current_tab = Object.keys(modal_data)[0];
 	});
-
 </script>
 
 <div class="modal" on:click={handleClose} class:hidden={!modal_data}>

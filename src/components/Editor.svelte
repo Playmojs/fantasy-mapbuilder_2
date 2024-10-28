@@ -119,9 +119,10 @@
 					const match = keyword_content.match(regex);
 
 					if (match) {
-						choose_modal().then((result) => {
-							if (result===undefined){return}
-							update_keyword_id(keyword, result, clickedKeyword.range)
+						const value: {id: number | null} = {id: null}; 
+						choose_modal(value).then(() => {
+							if (value.id===null){return}
+							update_keyword_id(keyword, value.id, clickedKeyword.range)
 						})
 					}
 				});

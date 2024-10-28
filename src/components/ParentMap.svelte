@@ -92,7 +92,7 @@
 			}}
 			class:hidden={store.map.parent_id === null && !store.edit_mode}
 			title="Hide parent map"
-			style={`background-image: url(/assets/${minimized ? 'plus' : 'minus'}.png);`}
+			style={`background-image: url(/assets/${minimized ? 'fantasy-plus' : 'fantasy_minus'}.png);`}
 		></button>
 		<button
 			id="edit_map"
@@ -132,12 +132,14 @@
 		aspect-ratio: 1;
 		background-size: contain;
 		background-color: transparent;
+		background-repeat: no-repeat;
+		background-position: center center;
 		border-color: transparent;
 		cursor: pointer;
 	}
 
 	#edit_map {
-		background: url('/assets/Wheel.png');
+		background-image: url('/assets/fantasy_cog.png');
 	}
 
 	.hidden {

@@ -115,6 +115,7 @@
 	function change_text_size(factor: number) {
 		store.text_size = store.text_size * factor;
 	}
+
 </script>
 
 <div
@@ -167,6 +168,15 @@
 			style="background-image: url('/assets/fantasy_minus.png');"
 			title="Decrease text size"
 			aria-label='Decrease Text Size Button'
+			></button>
+
+			<button 
+			id="edit_image_button" 
+			onclick={change_article_image}
+			style="background-image: url('/assets/fantasy_cog.png');"
+			class:hidden={!store.edit_mode}
+			title="Increase text size"
+			aria-label='Increase Text Size Button'
 		></button>
 	</div>
 	<div
@@ -180,9 +190,6 @@
 		<h1 bind:this={article_title}>{store.article.title}</h1>
 	</div>
 	<div id="image_container" style="height: {store.article.image !== null ? 30 : store.edit_mode ? 10 : 0}%;">
-		{#if store.edit_mode}
-			<button id="edit_image_button" onclick={change_article_image}></button>
-		{/if}
 		<img
 		id="article_image"
 		src={image_source}
@@ -244,6 +251,10 @@
 		background-repeat: no-repeat;
 		box-shadow: 3px 3px 5px rgb(30, 30, 30);
 	}
+
+	#edit_image_button.hidden{
+		display: none;
+	}
 	
 	#redo_article_button:disabled{
 		cursor: default;
@@ -271,6 +282,7 @@
 		font-family: 'Garamond Semibold Italic';
 		white-space: nowrap;
 		background-color: rgba(50, 50, 50, 0.8);
+		color: var(--main_white);
 	}
 
 	#article_title h1 {
@@ -279,6 +291,11 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	#article_title.editable{
+		color: black;
+		background-color: rgba(220, 220, 220, 0.8);
 	}
 
 
@@ -302,21 +319,18 @@
 		font-family: 'Garamond Regular';
 		text-align: justify;
 		overflow-y: scroll;
-		padding-left: 10px;
+		padding: 0px 10px;
 		border-radius: 10px;
-		padding-right: 10px;
-	}
-
-	.non-editable {
 		background-color: rgb(47, 47, 47);
 		color: var(--main_white);
 		white-space: normal;
 	}
 
-	.editable {
-		background-color: var(--main_white);
+	#informatic.editable {
+		background-color: white;
 		color: black;
 		white-space: pre-wrap;
+		padding: 10px 0px 0px 5px;
 	}
 
 	#informatic::-webkit-scrollbar-track.editable {
@@ -363,17 +377,6 @@
 
 	#image_container{
 		display: flex;
-	}
-
-	#edit_image_button{
-		position: relative;
-		background-image: url('/assets/Wheel.png');
-		background-color: transparent;
-		background-size: contain;
-		background-repeat: no-repeat;
-		border: none;
-		width: 30px;
-		aspect-ratio: 1;
 	}
 
 	#article_image {

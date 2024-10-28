@@ -13,6 +13,7 @@
 	import MapOption from '../../../../components/MapOption.svelte';
 	import { pop_modal } from '$lib/modal_manager';
 	import { push_article } from '$lib/article_stack';
+	import { browser } from '$app/environment';
 
 	function reset_modals() {
 		store.modals = [];
