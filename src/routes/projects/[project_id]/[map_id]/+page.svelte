@@ -4,15 +4,13 @@
 	import Informatic from '../../../../components/Informatic.svelte';
 	import Toolbar from '../../../../components/Toolbar.svelte';
 	import ParentMap from '../../../../components/ParentMap.svelte';
-	import Modal from '../../../../components/Modal.svelte';
 
 	import { page } from '$app/stores';
 	import dtb from '$lib/dtb';
 	import { onDestroy } from 'svelte';
 	import { pop_modal } from '$lib/modal_manager';
 	import { push_article } from '$lib/article_stack';
-	import { browser } from '$app/environment';
-	import ChooseModal from '../../../../components/ChooseModal.svelte';
+	import ModalWindow from '../../../../components/modals/ModalWindow.svelte';
 
 	function reset_modals() {
 		store.modals = [];
@@ -45,7 +43,7 @@
 	});
 </script>
 
-8<Toolbar />
+<Toolbar />
 <Map />
 <ParentMap />
 {#if !store.informatic_minimized}
@@ -53,7 +51,7 @@
 {/if}
 
 {#each store.modals as modal (modal)}
-		<Modal
+		<ModalWindow
 			close={() => {
 				pop_modal();
 			}}

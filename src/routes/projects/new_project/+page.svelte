@@ -3,9 +3,8 @@
 	import dtb from "$lib/dtb";
 	import { pop_modal, push_modal } from "$lib/modal_manager";
 	import { assert_unreachable } from "$lib/utils";
-	import ConfirmModal from "../../../components/ConfirmModal.svelte";
 	import Homebar from "../../../components/Homebar.svelte";
-	import Modal from "../../../components/Modal.svelte";
+	import ModalWindow from "../../../components/modals/ModalWindow.svelte";
 	import { store } from "../../../store.svelte";
 
     let project_title = $state<string>('')
@@ -90,7 +89,7 @@
 
 
 {#each store.modals as modal (modal)}
-		<Modal
+		<ModalWindow
 			close={() => {pop_modal();}}
 			modal={modal}
 		/>

@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { type ChooseModalData, type ModalEntity } from '$lib/types';
-	import SearchInput from './SearchInput.svelte';
+	import SearchInput from '../SearchInput.svelte';
 
 	let{close, modal_data, on_close, use_search}:{close: any, modal_data: ChooseModalData, on_close: ((success: boolean) => Promise<void> | void) | undefined, use_search: boolean} = $props()
 
 	async function handle_entity_click(entity: ModalEntity) {
 		await entity.on_click();
-		if (on_close){on_close(true);}
+		if(!on_close){close(); return;}
+		else{on_close(true);}
 		close()
 	}
 
@@ -48,9 +49,11 @@
 						handle_entity_click(entity);
 					}}
 				>
-					<div class="image-container">
-						<img class="entity-image" src={entity.image} alt={entity.title} />
-					</div>
+					{#if entity.image !== null}
+						<div class="image-container">
+							<img class="entity-image" src={entity.image} alt={entity.title} />
+						</div>
+					{/if}
 					<p>{entity.title}</p>
 				</div>
 			{/each}
@@ -68,7 +71,7 @@
 		justify-content: space-around;
 		gap: 50%;
 		height: 40px;
-		margin-bottom: 15px;
+		margin-bottom: 30px;
 		margin-right: 25px;
 	}
 
@@ -81,7 +84,7 @@
 
 	.tab {
 		height: 40px;
-		width: 100px;
+		width: fit-content;
 		border-radius: 5px;
 		background-color: rgb(80, 80, 80);
 		color: var(--main_white);
@@ -97,7 +100,10 @@
 	#grid-container {
 		max-height: calc(100vh - 300px);
 		overflow-y: scroll;
-		padding-right: 15px;
+		padding: 15px 15px 30px;
+		background-color: rgb(100, 100, 100);
+		border-radius: 15px;
+		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
 	}
 
 	#grid {
@@ -133,7 +139,8 @@
 
 	.entity-item p {
 		color: var(--main_white);
-		font-size: large;
+		font-family: 'Cormorant Garamond';
+		font-size: x-large;
 		margin: 10px 0px 0px 0px;
 	}
 

@@ -3,9 +3,8 @@
 	import { choose_existing_map, get_new_map_data, pop_modal, push_modal, push_promise_modal } from '$lib/modal_manager';
 	import { type MapData, type Project, type ModalEntity } from '$lib/types';
 	import { assert_unreachable } from '$lib/utils';
-	import ConfirmModal from '../../../../components/ConfirmModal.svelte';
 	import Homebar from '../../../../components/Homebar.svelte';
-	import Modal from '../../../../components/Modal.svelte';
+	import ModalWindow from '../../../../components/modals/ModalWindow.svelte';
 	import { store } from '../../../../store.svelte';
 
 	let project = $state<Project>();
@@ -128,7 +127,7 @@
 </main>
 
 {#each store.modals as modal (modal)}
-		<Modal
+		<ModalWindow
 			close={() => {
 				pop_modal();
 			}}

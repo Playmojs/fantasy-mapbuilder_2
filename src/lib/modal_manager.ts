@@ -1,14 +1,14 @@
 import { store } from '../store.svelte';
 import dtb from './dtb';
-import type { ChooseModalData, Modal, ModalEntity, UploadModal } from './types';
+import type { ChooseModalData, ModalType, ModalEntity, UploadModal } from './types';
 import { assert_unreachable } from './utils';
 
 
-export function push_modal(modal: Modal): void {store.modals = [...store.modals, modal]}
+export function push_modal(modal: ModalType): void {store.modals = [...store.modals, modal]}
 
 export function pop_modal(): void {store.modals = store.modals.slice(0, -1)} // TODO: I think this copies the list - can this be avoided?
 
-export function push_promise_modal(modal: Modal): Promise<void> {
+export function push_promise_modal(modal: ModalType): Promise<void> {
     return new Promise((resolve, reject) => {
         modal.on_close = (success: boolean) => {
             if (success) {

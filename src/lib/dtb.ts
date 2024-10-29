@@ -4,6 +4,7 @@ import { type Article, type Folder, type MapData, type MarkerData, type Project 
 import { store } from '../store.svelte';
 import { v4 as uuidv4 } from 'uuid';
 import { push_article } from './article_stack';
+import { assert } from './utils';
 
 const supabaseUrl = "https://ybazluanarelyccrfuuc.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYXpsdWFuYXJlbHljY3JmdXVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM1NDgyMTYsImV4cCI6MjAzOTEyNDIxNn0.hUbetjxp4zUMXS4C7wosekpD8CtJwpPU0jOOLyAxzt8";
@@ -298,7 +299,7 @@ export default {
         }
     },
 
-       async insert_new_map(project_id: number, image: string, title: string, article_id: number | null) {
+    async insert_new_map(project_id: number, image: string, title: string, article_id: number | null) {
         if (article_id === null){
             let article = await this.create_and_show_article(project_id, title);
             if(!article){
@@ -344,6 +345,40 @@ export default {
         else if (data){
             await this.upload_image(data.project_id, head_map_file, 'maps', image_id)
             return this.get_project(data.project_id)
+        }
+    },
+
+    async create_category(project_id: number, category_title: string){
+        let{error, data} = await supabase.from('category').insert({name: category_title, project_id: project_id}).select().single();
+        if(error){console.error(`Failed to create category, error: ${error}`)}
+        else if(data){
+            console.log(data.id)
+            store.category_cache[data.id] = data;
+            return data;
+        }
+    },
+
+    async insert_article_category_link(project_id: number, category_id: number, article_id: number){
+        assert(project_id === store.category_cache[category_id].project_id && project_id === store.article_cache[article_id].project_id, "Project ids for category and article did not match provided project id")
+        assert(!store.article_category_links[category_id] || !store.article_category_links[category_id].includes(article_id), "Article already has this category")
+        const response = await supabase.from('article_to_category').insert({article_id: article_id, category_id: category_id}).select().single();
+        if(response.error){console.error(`Failed to add category to article, error ${response.error}`)}
+        else if (response.data){
+            if(!store.article_category_links[category_id]){
+                store.article_category_links[category_id] = [article_id]
+            }
+            else{
+            store.article_category_links[category_id].push(article_id);}
+        }
+    },
+
+    async delete_article_category_link(project_id: number, category_id: number, article_id: number){
+        assert(project_id === store.category_cache[category_id].project_id && project_id === store.article_cache[article_id].project_id, "Project ids for category and article did not match provided project id")
+        assert(store.article_category_links[category_id].includes(article_id), "Article does not have this category")
+        const response = await supabase.from('article_to_category').delete().eq('article_id', article_id).eq('category_id', category_id).select().single()
+        if (response.error){console.error(`Failed to delete article category link, error: ${response.error}`)}
+        else if (response.data){
+            store.article_category_links[category_id].splice(store.article_category_links[category_id].indexOf(article_id), 1)
         }
     },
 

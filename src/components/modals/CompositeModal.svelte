@@ -1,10 +1,6 @@
 <script lang="ts">
-	import { pop_modal } from '$lib/modal_manager';
-	import { type CompositeModalData, type Modal, type ModalEntity } from '$lib/types';
-	import ChooseModal from './ChooseModal.svelte';
-	import ConfirmModal from './ConfirmModal.svelte';
-	import SearchInput from './SearchInput.svelte';
-	import UploadModal from './UploadModal.svelte';
+	import { type CompositeModalData, type ModalType, type ModalEntity } from '$lib/types';
+	import Modal from './Modal.svelte';
 
 	let{close, modal_data, on_close}:{close: any, modal_data: CompositeModalData, on_close: ((success: boolean) => Promise<void> | void) | undefined} = $props()
 
@@ -15,11 +11,7 @@
 	}
 
 	let current_tab = $state<string>(Object.keys(modal_data)[0]);
-    let current_modal = $derived<Modal>(modal_data[current_tab])
-
-	$effect(() => {
-		current_tab = Object.keys(modal_data)[0];
-	});
+    let current_modal = $derived<ModalType>(modal_data[current_tab])
 
 </script>
 
@@ -40,31 +32,7 @@
 	</div>	
 {/if}
 <div id='current_modal'>
-    {#if current_modal.type === 'upload_modal'}
-    <UploadModal
-            modal_data={current_modal.data}
-            close={() => {
-                pop_modal();
-            }}
-            on_close={current_modal.on_close}
-        />
-    {:else if current_modal.type === 'confirm_modal'}
-        <ConfirmModal
-            modal_data={current_modal.data}
-            close={() => {
-                pop_modal();
-            }}
-        />
-    {:else if current_modal.type === 'choose_modal'}
-        <ChooseModal
-            modal_data={current_modal.data}
-            close={() => {
-                pop_modal();
-            }}
-            on_close={current_modal.on_close}
-            use_search={current_modal.use_search}
-        />
-    {/if}
+    <Modal close={close} modal={current_modal}/>
 </div>
 
 

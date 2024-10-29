@@ -25,7 +25,7 @@ export type ModalEntity = {
 	on_click: () => Promise<void> | void;
 }
 
-export type ModalType = 'upload_modal' | 'choose_modal' | 'confirm_modal'
+export type ModalName = 'upload_modal' | 'choose_modal' | 'confirm_modal' | 'composite_modal' | 'category_modal'
 
 export type UploadModalData = {
 	submit_func: (file: File | null, title: string, article_id: number | null) => void;
@@ -35,7 +35,7 @@ export type UploadModalData = {
 	initial_map_title: string | null;
 	initial_image_blob: Blob | null;
 	initial_link: number | null;
-	allow_no_file: boolean;
+	allow_no_file: boolean | null; 
 };
 
 export type UploadModal = {
@@ -71,7 +71,7 @@ export type SearchEntry = {
 	image: string | null;
 }
 
-export type CompositeModalData = {[title: string]: Modal}
+export type CompositeModalData = {[title: string]: ModalType}
 
 export type CompositeModal = {
 	type: 'composite_modal';
@@ -79,6 +79,12 @@ export type CompositeModal = {
 	data: CompositeModalData;
 }
 
+export type CategoryModal = {
+	type: 'category_modal';
+	article_id: number;
+	on_close?: (success: boolean) => void;
+}
+
 
 export type Folder = "maps" | "articles"
-export type Modal = ChooseModal | UploadModal | ConfirmModal | CompositeModal
+export type ModalType = ChooseModal | UploadModal | ConfirmModal | CompositeModal | CategoryModal

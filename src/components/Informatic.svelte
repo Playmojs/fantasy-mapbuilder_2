@@ -100,22 +100,13 @@
 			allow_no_file: true,
 		}
 	}
-
-	const test_obj: {map_id: number | null, article_id: number | null} = {map_id: null, article_id: null};
-	
 	
 	async function open_article_options(){
-		const test_modal: ChooseModal = {
-			type: 'choose_modal',
-			data: choose_map_or_article(test_obj),
-			use_search: true,
-		}
-
 		const composite_modal_data: CompositeModal = {
 			type: 'composite_modal',
 			data: {
 				'Article Image': article_image_modal,
-				'Categories': test_modal
+				'Categories': {type: 'category_modal', article_id: store.article.id}
 			}
 		}
 
@@ -274,6 +265,10 @@
 		border-radius: 10px;
 		background-repeat: no-repeat;
 		box-shadow: 3px 3px 5px rgb(30, 30, 30);
+	}
+
+	#button_bar button:active{
+		box-shadow: inset 3px 3px 3px rgb(50, 50, 50);
 	}
 
 	#edit_image_button.hidden{

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { UploadModalData } from '$lib/types';
-	import { store } from '../store.svelte';
+	import { store } from '../../store.svelte';
 	import { assert_unreachable } from '$lib/utils';
 
 	let button: HTMLButtonElement;
@@ -77,14 +77,16 @@
 			/>
 		</div>
 	{/if}
-	<input
-		class="map_file"
-		type="file"
-		id="fileInput"
-		accept="image/*"
-		on:change={handle_file_change}
-		bind:this={file_input}
-	/>
+	{#if modal_data.allow_no_file !== null}
+		<input
+			class="map_file"
+			type="file"
+			id="fileInput"
+			accept="image/*"
+			on:change={handle_file_change}
+			bind:this={file_input}
+		/>
+	{/if}
 	{#if modal_data.link_func !== null}
 		<div id="link_row" on:click={() => {button.click()}}>
 			<button
