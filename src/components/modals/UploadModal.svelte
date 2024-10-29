@@ -34,7 +34,7 @@
 			return;
 		}
 		
-		modal_data.submit_func(file instanceof File ? file : null, map_title, link_id.id);
+		await modal_data.submit_func(file instanceof File ? file : null, map_title, link_id.id);
 		if (on_close !== undefined) {
 			on_close(true);
 		}

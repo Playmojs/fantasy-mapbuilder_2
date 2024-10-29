@@ -352,7 +352,6 @@ export default {
         let{error, data} = await supabase.from('category').insert({name: category_title, project_id: project_id}).select().single();
         if(error){console.error(`Failed to create category, error: ${error}`)}
         else if(data){
-            console.log(data.id)
             store.category_cache[data.id] = data;
             return data;
         }

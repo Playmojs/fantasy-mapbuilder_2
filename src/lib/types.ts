@@ -28,7 +28,7 @@ export type ModalEntity = {
 export type ModalName = 'upload_modal' | 'choose_modal' | 'confirm_modal' | 'composite_modal' | 'category_modal'
 
 export type UploadModalData = {
-	submit_func: (file: File | null, title: string, article_id: number | null) => void;
+	submit_func: (file: File | null, title: string, article_id: number | null) => Promise<void>;
 	validation_func: (file: File | Blob | null, title: string, article_id: number | null) => boolean;
 	link_func: ((value: {id: number | null}) => Promise<void>) | null;
 	button_title: string;
