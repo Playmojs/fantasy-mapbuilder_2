@@ -78,6 +78,7 @@ export default {
             return;
         }
         if (data) {
+            if(image in store.image_public_urls){console.error('Image already added')}
             store.image_public_urls[image] = data;
             return data
         }
@@ -186,6 +187,7 @@ export default {
         if (all_fetched_from_project) {
             return;
         }
+        all_fetched_from_project = true;
         await supabase
             .from('map')
             .select()
@@ -193,6 +195,7 @@ export default {
             .then(({ data, error }) => {
                 if (error) {
                     console.error(`Couldn't fetch map data, error was: ${error}`);
+                    all_fetched_from_project = false;
                 }
                 if (data) {
                     data.forEach(map => { store.map_cache[map.id] = map; this.update_image_blob(project_id, map.image, 'maps') });
@@ -205,6 +208,7 @@ export default {
             .then(({ data, error }) => {
                 if (error) {
                     console.error(`Couldn't fetch article data, error was: ${error}`);
+                    all_fetched_from_project = false;
                 }
                 if (data) {
                     data.forEach(article => { store.article_cache[article.id] = article; if (article.image !== null) { this.update_image_blob(project_id, article.image, 'articles') } });
@@ -217,6 +221,7 @@ export default {
             .then(({data, error}) => {
                 if(error){
                     console.error(`Couldn't fetch category data, error was: ${error}`)
+                    all_fetched_from_project = false;
                 }
                 if(data){
                     data.forEach(category => {
@@ -228,7 +233,6 @@ export default {
                 }
 
             });
-        all_fetched_from_project = true;
     },
 
     async create_and_show_article(project_id: number, title: string = "Untitled") {
