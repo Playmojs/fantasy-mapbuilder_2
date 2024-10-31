@@ -55,7 +55,7 @@
 					{/if}
 					{#if entity.image !== null}
 						<div class="image-container">
-							<img class="entity-image" src={entity.image} alt={entity.title} />
+							<img class="entity-image" src={entity.image} alt={entity.title}/>
 						</div>
 					{/if}
 					<p>{entity.title}</p>

@@ -31,7 +31,7 @@ export const choose_article_by_id: (value: {id: number | null, title: string}) =
             title: article.title,
             on_click: () => {
                 value.id = article.id;
-                value.title = article.title;
+                value.title = `Article: ${article.title}`;
             }
         };
     });
