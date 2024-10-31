@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
-import { type Article, type Folder, type MapData, type MarkerData, type Project } from "$lib/types";
+import { type Article, type Category, type Folder, type MapData, type MarkerData, type Project } from "$lib/types";
 import { store } from '../store.svelte';
 import { v4 as uuidv4 } from 'uuid';
 import { push_article } from './article_stack';
@@ -39,7 +39,7 @@ export default {
             return { ...store.project_cache[project_id] };
         }
         const response = await supabase.from('project').select().eq('id', project_id).single();
-        if (response.error) { console.error(response); }
+        if (response.error) { console.error(`Failed to get project. Error: ${response}`); }
         if (response.data) {
             store.project_cache[project_id] = response.data;
             return response.data
@@ -48,6 +48,7 @@ export default {
 
 
     async get_map(project_id: number, map_id: number) {
+        if (map_id === -1 || Number.isNaN(map_id)){return}
         if (map_id in store.map_cache) {
             this.update_image_blob(project_id, store.map_cache[map_id].image, 'maps');
             return { ...store.map_cache[map_id] };
@@ -60,7 +61,8 @@ export default {
             .single();
         const { data } = response;
         if (response.error) {
-            console.error(response);
+            console.log(map_id)
+            console.error(`Failed to get map. Error: ${response.error.message}`);
         }
         if (data) {
             store.map_cache[map_id] = data;
@@ -101,6 +103,7 @@ export default {
     },
 
     async get_article(project_id: number, article_id: number) {
+        if (article_id === -1){return;}
         if (article_id in store.article_cache) {
             if (store.article_cache[article_id].image !== null) {
                 this.update_image_blob(project_id, store.article_cache[article_id].image, 'articles');
@@ -161,7 +164,7 @@ export default {
         if (my_project_ids_fetched || store.user === null) { return; }
         const response = await supabase.from('user_project_access').select('project_id').eq('user_id', store.user.id)
         if (response.error) {
-            console.error("Error fetching user projects: ", response.error)
+            console.error("Error fetching user projects: ", response.error.message)
             return;
         }
         if (response.data) {
@@ -175,7 +178,7 @@ export default {
         if (uncached_projects.length === 0) { return Object.values(store.project_cache).filter((project) => { project.id in project_ids }); }
         const response = await supabase.from('project').select('*').in('id', uncached_projects)
         if (response.error) {
-            console.error("Error fetching user projects: ", response.error)
+            console.error("Error fetching user projects: ", response.error.message)
         }
         if (response.data) {
             response.data.forEach((project) => { store.project_cache[project.id] = project })
@@ -239,7 +242,7 @@ export default {
         const response = await supabase.from('article').insert({ project_id: project_id, title: title }).select().single();
         const { data } = response
         if (response.error) {
-            console.error(response);
+            console.error(`Failed to create article. Error: ${response.error.message}`);
         }
         if (data) {
             store.article_cache[data.id] = data;
@@ -253,7 +256,7 @@ export default {
         const response = await supabase.from('marker').insert({ owner_map_id: store.map.id, x: 50, y: 50 }).select().single();
         const { data } = response
         if (response.error) {
-            console.error(response);
+            console.error(`Failed to create marker. Error: ${response.error.message}`);
         }
         if (data) {
             store.selected_marker = data.id;
@@ -263,17 +266,18 @@ export default {
 
 
     async update_article(article: Article) {
-        store.article_cache[article.id] = article;
+        if(store.article_cache[article.id] === article){return;}
         const response = await supabase.from('article').upsert(article).select().single()
         if (response.error) {
-            console.error(response);
+            console.error(`Failed to update article. Error: ${response.error.message}`);
         }
+        else{store.article_cache[article.id] = article;}
     },
 
     async update_marker(marker: MarkerData) {
         const response = await supabase.from('marker').upsert(marker).select().single()
         if (response.error) {
-            console.error(response);
+            console.error(`Failed to update marker. Error: ${response.error.message}`);
         }
     },
 
@@ -283,7 +287,7 @@ export default {
         };
         const response = await supabase.from('map').upsert(map).select().single()
         if (response.error) {
-            console.error(response);
+            console.error(`Failed to update map. Error: ${response}`);
         }
         if (response.data) {
             store.map_cache[response.data.id] = response.data;
@@ -296,10 +300,22 @@ export default {
         };
         const response = await supabase.from('project').upsert(project).select().single()
         if (response.error) {
-            console.error(response);
+            console.error(`Failed to update project. Error: ${response.error.message}`);
         }
         if (response.data) {
             store.project_cache[response.data.id] = response.data;
+        }
+    },
+
+    async update_category(category: Category){
+        if (category === store.category_cache[category.id]){return;}
+        const response = await supabase.from('category').upsert(category).select().single()
+        if (response.error){
+            console.error(`Failed to fetch categories. Error: ${response.error.message}`)
+        }
+        else if (response.data){
+            console.log(response.data)
+            store.category_cache[response.data.id] = response.data;
         }
     },
 
@@ -314,7 +330,7 @@ export default {
         }
         const response = await supabase.from('map').insert({ article_id: article_id, image: image, title: title, project_id: project_id }).select().single()
         if (response.error) {
-            console.error(response);
+            console.error(`Failed to insert response. Error: ${response.error.message}`);
         } else { return response.data }
     },
 
@@ -352,8 +368,8 @@ export default {
         }
     },
 
-    async create_category(project_id: number, category_title: string){
-        let{error, data} = await supabase.from('category').insert({name: category_title, project_id: project_id}).select().single();
+    async create_category(project_id: number, category_title: string, theme_id: number){
+        let{error, data} = await supabase.from('category').insert({name: category_title, project_id: project_id, theme_id: theme_id}).select().single();
         if(error){console.error(`Failed to create category, error: ${error}`)}
         else if(data){
             store.category_cache[data.id] = data;
@@ -365,7 +381,7 @@ export default {
         assert(project_id === store.category_cache[category_id].project_id && project_id === store.article_cache[article_id].project_id, "Project ids for category and article did not match provided project id")
         assert(!store.article_category_links[category_id] || !store.article_category_links[category_id].includes(article_id), "Article already has this category")
         const response = await supabase.from('article_to_category').insert({article_id: article_id, category_id: category_id}).select().single();
-        if(response.error){console.error(`Failed to add category to article, error ${response.error}`)}
+        if(response.error){console.error(`Failed to add category to article, error ${response.error.message}`)}
         else if (response.data){
             if(!store.article_category_links[category_id]){
                 store.article_category_links[category_id] = [article_id]
@@ -379,7 +395,7 @@ export default {
         assert(project_id === store.category_cache[category_id].project_id && project_id === store.article_cache[article_id].project_id, "Project ids for category and article did not match provided project id")
         assert(store.article_category_links[category_id].includes(article_id), "Article does not have this category")
         const response = await supabase.from('article_to_category').delete().eq('article_id', article_id).eq('category_id', category_id).select().single()
-        if (response.error){console.error(`Failed to delete article category link, error: ${response.error}`)}
+        if (response.error){console.error(`Failed to delete article category link, error: ${response.error.message}`)}
         else if (response.data){
             store.article_category_links[category_id].splice(store.article_category_links[category_id].indexOf(article_id), 1)
         }
@@ -391,7 +407,7 @@ export default {
         }
         const response = await supabase.from('marker').delete().eq('id', marker_id).select();
         if (response.error) {
-            console.error(response);
+            console.error(`Failed to delete marker. Response: ${response.error.message}`);
         }
         if (response.data) {
             store.markers = store.markers.filter(marker => marker.id !== marker_id);
@@ -401,7 +417,7 @@ export default {
     async delete_map(map: MapData) {
         const response = await supabase.from('map').delete().eq('id', map.id).select();
         if (response.error) {
-            console.error(response)
+            console.error(`Failed to delete map. Error: ${response.error.message}`)
         }
         if (response.data) {
             const file_response = await supabase.storage.from('project').remove([`${store.project_id}/maps/${map.image}`])
@@ -446,7 +462,7 @@ export default {
             const ids = data.map((id)=> {return id.user_id})
             const response = await supabase.from('user_info').select('username').in('user_id', ids)
             if(response.error){
-                console.error(`Couldn't fetch usernames, error: ${response.error}`)
+                console.error(`Couldn't fetch usernames, error: ${response.error.message}`)
             }
             if(response.data){
                 return response.data.map((user_info) => {return user_info.username})

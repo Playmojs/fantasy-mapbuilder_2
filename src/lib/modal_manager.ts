@@ -21,7 +21,7 @@ export function push_promise_modal(modal: ModalType): Promise<void> {
     });
 };
 
-export const choose_article_by_id: (value: {id: number | null}) => ModalEntity[] = (value) => {
+export const choose_article_by_id: (value: {id: number | null, title: string}) => ModalEntity[] = (value) => {
     return Object.entries(store.article_cache).map(([id, article]) => {
         return {
             image:
@@ -31,6 +31,7 @@ export const choose_article_by_id: (value: {id: number | null}) => ModalEntity[]
             title: article.title,
             on_click: () => {
                 value.id = article.id;
+                value.title = article.title;
             }
         };
     });
@@ -77,7 +78,7 @@ export const choose_no_article: (value: {id: null | number}) => ModalEntity = (v
     }
 }
 
-export const link_article: (value: {id: number | null}) => Promise<void> = async (value) => {
+export const link_article: (value: {id: number | null, title: string}) => Promise<void> = async (value) => {
     await push_promise_modal({
         type: 'choose_modal',
         data: { Articles: [choose_no_article(value)].concat(choose_article_by_id(value))},
@@ -88,7 +89,7 @@ export const link_article: (value: {id: number | null}) => Promise<void> = async
 export const get_new_map_data: (value: {file: File | null, title: string, article_id: number | null}) => Promise<void> = (value) => {
     let modal: UploadModal = {type: 'upload_modal',
         data: {
-            submit_func: (file: File | null, title: string, article_id: number | null) => {
+            submit_func: async (file: File | null, title: string, article_id: number | null) => {
                 if(file === null || title === ''){return}
                 value.file = file;
                 value.title = title;
@@ -101,7 +102,7 @@ export const get_new_map_data: (value: {file: File | null, title: string, articl
             button_title: 'Create Map',
             initial_image_blob: null,
             initial_map_title: '',
-            initial_link: null,
+            initial_link: {id: null, title: ""},
             allow_no_file: false}};
 
     return push_promise_modal(modal)

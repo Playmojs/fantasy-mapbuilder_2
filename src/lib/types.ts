@@ -23,18 +23,19 @@ export type ModalEntity = {
 	image: string | null;
 	title: string;
 	on_click: () => Promise<void> | void;
+	optional_func?: () => Promise<void> | void;
 }
 
 export type ModalName = 'upload_modal' | 'choose_modal' | 'confirm_modal' | 'composite_modal' | 'category_modal'
 
 export type UploadModalData = {
-	submit_func: (file: File | null, title: string, article_id: number | null) => Promise<void>;
-	validation_func: (file: File | Blob | null, title: string, article_id: number | null) => boolean;
-	link_func: ((value: {id: number | null}) => Promise<void>) | null;
+	submit_func: (file: File | null, title: string, link_id: number | null) => Promise<void>;
+	validation_func: (file: File | Blob | null, title: string, link_id: number | null) => boolean;
+	link_func: ((value: {id: number | null, title: string}) => Promise<void>) | null;
 	button_title: string;
 	initial_map_title: string | null;
 	initial_image_blob: Blob | null;
-	initial_link: number | null;
+	initial_link: {id: number | null, title: string};
 	allow_no_file: boolean | null; 
 };
 

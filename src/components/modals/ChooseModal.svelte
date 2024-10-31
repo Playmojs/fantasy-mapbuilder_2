@@ -30,7 +30,7 @@
 					class="tab"
 					class:current_tab={tab === current_tab}
 					disabled={tab === current_tab}
-					on:click={() => {
+					onclick={() => {
 						current_tab = tab;
 					}}><strong>{tab}</strong></button
 				>
@@ -45,10 +45,14 @@
 			{#each current_entities as entity}
 				<div
 					class="entity-item"
-					on:click={() => {
+					onclick={() => {
 						handle_entity_click(entity);
 					}}
 				>
+					{#if entity.optional_func}
+						<button class='option_button' onclick={(e: Event)=>{if(entity.optional_func)entity.optional_func(); e.stopPropagation();}}>
+						</button>	
+					{/if}
 					{#if entity.image !== null}
 						<div class="image-container">
 							<img class="entity-image" src={entity.image} alt={entity.title} />
@@ -113,12 +117,33 @@
 	}
 
 	.entity-item {
+		position: relative;
 		cursor: pointer;
 		text-align: center;
 		background-color: rgb(50, 50, 50);
 		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 		padding: 10px 10px;
 		border-radius: 10px;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.option_button {
+		position: absolute;
+		top: 10px;
+		width: 30px;
+		right: 10px;
+		aspect-ratio: 0.5;
+		background-color: transparent;
+		background-image: url('/assets/more_vert.png');
+		background-size: contain;
+		background-repeat: no-repeat;
+		border: none;
+		cursor: pointer;
+	}
+
+	.option_button:hover{
+		opacity: 0.7;
 	}
 
 	.image-container {
@@ -126,6 +151,7 @@
 		width: 100%;
 		height: 150px;
 		overflow: hidden;
+		margin-bottom: 10px;
 	}
 
 	.entity-image {
@@ -141,7 +167,7 @@
 		color: var(--main_white);
 		font-family: 'Cormorant Garamond';
 		font-size: x-large;
-		margin: 10px 0px 0px 0px;
+		margin: 0;
 	}
 
 	#grid-container::-webkit-scrollbar {

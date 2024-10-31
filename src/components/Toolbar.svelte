@@ -76,7 +76,7 @@
 				button_title: 'Update Map',
 				initial_map_title: store.map.title,
 				initial_image_blob: store.image_public_urls[store.map.image] ?? null,
-				initial_link: store.map.article_id,
+				initial_link: {id: store.map.article_id, title: store.article_cache[store.map.article_id].title},
 				allow_no_file: false
 			}
 		});

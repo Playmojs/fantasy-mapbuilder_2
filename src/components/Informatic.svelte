@@ -9,6 +9,7 @@
 	import KeyWordRenderer from './KeyWordRenderer.svelte';
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
 	import type { ChooseModal, CompositeModal, UploadModal } from '$lib/types';
+	import { theme_entities } from '$lib/data.svelte';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -96,7 +97,7 @@
 			button_title: "Update Article Image",
 			initial_map_title: null,
 			initial_image_blob: store.article.image !== null ? store.image_public_urls[store.article.image] ?? null : null,
-			initial_link: null,
+			initial_link: {id: null, title: ""},
 			allow_no_file: true,
 		}
 	}
@@ -138,6 +139,7 @@
 	bind:this={informaticWindow}
 	class:edit_mode={store.edit_mode}
 	transition:fly={{ x: 400, duration: 500 }}
+	style='background-image: url("{theme_entities[store.category_cache[store.article.main_category ?? 0]?.theme_id ?? 0].image}");'
 >
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 
@@ -240,7 +242,6 @@
 		gap: 1%;
 		padding: 10px;
 
-		background-image: url('/assets/brickwall_2.jpg');
 		background-position: top right;
 		background-size: 500px;
 		box-shadow: inset 5px 0px 5px rgb(20, 20, 20);

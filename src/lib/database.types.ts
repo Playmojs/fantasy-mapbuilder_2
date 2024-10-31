@@ -15,6 +15,7 @@ export type Database = {
           created_at: string
           id: number
           image: string | null
+          main_category: number | null
           project_id: number
           title: string
         }
@@ -23,6 +24,7 @@ export type Database = {
           created_at?: string
           id?: number
           image?: string | null
+          main_category?: number | null
           project_id: number
           title?: string
         }
@@ -31,10 +33,18 @@ export type Database = {
           created_at?: string
           id?: number
           image?: string | null
+          main_category?: number | null
           project_id?: number
           title?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "article_main_category_fkey"
+            columns: ["main_category"]
+            isOneToOne: false
+            referencedRelation: "category"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "article_project_id_fkey"
             columns: ["project_id"]
@@ -86,18 +96,21 @@ export type Database = {
           id: number
           name: string
           project_id: number
+          theme_id: number
         }
         Insert: {
           created_at?: string
           id?: number
           name: string
           project_id: number
+          theme_id?: number
         }
         Update: {
           created_at?: string
           id?: number
           name?: string
           project_id?: number
+          theme_id?: number
         }
         Relationships: [
           {

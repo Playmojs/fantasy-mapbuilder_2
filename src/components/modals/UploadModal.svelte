@@ -2,6 +2,7 @@
 	import type { UploadModalData } from '$lib/types';
 	import { store } from '../../store.svelte';
 	import { assert_unreachable } from '$lib/utils';
+	import Modal from './Modal.svelte';
 
 	let button: HTMLButtonElement;
 
@@ -28,13 +29,13 @@
 	};
 
 	const handle_submit = async () => {
-		if (!modal_data.validation_func(file, map_title, link_id.id)) {
+		if (!modal_data.validation_func(file, map_title, link.id)) {
 			assert_unreachable('Error trying to submit image');
 			close();
 			return;
 		}
 		
-		await modal_data.submit_func(file instanceof File ? file : null, map_title, link_id.id);
+		await modal_data.submit_func(file instanceof File ? file : null, map_title, link.id);
 		if (on_close !== undefined) {
 			on_close(true);
 		}
@@ -54,7 +55,7 @@
 	let file = $state<File | Blob | null>(modal_data.initial_image_blob ?? null);
 	let file_preview = $derived<string | null>(file !== null ? URL.createObjectURL(file) : null);
 
-	let link_id = $state<{id: number | null}>({id: modal_data.initial_link});
+	let link = $state<{id: number | null, title: string}>(modal_data.initial_link);
 	$effect(() => {
 		file = modal_data.initial_image_blob ?? null;
 		map_title = modal_data.initial_map_title ?? '';
@@ -65,7 +66,7 @@
 <form id="form" on:submit|preventDefault={handle_submit}>
 	{#if modal_data?.initial_map_title !== null}
 		<div id="title">
-			<label id="title_label">Map Title: </label>
+			<label id="title_label">Name: </label>
 			<input
 				id="title_input"
 				value={map_title}
@@ -95,17 +96,17 @@
 				bind:this={button}
 				on:click|stopPropagation={async () => {
 					if (modal_data.link_func) {
-						await modal_data.link_func(link_id) ?? null;
+						await modal_data.link_func(link) ?? null;
 					}
-				}}>Link Article</button
+				}}>Link</button
 			>
 			<p id='link_title'>
-				{`Article: ${typeof link_id.id === 'number' ? store.article_cache[link_id.id]?.title : 'unknown'}`}
+				{`${link.title === '' ? 'unknown' : link.title}`}
 			</p>
 		</div>
 	{/if}
 	<button
-		disabled={!modal_data.validation_func(file, map_title, link_id.id)}
+		disabled={!modal_data.validation_func(file, map_title, link.id)}
 		type="submit"
 		class="execute_button"
 		>{modal_data?.button_title}

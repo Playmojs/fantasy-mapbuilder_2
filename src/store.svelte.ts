@@ -1,4 +1,4 @@
-import { type Article, type MapData, type MarkerData, type Modal, type Project, type UploadModalData, type ConfirmModalData, type ChooseModalData, type Category } from "$lib/types";
+import { type Article, type MapData, type MarkerData, type ModalType, type Project, type Category } from "$lib/types";
 import type { User } from "@supabase/supabase-js";
 import { readable, writable } from "svelte/store";
 
@@ -19,13 +19,14 @@ class Store {
     write_access = writable(false);
     //edit_map_window = $state<UploadModalData | null>(null);
     //confirm_modal = $state<ConfirmModalData | null>(null);
-    modals = $state<Modal[]>([])
+    modals = $state<ModalType[]>([])
 
     map_article_link=$state<number | null>()
 
     // From database
     map = $state<MapData>(default_map);
     markers = $state<MarkerData[]>([]);
+    theme = $state<number>(0);
     
     map_cache = $state<{ [id: number]: MapData }>({});
     article_cache = $state<{ [id: number]: Article }>({});
@@ -45,6 +46,6 @@ class Store {
 }
 
 const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "map.jpg", parent_id: null, parent_image: null, project_id: 0 }
-const default_article: Article = { id: -1, title: "", created_at: "", content: "", image: null, project_id: 0 }
+const default_article: Article = { id: -1, title: "", created_at: "", content: "", image: null, project_id: 0, main_category: 0 }
 
 export const store = new Store()
