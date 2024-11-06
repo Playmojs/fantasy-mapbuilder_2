@@ -1,5 +1,6 @@
 import { type Article, type MapData, type MarkerData, type ModalType, type Project, type Category } from "$lib/types";
 import type { User } from "@supabase/supabase-js";
+import { untrack } from "svelte";
 import { readable, writable } from "svelte/store";
 
 class Store {
@@ -25,24 +26,25 @@ class Store {
 
     // From database
     map = $state<MapData>(default_map);
-    markers = $state<MarkerData[]>([]);
     theme = $state<number>(0);
     
     map_cache = $state<{ [id: number]: MapData }>({});
     article_cache = $state<{ [id: number]: Article }>({});
+    marker_cache = $state<{[map_id: number] : MarkerData[]}>({});
     project_cache = $state<{ [id: number]: Project }>({});
     category_cache = $state<{[id: number]: Category}>({});
-
+    
     project_images = $state<{ [id: number]: string }>({});
     image_public_urls = $state<{ [image: string]: Blob }>({});
     user_projects = $state<number[]>([]);
-
+    
     article_category_links = $state<{[id: number]: number[]}>({});
     category_links = $state<{[id: number]: number[]}>({})    
-
+    
+    markers = $derived<MarkerData[]>(this.marker_cache[this.map.id] ?? [])
     article_history = $state<number[]>([]);
     undone_articles = $state<number[]>([]); 
-    article = $derived.by<Article>(() => {const id = this.article_history.at(-1); return (id === undefined || !this.article_cache[id]) ? default_article : this.article_cache[id]});
+    article = $derived.by<Article>(() => {const id = this.article_history.at(-1); return (id === undefined || !this.article_cache[id]) ? default_article :  {...this.article_cache[id]}});
 }
 
 const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "map.jpg", parent_id: null, parent_image: null, project_id: 0 }

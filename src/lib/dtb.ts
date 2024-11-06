@@ -18,6 +18,8 @@ let all_fetched_from_project: boolean = false;
 let all_projects_fetched: boolean = false;
 let my_project_ids_fetched: boolean = false;
 
+let requested_images: string[] = [];
+
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
 
@@ -55,7 +57,7 @@ export default {
         }
         const response = await supabase
             .from('map')
-            .select()
+            .select('*, marker!owner_map_id(*)')
             .eq('project_id', project_id)
             .eq('id', map_id)
             .single();
@@ -65,22 +67,26 @@ export default {
             console.error(`Failed to get map. Error: ${response.error.message}`);
         }
         if (data) {
-            store.map_cache[map_id] = data;
+            const {marker, ...map} = data;
+            store.map_cache[map_id] = map;
+            store.marker_cache[map_id] = marker;
             this.update_image_blob(project_id, store.map_cache[map_id].image, 'maps');
             return data;
         }
     },
 
     async update_image_blob(project_id: number, image: string, folder: Folder) {
-        if (image in store.image_public_urls) { return; }
+        if (image in store.image_public_urls || requested_images.includes(image)) { return; }
+        requested_images.push(image)
         const filePath = `${project_id}/${folder}/${image}`;
         const { data, error } = await supabase.storage.from('project').download(filePath);
+        requested_images = requested_images.filter(value => {return image.localeCompare(value)})
         if (error) {
             console.error('Error downloading file:', error.message);
             return;
         }
         if (data) {
-            if(image in store.image_public_urls){console.error('Image already added')}
+            if(image in store.image_public_urls){console.error(`Image fetched multiple times: ${image}`)}
             store.image_public_urls[image] = data;
             return data
         }
@@ -193,7 +199,7 @@ export default {
         all_fetched_from_project = true;
         await supabase
             .from('map')
-            .select()
+            .select('*, marker!owner_map_id(*)')
             .eq('project_id', project_id)
             .then(({ data, error }) => {
                 if (error) {
@@ -201,7 +207,11 @@ export default {
                     all_fetched_from_project = false;
                 }
                 if (data) {
-                    data.forEach(map => { store.map_cache[map.id] = map; this.update_image_blob(project_id, map.image, 'maps') });
+                    data.forEach(map_and_markers => { 
+                        const {marker, ...map} = map_and_markers
+                        store.map_cache[map.id] = map; 
+                        store.marker_cache[map.id] = marker;
+                        this.update_image_blob(project_id, map.image, 'maps') });
                 }
             });
         await supabase
@@ -266,8 +276,10 @@ export default {
 
 
     async update_article(article: Article) {
+
+        if(article.id === -1 || isNaN(article.id)){return};
         if(store.article_cache[article.id] === article){return;}
-        const response = await supabase.from('article').upsert(article).select().single()
+            const response = await supabase.from('article').upsert(article).select().single()
         if (response.error) {
             console.error(`Failed to update article. Error: ${response.error.message}`);
         }

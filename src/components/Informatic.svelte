@@ -10,6 +10,7 @@
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
 	import type { ChooseModal, CompositeModal, UploadModal } from '$lib/types';
 	import { theme_entities } from '$lib/data.svelte';
+	import { untrack } from 'svelte';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -121,12 +122,6 @@
 			image_source = URL.createObjectURL(store.image_public_urls[store.article.image]);
 		}
 	});
-
-	$effect.pre(() => {
-		if (store.edit_mode){
-			dtb.update_article(store.article)
-		}
-	})
 
 	function change_text_size(factor: number) {
 		store.text_size = store.text_size * factor;
