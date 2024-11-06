@@ -18,7 +18,6 @@
 
 	let unsubscribe = page.subscribe(async (value) => {
 		reset_modals();
-		store.markers = [];
 		const map_id = +value.params.map_id;
 		const map = await dtb.get_map(store.project_id, map_id);
 		if (map) {
@@ -31,10 +30,10 @@
 		if (article) {
 			push_article(article.id, false);
 		}
-		const current_markers = await dtb.get_markers(store.map.id);
-		if (current_markers) {
-			store.markers = current_markers;
-		}
+		// const current_markers = await dtb.get_markers(store.map.id);
+		// if (current_markers) {
+		// 	store.markers = current_markers;
+		// }
 		// await dtb.fetch_all_from_project(store.project_id)
 	});
 
