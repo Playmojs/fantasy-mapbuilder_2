@@ -210,7 +210,7 @@
 		>
 		</button>
 		<button
-			onclick={()=>{generate_map_graph(); go_to_article_or_map_modal();}}
+			onclick={()=>{go_to_article_or_map_modal();}}
 			style="background-image: url('/assets/old_map.png');"
 			>
 		</button>
