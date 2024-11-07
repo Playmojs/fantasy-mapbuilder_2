@@ -88,7 +88,7 @@
         <div class="category_display" style='background-image: url("{theme_entities[category.theme_id].image}");'>
             <input class='category_checkbox' type="checkbox" checked={category.id === store.article_cache[article_id].main_category} onchange={()=> {toggle_main_category(category.id)}}/>
             <p class="category_name">{category.name}</p>
-            <button class='option_button' onclick={(e: Event)=>{push_modal(edit_category_modal(category))}}>
+            <button class='option_button' onclick={(e: Event)=>{push_modal(edit_category_modal({...category}))}}>
             </button>	
             <span class="close" onclick={()=>{remove_category(category.id)}}>&times;</span>
         </div>

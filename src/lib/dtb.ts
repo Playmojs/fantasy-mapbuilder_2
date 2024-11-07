@@ -130,10 +130,39 @@ export default {
                     if (data.image !== null) {
                         this.update_image_blob(project_id, data.image, 'articles');
                     }
+
+                    this.get_categories_from_article(article_id)
+
                     store.article_cache[article_id] = data;
-                    return data
+                    return data;
                 }
             });
+    },
+
+    async get_categories(category_ids: number[]){
+        const response = await supabase.from('category').select().in('id', category_ids);
+        if(response.error){
+            console.error(`Couldn't fetch categories, error was ${response.error.message}`)
+        }
+        if(response.data){
+            response.data.forEach(category => store.category_cache[category.id] = category)
+        }
+    },
+
+    async get_categories_from_article(article_id: number){ //As opposed to other get-functions, this one does not check if the article-category-links have already been fetched. It does check if the categories have been fetched.
+        const response = await supabase.from('article_to_category').select('*').eq('article_id', article_id);
+        if(response.error){
+            console.error(`Couldn't fetch category links for article ${article_id}, error was: ${response.error.message}`)
+        }
+        if(response.data){
+            const unfetched_categories = Object.values(response.data).map(value => {return value.category_id}).filter(category_id => {return !(category_id in store.category_cache)})
+            if(unfetched_categories.length > 0){await this.get_categories(unfetched_categories)}
+            response.data.forEach(category_link =>{
+                if(!store.article_category_links[category_link.category_id]){store.article_category_links[category_link.category_id] = []}
+                let existing_links = store.article_category_links[category_link.category_id];
+                if(!existing_links.includes(article_id)){existing_links.push(article_id)}
+            })
+        }
     },
 
     async fetch_project_images(projects: Project[]) {
@@ -274,9 +303,7 @@ export default {
         }
     },
 
-
     async update_article(article: Article) {
-
         if(article.id === -1 || isNaN(article.id)){return};
         if(store.article_cache[article.id] === article){return;}
             const response = await supabase.from('article').upsert(article).select().single()
@@ -326,7 +353,6 @@ export default {
             console.error(`Failed to fetch categories. Error: ${response.error.message}`)
         }
         else if (response.data){
-            console.log(response.data)
             store.category_cache[response.data.id] = response.data;
         }
     },
