@@ -5,7 +5,10 @@
 		type ModalEntity,
 		type UploadModal,
 
-		type ChooseModalData
+		type ChooseModalData,
+
+		type GraphModalData
+
 
 	} from '$lib/types';
 	import { store } from '../store.svelte';
@@ -194,6 +197,23 @@
 		});
 	}
 
+	function open_map_graph(){
+		let graph = generate_map_graph();
+		let graph_entities: GraphModalData = {graph_entities: {}};
+		Object.entries(graph).forEach(([id, value]) => {
+			const entity: ModalEntity = {
+				title: store.map_cache[+id].title,
+				image: URL.createObjectURL(store.image_public_urls[store.map_cache[+id].image]),
+				on_click: () => {gotoMap(+id)}
+			}
+			graph_entities.graph_entities[+id] = {
+				children: value,
+				entity: entity
+			}
+		})
+		push_modal({type: 'graph_modal', data: graph_entities, use_search: false})
+	}
+
 	let edit_visible: boolean;
 	store.write_access.subscribe((value: boolean) => {
 		edit_visible = value;
@@ -212,6 +232,11 @@
 		<button
 			onclick={()=>{go_to_article_or_map_modal();}}
 			style="background-image: url('/assets/old_map.png');"
+			>
+		</button>
+		<button
+			onclick={()=>{open_map_graph();}}
+			style="background-image: url('/assets/map_icon.png');"
 			>
 		</button>
 	</div>

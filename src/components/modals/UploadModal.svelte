@@ -23,11 +23,6 @@
 		map_title = title_input.value;
 	}
 
-	const handleClose = (e: Event) => {
-		e.stopPropagation();
-		close();
-	};
-
 	const handle_submit = async () => {
 		if (!modal_data.validation_func(file, map_title, link.id)) {
 			assert_unreachable('Error trying to submit image');

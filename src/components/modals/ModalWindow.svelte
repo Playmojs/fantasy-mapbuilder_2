@@ -49,7 +49,7 @@
 		padding: 20px;
 		background: rgb(60, 60, 60);
 		width: 80%;
-		max-width: 1000px;
+		max-width: 2000px;
 		max-height: 80%;
 		overflow-y: hidden;
 		border-radius: 5px;

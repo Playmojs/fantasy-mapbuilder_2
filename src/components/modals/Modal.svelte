@@ -6,6 +6,7 @@
 	import UploadModal from './UploadModal.svelte';
 	import CompositeModal from './CompositeModal.svelte';
 	import CategoryModal from './CategoryModal.svelte';
+	import GraphModal from './GraphModal.svelte';
 
 	let {
 		close,
@@ -54,4 +55,11 @@
 		close={() => {pop_modal();}}
 		article_id={modal.article_id}
 	/>
+{:else if modal.type === 'graph_modal'}
+	<GraphModal
+		close={() => {pop_modal();}}
+		modal_data={modal.data}
+		on_close={modal.on_close}
+		use_search={modal.use_search}
+		/>
 {/if}

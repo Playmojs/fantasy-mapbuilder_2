@@ -9,6 +9,7 @@
 		store.project_id = +value.params.project_id;
 
 		store.write_access.set(await dtb.check_write_access());
+		dtb.get_project(store.project_id);
 	});
 
 	onDestroy(() => {

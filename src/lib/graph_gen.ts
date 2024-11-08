@@ -1,7 +1,5 @@
 import { store } from "../store.svelte"
 
-
-
 export function generate_map_graph(): {[map_id: number]: number[]}{
     
     let graph: {[map_id: number]: number[]} = {};
@@ -11,7 +9,7 @@ export function generate_map_graph(): {[map_id: number]: number[]}{
     let map_layer: {[layer: number]: number[]} = {};
     
     function prune_graph_by_layer(layer: number){
-        // This function is a mess. Can it be simplified?
+        /* This function is a mess. Can it be simplified? */
         
         // Iterate over each map in this layer. This layer will not be changed.
         map_layer[layer].forEach(map_id => {
@@ -21,29 +19,36 @@ export function generate_map_graph(): {[map_id: number]: number[]}{
                 {
                 if(map_order.includes(child_id)){return}
 
-                // Check if the map's child should be added to the next layer
-                if(duplicate[child_id].length > 1){
-                    const parent_id = store.map_cache[child_id].parent_id
+                /* Check if the map is the legitimate parent for the child. 
+                Each child map will have only a single legitimate parent, with the following priority:
+                1. The parent is legitimate if it is the child's only parent
+                2. If the child has multiple parents, the parent is legitimate if it is the child's parent_map (and the parent_map has a link to this child)
+                3. If the child has multiple parents and no parent_map, the parent with the lowest map_layer is the legitimate one
+                4. If it can't be decided in steps 1-4, it will be determined by chance. */
 
-                    /* The map's child is added to the next layer if no other map points to this child, 
-                    if this map is the child's parent-map or if the child's parent-map doesn't link to the child with a marker.*/
+                // 1. Check if the child has multiple parents:
+                if(duplicate[child_id].length > 1){
+
+                    const parent_id = store.map_cache[child_id].parent_id
                     
-                    // The keep_parent represents the proper parent for the child - regardless if it is this map or another.
+                    // 2. & 3. Find the child's correct parent - it is either this map_id, which is sorted by layer (3.), or the parent_id if that is different (2.)
                     const keep_parent = parent_id !== null && graph[parent_id].includes(child_id) ? parent_id : map_id;
                     
-                    // Remove links between child and illegitimate parents
+                    // Prune links to illegitimate parents after the correct parent is established
                     duplicate[child_id].forEach(parent_duplicate=> {
                         if (parent_duplicate === keep_parent){return}
                         graph[parent_duplicate] = graph[parent_duplicate].filter(target => {return target !== child_id}
                         )
                     })
+
+                    // If this works, each entry in the duplicate-object will be left with only a single entry.
                     duplicate[child_id] = [keep_parent];
 
-                    // Return if this map is not the true parent, so the child is placed in the right layer
+                    // If this parent was illegitimate (the child had a different parent-map)
                     if(keep_parent !== map_id){return}
                 }
 
-                // Place child in the right layer
+                // Place the legitimate child in the next layer
                 map_order.push(child_id); 
                 map_layer[layer + 1] ? map_layer[layer + 1].push(child_id): map_layer[layer + 1] = [child_id];}
                 )

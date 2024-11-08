@@ -3,11 +3,6 @@
 
     let { modal_data, close }: { modal_data: ConfirmModalData; close: any } = $props();
 
-	const handleClose = (e: Event) => {
-		e.stopPropagation();
-		close();
-	};
-
     async function confirm(){
         modal_data.confirm_function()
         close()
