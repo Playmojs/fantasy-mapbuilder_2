@@ -218,8 +218,8 @@
 		gap: 1%;
 		padding: 10px;
 
-		background-image: url('/assets/brickwall_2.jpg');
-		background-position: right;
+		background-image: url('/assets/BG4.jpg');
+		background-position: top right;
 		background-size: 500px;
 	}
 
