@@ -204,7 +204,7 @@
 			const entity: ModalEntity = {
 				title: store.map_cache[+id].title,
 				image: URL.createObjectURL(store.image_public_urls[store.map_cache[+id].image]),
-				on_click: () => {gotoMap(+id)}
+				on_click: () => {return } //gotoMap(+id)}
 			}
 			graph_entities.graph_entities[+id] = {
 				children: value,

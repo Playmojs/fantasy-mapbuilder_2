@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { store } from '../store.svelte';
 
-	let {parent_selector, transform, offset_limit} : {parent_selector: string, transform: {x: number, y: number, scale: number}, offset_limit: {x: number, y: number, width: number, height: number}} = $props()
+	let {parent_selector, transform, offset_limit, scale_limit, on_zoompan} : {parent_selector: string, transform: {x: number, y: number, scale: number}, offset_limit: {x: number, y: number, width: number, height: number}, scale_limit: {min: number, max: number} | null, on_zoompan?: (transform: {x: number, y: number, scale: number}) => void} = $props()
 
 	let parent: any;
 	let current_x = 0;
@@ -20,9 +20,6 @@
 		current_y = transform.y
 		update_transform()}
 	)
-
-	const min_scale = 0.5 * initial_scale;
-	const max_scale = 5 * initial_scale;
 
 	function handle_mouse_down(event: MouseEvent) {
 		event.preventDefault();
@@ -65,11 +62,11 @@
 		} else if (event.touches.length === 2) {
 			store.is_panning = false;
 			const new_distance = get_distance(event.touches[0], event.touches[1]);
-			let new_scale = clamp(
+			let new_scale = scale_limit ? clamp(
 				initial_scale * (new_distance / initial_distance),
-				min_scale,
-				max_scale
-			);
+				scale_limit.min,
+				scale_limit.max
+			) : initial_scale*(new_distance / initial_distance);
 
 			const center_x = (event.touches[0].clientX + event.touches[1].clientX) / 2;
 			const center_y = (event.touches[0].clientY + event.touches[1].clientY) / 2;
@@ -88,7 +85,7 @@
 	function handle_wheel(event: WheelEvent) {
 		event.preventDefault();
 		const delta = Math.sign(event.deltaY);
-		const new_scale = clamp(scale * (1 + delta * -0.1), min_scale, max_scale);
+		const new_scale = scale_limit ? clamp(scale * (1 + delta * -0.1), scale_limit.min, scale_limit.max) : scale * (1 + delta * -0.1);
 		zoom_at(event.clientX, event.clientY, new_scale);
 		update_transform();
 	}
@@ -136,8 +133,8 @@
 
 	function update_transform() {
 		if (parent) {
-			store.map_transform = { x: current_x, y: current_y, scale: scale };
 			parent.style.transform = `translate(${current_x}px, ${current_y}px) scale(${scale})`;
+			if(on_zoompan){on_zoompan({x: current_x, y: current_y, scale: scale})}
 		}
 	}
 

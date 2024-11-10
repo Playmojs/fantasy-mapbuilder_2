@@ -10,10 +10,12 @@
 
 	let {
 		close,
-		modal
+		modal,
+		window_rect,
 	}: {
 		close: any;
 		modal: ModalType;
+		window_rect: DOMRect;
 	} = $props();
 </script>
 
@@ -61,5 +63,6 @@
 		modal_data={modal.data}
 		on_close={modal.on_close}
 		use_search={modal.use_search}
+		window_rect={window_rect}
 		/>
 {/if}

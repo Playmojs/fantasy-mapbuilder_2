@@ -80,6 +80,10 @@
 		offset_limit = {x: 0, y: 50, width: window.innerWidth*(store.informatic_minimized ? 1 : store.informatic_width / 100), height: window.innerHeight - 50}
 	}
 
+	function on_zoompan(transform: {x: number, y: number, scale: number}){
+		store.map_transform = transform;
+	}
+
 	$effect(() => {
 		store.informatic_minimized;
 		store.informatic_width;
@@ -93,7 +97,7 @@
 	{#each store.markers as marker}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}
-	<ZoomPan parent_selector="#map-container" transform={transf} offset_limit={offset_limit}/>
+	<ZoomPan parent_selector="#map-container" transform={transf} offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
 </div>
 
 <style>

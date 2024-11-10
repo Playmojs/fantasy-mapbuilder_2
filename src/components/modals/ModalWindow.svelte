@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type {ModalType } from '$lib/types';
+	import { onMount } from 'svelte';
 	import Modal from './Modal.svelte';
 
 	let {
@@ -10,6 +11,18 @@
 		modal: ModalType;
 	} = $props();
 
+	let modal_window: HTMLDivElement;
+	let rect = $state<DOMRect>({height: 0, width: 0, x: 0, y: 0, top: 0, right: 0, bottom: 0, left: 0, toJSON: () => {}});
+
+	function set_window_rect(){
+		rect = modal_window.getBoundingClientRect();
+	}
+
+	onMount(()=> {
+		window.addEventListener('resize', set_window_rect);
+		set_window_rect();
+	})
+
 	const handleClose = (e: Event) => {
 		e.stopPropagation();
 		close();
@@ -17,9 +30,9 @@
 </script>
 
 <div class="modal" on:click={handleClose}>
-	<div class="modal-content" on:click|stopPropagation>
+	<div class="modal-content" bind:this={modal_window} on:click|stopPropagation>
 		<span class="close" on:click={handleClose}>&times;</span>
-		<Modal close={close} modal={modal}/>
+		<Modal close={close} modal={modal} window_rect={rect}/>
 	</div>
 </div>
 
@@ -49,9 +62,9 @@
 		padding: 20px;
 		background: rgb(60, 60, 60);
 		width: 80%;
-		max-width: 2000px;
 		max-height: 80%;
 		overflow-y: hidden;
+		overflow-x: hidden;
 		border-radius: 5px;
 		border: 3px ridge var(--main_gold);
 	}
