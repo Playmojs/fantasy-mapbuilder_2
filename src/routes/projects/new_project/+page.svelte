@@ -3,10 +3,8 @@
 	import dtb from "$lib/dtb";
 	import { pop_modal, push_modal } from "$lib/modal_manager";
 	import { assert_unreachable } from "$lib/utils";
-	import ConfirmModal from "../../../components/ConfirmModal.svelte";
 	import Homebar from "../../../components/Homebar.svelte";
-	import MapOption from "../../../components/MapOption.svelte";
-	import Modal from "../../../components/Modal.svelte";
+	import ModalWindow from "../../../components/modals/ModalWindow.svelte";
 	import { store } from "../../../store.svelte";
 
     let project_title = $state<string>('')
@@ -89,31 +87,12 @@
     </div>
 </main>
 
+
 {#each store.modals as modal (modal)}
-	{#if modal.type === 'upload_modal'}
-		<MapOption
-			modal_data={modal.data}
-			close={() => {
-				pop_modal();
-			}}
-			on_close={modal.on_close}
+		<ModalWindow
+			close={() => {pop_modal();}}
+			modal={modal}
 		/>
-	{:else if modal.type === 'confirm_modal'}
-		<ConfirmModal
-			modal_data={modal.data}
-			close={() => {
-				pop_modal();
-			}}
-		/>
-	{:else if modal.type === 'choose_modal'}
-		<Modal
-			modal_data={modal.data}
-			close={() => {
-				pop_modal();
-			}}
-			on_close={modal.on_close}
-		/>
-	{/if}
 {/each}
 
 <style>

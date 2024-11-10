@@ -68,6 +68,7 @@
 
 		z-index: 50;
 	}
+
 	#marker_window {
 		position: relative;
 
@@ -83,7 +84,7 @@
 
 	@media(max-width: 1300px){
 		#border{
-			width: 100px;
+			width: 120px;
 		}
 	}
 

@@ -3,10 +3,8 @@
 	import { choose_existing_map, get_new_map_data, pop_modal, push_modal, push_promise_modal } from '$lib/modal_manager';
 	import { type MapData, type Project, type ModalEntity } from '$lib/types';
 	import { assert_unreachable } from '$lib/utils';
-	import ConfirmModal from '../../../../components/ConfirmModal.svelte';
 	import Homebar from '../../../../components/Homebar.svelte';
-	import MapOption from '../../../../components/MapOption.svelte';
-	import Modal from '../../../../components/Modal.svelte';
+	import ModalWindow from '../../../../components/modals/ModalWindow.svelte';
 	import { store } from '../../../../store.svelte';
 
 	let project = $state<Project>();
@@ -16,10 +14,11 @@
 	const change_main_map = async () => {
 		if (!project){return}
 		await dtb.fetch_all_from_project(project.id)
-		const response = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_existing_map()}})
-		if(!response){return}
+		let value: {id: number | null} = {id: null}
+		const response = await push_promise_modal({type: 'choose_modal', data: {Maps: await choose_existing_map(value)}, use_search: true})
+		if(value.id===null){return}
 		else{
-			main_map = store.map_cache[response]
+			main_map = store.map_cache[value.id]
 		}
 	}
 
@@ -128,30 +127,12 @@
 </main>
 
 {#each store.modals as modal (modal)}
-	{#if modal.type === 'upload_modal'}
-		<MapOption
-			modal_data={modal.data}
+		<ModalWindow
 			close={() => {
 				pop_modal();
 			}}
-			on_close={modal.on_close}
+			modal={modal}
 		/>
-	{:else if modal.type === 'confirm_modal'}
-		<ConfirmModal
-			modal_data={modal.data}
-			close={() => {
-				pop_modal();
-			}}
-		/>
-	{:else if modal.type === 'choose_modal'}
-		<Modal
-			modal_data={modal.data}
-			close={() => {
-				pop_modal();
-			}}
-			on_close={modal.on_close}
-		/>
-	{/if}
 {/each}
 
 <style>

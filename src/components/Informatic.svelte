@@ -5,9 +5,12 @@
 	import { fly } from 'svelte/transition';
 	import dtb from '$lib/dtb';
 	import edit_mode from '../store';
-	import { push_modal } from '$lib/modal_manager';
+	import { choose_map_or_article, link_article, push_modal } from '$lib/modal_manager';
 	import KeyWordRenderer from './KeyWordRenderer.svelte';
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
+	import type { ChooseModal, CompositeModal, UploadModal } from '$lib/types';
+	import { theme_entities } from '$lib/data.svelte';
+	import { untrack } from 'svelte';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -69,8 +72,9 @@
 		window.removeEventListener('touchend', stopResize);
 	}
 
-	async function change_article_image(){
-		push_modal({type: 'upload_modal', data:{
+	const article_image_modal: UploadModal = {
+		type: 'upload_modal',
+		data: {
 			submit_func: async(file: File | null, title: string) => {
 				if (file === null){
 					store.article.image = null;
@@ -94,10 +98,23 @@
 			button_title: "Update Article Image",
 			initial_map_title: null,
 			initial_image_blob: store.article.image !== null ? store.image_public_urls[store.article.image] ?? null : null,
-			initial_link: null,
+			initial_link: {id: null, title: ""},
 			allow_no_file: true,
 		}
-	})}
+	}
+	
+	async function open_article_options(){
+		const composite_modal_data: CompositeModal = {
+			type: 'composite_modal',
+			data: {
+				'Article Image': article_image_modal,
+				'Categories': {type: 'category_modal', article_id: store.article.id}
+			}
+		}
+
+		push_modal(composite_modal_data)
+	}
+	
 
 	let image_source = $state('');
 	$effect(() => {
@@ -106,15 +123,10 @@
 		}
 	});
 
-	$effect.pre(() => {
-		if (store.edit_mode){
-			dtb.update_article(store.article)
-		}
-	})
-
 	function change_text_size(factor: number) {
 		store.text_size = store.text_size * factor;
 	}
+
 </script>
 
 <div
@@ -122,6 +134,7 @@
 	bind:this={informaticWindow}
 	class:edit_mode={store.edit_mode}
 	transition:fly={{ x: 400, duration: 500 }}
+	style='background-image: url("{theme_entities[store.category_cache[store.article.main_category ?? 0]?.theme_id ?? 0].image}");'
 >
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 
@@ -132,7 +145,7 @@
 			onclick={() => {
 				pop_article();
 			}}
-			style="background-image: url('/assets/arrow_back.png');"
+			style="background-image: url('/assets/arrow_left.png');"
 			title="Go to last Article"
 			aria-label='Undo Button'
 			disabled={store.article_history.length <= 1}
@@ -144,7 +157,7 @@
 				undo_article_pop();
 			}}
 			disabled={store.undone_articles.length === 0}
-			style="background-image: url('/assets/arrow_forward.png');"
+			style="background-image: url('/assets/arrow_right.png');"
 			title="Go to next Article"
 			aria-label='Redo Button'
 		></button>
@@ -164,9 +177,18 @@
 			onclick={() => {
 				change_text_size(0.9);
 			}}
-			style="background-image: url('/assets/minus.png');"
+			style="background-image: url('/assets/fantasy_minus.png');"
 			title="Decrease text size"
 			aria-label='Decrease Text Size Button'
+			></button>
+
+			<button 
+			id="edit_image_button" 
+			onclick={open_article_options}
+			style="background-image: url('/assets/fantasy_cog.png');"
+			class:hidden={!store.edit_mode}
+			title="Increase text size"
+			aria-label='Increase Text Size Button'
 		></button>
 	</div>
 	<div
@@ -180,9 +202,6 @@
 		<h1 bind:this={article_title}>{store.article.title}</h1>
 	</div>
 	<div id="image_container" style="height: {store.article.image !== null ? 30 : store.edit_mode ? 10 : 0}%;">
-		{#if store.edit_mode}
-			<button id="edit_image_button" onclick={change_article_image}></button>
-		{/if}
 		<img
 		id="article_image"
 		src={image_source}
@@ -218,9 +237,9 @@
 		gap: 1%;
 		padding: 10px;
 
-		background-image: url('/assets/BG4.jpg');
 		background-position: top right;
 		background-size: 500px;
+		box-shadow: inset 5px 0px 5px rgb(20, 20, 20);
 	}
 
 	#button_bar{
@@ -242,6 +261,14 @@
 		border-radius: 10px;
 		background-repeat: no-repeat;
 		box-shadow: 3px 3px 5px rgb(30, 30, 30);
+	}
+
+	#button_bar button:active{
+		box-shadow: inset 3px 3px 3px rgb(50, 50, 50);
+	}
+
+	#edit_image_button.hidden{
+		display: none;
 	}
 	
 	#redo_article_button:disabled{
@@ -269,6 +296,8 @@
 		border-radius: 10px;
 		font-family: 'Garamond Semibold Italic';
 		white-space: nowrap;
+		background-color: rgba(50, 50, 50, 0.8);
+		color: var(--main_white);
 	}
 
 	#article_title h1 {
@@ -277,6 +306,11 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+
+	#article_title.editable{
+		color: black;
+		background-color: rgba(220, 220, 220, 0.8);
 	}
 
 
@@ -300,22 +334,18 @@
 		font-family: 'Garamond Regular';
 		text-align: justify;
 		overflow-y: scroll;
-		margin-right: 20px;
-		padding-left: 10px;
+		padding: 0px 10px;
 		border-radius: 10px;
-		padding-right: 10px;
-	}
-
-	.non-editable {
 		background-color: rgb(47, 47, 47);
 		color: var(--main_white);
 		white-space: normal;
 	}
 
-	.editable {
-		background-color: var(--main_white);
+	#informatic.editable {
+		background-color: white;
 		color: black;
 		white-space: pre-wrap;
+		padding: 10px 0px 0px 5px;
 	}
 
 	#informatic::-webkit-scrollbar-track.editable {
@@ -362,17 +392,6 @@
 
 	#image_container{
 		display: flex;
-	}
-
-	#edit_image_button{
-		position: relative;
-		background-image: url('/assets/Wheel.png');
-		background-color: transparent;
-		background-size: contain;
-		background-repeat: no-repeat;
-		border: none;
-		width: 30px;
-		aspect-ratio: 1;
 	}
 
 	#article_image {

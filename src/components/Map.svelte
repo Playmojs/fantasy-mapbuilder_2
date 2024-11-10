@@ -36,10 +36,10 @@
 			return;
 		}
 		const article = await dtb.get_article(store.project_id, store.map.article_id);
-		if (article) {
-			push_article(article.id, true);
-			if (store.informatic_opened_by_marker){
-				store.informatic_minimized = true;
+		if (article && article.id !== store.article.id) {
+				push_article(article.id, true);
+				if (store.informatic_opened_by_marker){
+					store.informatic_minimized = true;
 			}
 		}
 		store.selected_marker = null;
@@ -49,8 +49,9 @@
 	onMount(() => {
 		map_.addEventListener('mousedown', detectClick);
 		map_.addEventListener('touchstart', detectTouch);
+		window.addEventListener('resize', update_offset_limit);
 	});
-
+	
 	function get_relative_movement(x: number, y: number) {
 		let rect = map_.getBoundingClientRect();
 		let rel_x = Math.max(0, Math.min(((x - rect.x) / rect.width) * 100, 100));
@@ -58,20 +59,33 @@
 		let position: { x: number; y: number } = { x: rel_x, y: rel_y };
 		return position;
 	}
-
+	
 	let image_source = $state('');
 	$effect(() => {
 		if (store.map.image && store.image_public_urls[store.map.image]) {
 			image_source = URL.createObjectURL(store.image_public_urls[store.map.image]);
 		}
 	});
-
+	
 	type transform={x: number; y: number; scale: number}
 	let transf = $state<transform>({x: 0, y: 0, scale: 1})
-
+		
 	function update_scale(){
-		transf={x: 0, y: 0, scale: window.innerHeight / map_.naturalHeight / window.innerWidth * map_.naturalWidth};
+			transf={x: 0, y: 50, scale: (window.innerHeight-50) / map_.naturalHeight / window.innerWidth * map_.naturalWidth};
 	}
+
+	let offset_limit = $state({x: 0, y: 50, width: 1920, height: 1080})
+	function update_offset_limit(){
+		if (!window){return}
+		offset_limit = {x: 0, y: 50, width: window.innerWidth*(store.informatic_minimized ? 1 : store.informatic_width / 100), height: window.innerHeight - 50}
+	}
+
+	$effect(() => {
+		store.informatic_minimized;
+		store.informatic_width;
+		update_offset_limit();
+	})
+
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
@@ -79,7 +93,7 @@
 	{#each store.markers as marker}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}
-	<ZoomPan parent_selector="#map-container" transform={transf}/>
+	<ZoomPan parent_selector="#map-container" transform={transf} offset_limit={offset_limit}/>
 </div>
 
 <style>

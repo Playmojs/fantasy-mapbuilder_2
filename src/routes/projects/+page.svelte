@@ -11,14 +11,14 @@
 	};
 	get_projects();
 
-	let project_markers = $derived<ModalEntity<void>[]>(
+	let project_markers = $derived<ModalEntity[]>(
 		Object.entries(store.project_cache).map(([_, project]) => {
 			return {
 				image: store.image_public_urls[store.project_images[project.id]]
 					? URL.createObjectURL(store.image_public_urls[store.project_images[project.id]])
 					: '/assets/old_map.png',
 				title: project.name,
-				on_result: () => {
+				on_click: () => {
 					goto(`/projects/${project.id}/${project.head_map_id}`);
 				}
 			};
@@ -35,7 +35,7 @@
 				<div
 					class="entity-item"
 					onclick={() => {
-						entity.on_result();
+						entity.on_click();
 					}}
 				>
 					<div class="image-container">

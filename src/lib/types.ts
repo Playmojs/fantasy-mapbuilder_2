@@ -17,31 +17,32 @@ export type MarkerData = Database["public"]["Tables"]["marker"]["Row"];
 export type MapData = Database["public"]["Tables"]["map"]["Row"];
 export type Article = Database["public"]["Tables"]["article"]["Row"];
 export type Project = Database["public"]["Tables"]["project"]["Row"];
+export type Category = Database["public"]["Tables"]["category"]["Row"];
 
-export type ModalEntity<TResult> = {
+export type ModalEntity = {
 	image: string | null;
 	title: string;
-	on_result: () => TResult | void;
-	on_reject?: () => void;
+	on_click: () => Promise<void> | void;
+	optional_func?: () => Promise<void> | void;
 }
 
-export type ModalType = 'upload_modal' | 'choose_modal' | 'confirm_modal'
+export type ModalName = 'upload_modal' | 'choose_modal' | 'confirm_modal' | 'composite_modal' | 'category_modal' | 'graph_modal'
 
-export type UploadModalData<TResult> = {
-	submit_func: (file: File | null, title: string, article_id: number | null) => TResult | void;
-	validation_func: (file: File | Blob | null, title: string, article_id: number | null) => boolean;
-	link_func: (() => Promise<number | null | undefined>) | null;
+export type UploadModalData = {
+	submit_func: (file: File | null, title: string, link_id: number | null) => Promise<void>;
+	validation_func: (file: File | Blob | null, title: string, link_id: number | null) => boolean;
+	link_func: ((value: {id: number | null, title: string}) => Promise<void>) | null;
 	button_title: string;
 	initial_map_title: string | null;
 	initial_image_blob: Blob | null;
-	initial_link: number | null;
-	allow_no_file: boolean;
+	initial_link: {id: number | null, title: string};
+	allow_no_file: boolean | null; 
 };
 
-export type UploadModal<TResult> = {
+export type UploadModal = {
 	type: "upload_modal";
 	on_close?: (success: boolean) => void;
-	data: UploadModalData<TResult>;
+	data: UploadModalData;
 }
 
 export type ConfirmModalData = {
@@ -55,15 +56,52 @@ export type ConfirmModal = {
 	data: ConfirmModalData;
 }
 
-export type ChooseModalData<TResult> = { [modal_tab: string]: ModalEntity<TResult>[]; };
+export type ChooseModalData= { [modal_tab: string]: ModalEntity[]; };
 
 
-export type ChooseModal<TResult> = {
+export type ChooseModal = {
 	type: 'choose_modal';
-	on_close?: (success: boolean, result?: any) => void;
-	data: ChooseModalData<TResult>;
+	on_close?: (success: boolean) => void;
+	data: ChooseModalData;
+	use_search: boolean;
+}
+
+export type SearchEntry = {
+	on_click: () => void;
+	title: string;
+	image: string | null;
+}
+
+export type CompositeModalData = {[title: string]: ModalType}
+
+export type GraphEntity = {
+	children: number[],
+	entity: ModalEntity
+}
+
+export type GraphModalData = {
+	graph_entities: {[id: number]: GraphEntity}
+}
+
+export type CompositeModal = {
+	type: 'composite_modal';
+	on_close?: (success: boolean) => void;
+	data: CompositeModalData;
+}
+
+export type CategoryModal = {
+	type: 'category_modal';
+	article_id: number;
+	on_close?: (success: boolean) => void;
+}
+
+export type GraphModal = {
+	type: 'graph_modal';
+	data: GraphModalData;
+	on_close?: (success: boolean) => void;
+	use_search: boolean;
 }
 
 
 export type Folder = "maps" | "articles"
-export type Modal<TResult> = ChooseModal<TResult> | UploadModal<TResult> | ConfirmModal
+export type ModalType = ChooseModal | UploadModal | ConfirmModal | CompositeModal | CategoryModal | GraphModal

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { store } from '../store.svelte';
 
-	let {parent_selector, transform} : {parent_selector: string, transform: {x: number, y: number, scale: number}} = $props()
+	let {parent_selector, transform, offset_limit} : {parent_selector: string, transform: {x: number, y: number, scale: number}, offset_limit: {x: number, y: number, width: number, height: number}} = $props()
 
 	let parent: any;
 	let current_x = 0;
@@ -99,26 +99,26 @@
 
 	function get_min_x() {
 		return Math.min(
-			0,
-			window.innerWidth * (store.informatic_minimized ? 1 : store.informatic_width / 100) -
+			offset_limit.x,
+			offset_limit.x + offset_limit.width -
 				parent.clientWidth * scale
 		);
 	}
 
 	function get_max_x() {
 		return Math.max(
-			0,
-			window.innerWidth * (store.informatic_minimized ? 1 : store.informatic_width / 100) -
+			offset_limit.x,
+			offset_limit.x + offset_limit.width -
 				parent.clientWidth * scale
 		);
 	}
 
 	function get_min_y() {
-		return Math.min(0, window.innerHeight - parent.clientHeight * scale);
+		return Math.min(offset_limit.y, offset_limit.y + offset_limit.height - parent.clientHeight * scale);
 	}
 
 	function get_max_y() {
-		return Math.max(0, window.innerHeight - parent.clientHeight * scale);
+		return Math.max(offset_limit.y, offset_limit.y + offset_limit.height - parent.clientHeight * scale);
 	}
 
 	function get_distance(touch1: Touch, touch2: Touch) {

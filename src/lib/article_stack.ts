@@ -6,6 +6,7 @@ import { assert, assert_unreachable } from "./utils";
 let replace_head: boolean = false;
 
 export function push_article(id: number, is_replaced: boolean){
+    if(store.edit_mode && store.article_history.at(-1)){dtb.update_article(store.article)}
     if (replace_head){pop_article()}
     store.article_history.push(id)
     replace_head = is_replaced;
@@ -18,6 +19,7 @@ export async function pop_article(){
         console.error('Invalid pop of article history');
         return;
     }
+    if (store.edit_mode){dtb.update_article(store.article_cache[current_id])}
     const validated = await validate_article_pop();
     if (!validated){
         store.article_history.push(current_id);

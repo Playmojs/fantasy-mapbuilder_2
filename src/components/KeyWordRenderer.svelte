@@ -11,9 +11,8 @@
     alert(`Article function called with ID: ${id}`);
   }
 
-  const {href, title, text}: {href: string, title: string | undefined, text: string} = $props()
+  const {href, title, text, raw, tokens}: {href: string, title: string | null, text: string, raw: string, tokens: any} = $props()
   
-
   let id = $state<number | null>(null)
   let active_key = $state<string>('')
   let hover = $state<boolean>(false)

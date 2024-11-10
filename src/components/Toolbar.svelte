@@ -5,7 +5,10 @@
 		type ModalEntity,
 		type UploadModal,
 
-		type ChooseModalData
+		type ChooseModalData,
+
+		type GraphModalData
+
 
 	} from '$lib/types';
 	import { store } from '../store.svelte';
@@ -15,12 +18,15 @@
 	import { gotoMap } from '$lib/goto_map';
 	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article} from '$lib/modal_manager';
 	import { push_article } from '$lib/article_stack';
+	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
+	import { generate_map_graph } from '$lib/graph_gen';
 
-	const add_map: ModalEntity<void> = {
+	const add_map: ModalEntity = {
 		image: '/assets/plus.png',
 		title: 'Add Map',
-		on_result: async () => {
-			const map_info = await get_new_map_data()
+		on_click: async () => {
+			let map_info: {file: File | null, title: string, article_id: number | null} = {file: null, title: '', article_id: null};
+			await get_new_map_data(map_info)
 			if (map_info === undefined || map_info.file === null || map_info.title === ''){return}
 			
 			const selected_marker = store.markers.find((marker) => marker.id === store.selected_marker);
@@ -64,19 +70,17 @@
 						file !== null && title !== '' && article_id !== null && (file instanceof File || title !== store.map.title || article_id !== store.map.article_id)
 					);
 				},
-				link_func: async () => {
-					const result = await push_promise_modal<number | null>({
+				link_func: async (value) => {
+					await push_promise_modal({
 						type: 'choose_modal',
-						data: { Articles: choose_article_by_id() }
+						data: { Articles: choose_article_by_id(value)},
+						use_search: true
 					});
-					if (typeof result === 'number' || result === null) {
-						return result;
-					}
 				},
 				button_title: 'Update Map',
 				initial_map_title: store.map.title,
 				initial_image_blob: store.image_public_urls[store.map.image] ?? null,
-				initial_link: store.map.article_id,
+				initial_link: {id: store.map.article_id, title: store.article_cache[store.map.article_id].title},
 				allow_no_file: false
 			}
 		});
@@ -105,13 +109,14 @@
 
 	const go_to_article_or_map_modal = async () => {
 		await dtb.fetch_all_from_project(store.project_id);
-		const result = await push_promise_modal({type: 'choose_modal', data: choose_map_or_article()})
-		if(result === undefined){return}
-		if(result.map_id !== null){
-			gotoMap(result.map_id)
+		let value: {map_id: number| null, article_id: number | null} = {map_id: null, article_id: null}
+		await push_promise_modal({type: 'choose_modal', data: choose_map_or_article(value), use_search: true})
+		if(value.article_id === null && value.map_id === null){return}
+		else if(value.map_id !== null){
+			gotoMap(value.map_id)
 		}
-		else if (result.article_id !== null){
-			const article = await dtb.get_article(store.project_id, result.article_id)
+		else if (value.article_id !== null){
+			const article = await dtb.get_article(store.project_id, value.article_id)
 			if(article){
 				push_article(article.id, false);
 			}
@@ -156,7 +161,7 @@
 						return {
 							image: URL.createObjectURL(store.image_public_urls[map.image]),
 							title: map.title,
-							on_result: () => {
+							on_click: () => {
 								if (store.selected_marker === null) {
 									return;
 								}
@@ -175,7 +180,7 @@
 									? URL.createObjectURL(store.image_public_urls[article.image])
 									: '/assets/Parchment.png',
 							title: article.title,
-							on_result: () => {
+							on_click: () => {
 								if (store.selected_marker === null) {
 									return;
 								}
@@ -187,8 +192,26 @@
 						};
 					})
 				)
-			}
+			},
+			use_search: true
 		});
+	}
+
+	function open_map_graph(){
+		let graph = generate_map_graph();
+		let graph_entities: GraphModalData = {graph_entities: {}};
+		Object.entries(graph).forEach(([id, value]) => {
+			const entity: ModalEntity = {
+				title: store.map_cache[+id].title,
+				image: URL.createObjectURL(store.image_public_urls[store.map_cache[+id].image]),
+				on_click: () => {gotoMap(+id)}
+			}
+			graph_entities.graph_entities[+id] = {
+				children: value,
+				entity: entity
+			}
+		})
+		push_modal({type: 'graph_modal', data: graph_entities, use_search: false})
 	}
 
 	let edit_visible: boolean;
@@ -207,10 +230,18 @@
 		>
 		</button>
 		<button
-			onclick={()=>{go_to_article_or_map_modal()}}
+			onclick={()=>{go_to_article_or_map_modal();}}
 			style="background-image: url('/assets/old_map.png');"
 			>
 		</button>
+		<button
+			onclick={()=>{open_map_graph();}}
+			style="background-image: url('/assets/map_icon.png');"
+			>
+		</button>
+	</div>
+	<div>
+		<DropdownMapAndArticleSearch/>
 	</div>
 	<div class="button_group"></div>
 	<div class="button_group"></div>
@@ -229,27 +260,29 @@
 			title="Edit map"
 		></button>
 	</div>
-
-	<div class="button_group">
-		<button
-			onclick={() => dtb.delete_marker(store.selected_marker)}
-			class:hidden={!store.edit_mode || store.selected_marker === null}
-			style="background-image: url('/assets/delete_marker.png');"
-			title="Delete selected marker"
-		></button>
+	
+	<div class="button_group" id='plus_and_minus' class:transparent={!store.edit_mode}>
 		<button
 			onclick={() => {
 				changeMarkerTarget();
 			}}
+			disabled={store.selected_marker === null}
 			style="background-image: url('/assets/quill and scroll.png');"
 			title="Set target of selected marker"
-			class:hidden={!store.edit_mode || store.selected_marker === null}
+			class:hidden={!store.edit_mode}
+		></button>
+		<button
+			onclick={() => dtb.delete_marker(store.selected_marker)}
+			class:hidden={!store.edit_mode}
+			disabled={store.selected_marker === null}
+			style="background-image: url('/assets/+ and - -.png');"
+			title="Delete selected marker"
 		></button>
 
 		<button
 			onclick={(_event: MouseEvent) => dtb.create_and_select_marker_in_current_map()}
 			class:hidden={!store.edit_mode}
-			style="background-image: url('/assets/add_marker.png');"
+			style="background-image: url('/assets/+ and - +.png');"
 			title="Add new marker to map"
 		></button>
 	</div>
@@ -286,8 +319,7 @@
 		background-color: #333;
 		color: var(--main_white);
 		display: flex;
-		flex-wrap: wrap;
-		justify-content:space-around;
+		justify-content: space-around;
 		align-items: center;
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 		z-index: 11;
@@ -299,7 +331,7 @@
 		gap: 10px;
 		align-items: center;
 		height: 100%;
-		width: 5%;
+		width: 150px;
 	}
 
 	#toolbar button {
@@ -315,6 +347,31 @@
 
 	#toolbar button:hover {
 		opacity: 0.8; /* Slight hover effect */
+	}
+
+	#plus_and_minus{
+		height: 80%;
+		width: 200px;
+		flex-shrink: 0;
+		background-image: url('/assets/+ and - both.png');
+		background-repeat: no-repeat;
+		background-size: 100% 100%;
+		background-position: center center;
+		z-index: 10;
+	}
+
+	#plus_and_minus.transparent{
+		background-image: none;
+	}
+
+	#plus_and_minus > button{
+		height: 60%;
+	}
+
+	#toolbar button:disabled{
+		cursor: default;
+		box-shadow: none;
+		opacity: 1;
 	}
 
 	#edit_content_button {
