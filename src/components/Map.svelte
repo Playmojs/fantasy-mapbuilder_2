@@ -68,10 +68,10 @@
 	});
 	
 	type transform={x: number; y: number; scale: number}
-	let transf = $state<transform>({x: 0, y: 0, scale: 1})
+	let zoompan_element: ZoomPan
 		
 	function update_scale(){
-			transf={x: 0, y: 50, scale: (window.innerHeight-50) / map_.naturalHeight / window.innerWidth * map_.naturalWidth};
+			zoompan_element.set_transform({x: 0, y: 50, scale: (window.innerHeight-50) / map_.naturalHeight / window.innerWidth * map_.naturalWidth});
 	}
 
 	let offset_limit = $state({x: 0, y: 50, width: 1920, height: 1080})
@@ -97,7 +97,7 @@
 	{#each store.markers as marker}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}
-	<ZoomPan parent_selector="#map-container" transform={transf} offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
+	<ZoomPan bind:this={zoompan_element} parent_selector="#map-container" offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
 </div>
 
 <style>

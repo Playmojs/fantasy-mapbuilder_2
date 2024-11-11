@@ -20,6 +20,7 @@ export const theme_entities: {[id: number]: Theme} = {
     2: {image: '/assets/BG3.jpg', title: 'Magic'},
     3: {image: '/assets/BG2.jpg', title: 'Plants'},
     4: {image: '/assets/BG4.jpg', title: 'Rocks'},
+    5: {image: '/assets/BG1.jpg', title: 'Dark'},
 }
 
 export const get_modal_entity_themes: (value: {id: number | null, title: string}) => ModalEntity[] = (value) => {

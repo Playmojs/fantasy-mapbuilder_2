@@ -10,7 +10,7 @@ export enum TargetType {
 	Marker,
 	Map,
 	Informatic,
-	ParentMap
+	Parent,
 }
 
 export type MarkerData = Database["public"]["Tables"]["marker"]["Row"];
@@ -25,6 +25,8 @@ export type ModalEntity = {
 	on_click: () => Promise<void> | void;
 	optional_func?: () => Promise<void> | void;
 }
+
+export type NodeEvent = 'toggle' | 'init' | 'zoom'
 
 export type ModalName = 'upload_modal' | 'choose_modal' | 'confirm_modal' | 'composite_modal' | 'category_modal' | 'graph_modal'
 

@@ -2,7 +2,37 @@
 	import { onMount } from 'svelte';
 	import { store } from '../store.svelte';
 
-	let {parent_selector, transform, offset_limit, scale_limit, on_zoompan} : {parent_selector: string, transform: {x: number, y: number, scale: number}, offset_limit: {x: number, y: number, width: number, height: number}, scale_limit: {min: number, max: number} | null, on_zoompan?: (transform: {x: number, y: number, scale: number}) => void} = $props()
+	
+	let {parent_selector, offset_limit, scale_limit, on_zoompan} : {parent_selector: string, offset_limit: {x: number, y: number, width: number, height: number}, scale_limit: {min: number, max: number} | null, on_zoompan?: (transform: {x: number, y: number, scale: number}) => void} = $props()
+	
+	export async function set_transform(transform: {x?: number, y?: number, scale?: number}, time_ms?: number){
+		if(!time_ms || time_ms === 0){
+			if(transform.x !== undefined) current_x = transform.x;
+			if(transform.y !== undefined) current_y = transform.y;
+			if(transform.scale !== undefined) scale = transform.scale;
+			update_transform();
+			return
+		}
+
+		if(time_ms < 0){
+			console.error("Cannot make transform in negative time")
+			return
+		}
+		const delta_x = transform.x ? transform.x - current_x : 0;
+		const delta_y = transform.y ? transform.y - current_y : 0;
+		const delta_scale = transform.scale ? transform.scale - scale : 0;
+		const n_frames = Math.floor(time_ms / 20)
+		
+		for (let i = 0; i < n_frames; i++){
+			current_x += 1/n_frames * delta_x;
+			current_y += 1/n_frames * delta_y;
+			scale += 1/n_frames * delta_scale;
+			update_transform()
+			await new Promise(r => setTimeout(r, 20));
+		}
+		
+
+	}
 
 	let parent: any;
 	let current_x = 0;
@@ -13,13 +43,6 @@
 	let initial_distance = 0;
 	let initial_scale = 1
 	let scale = initial_scale
-
-	$effect(()=> {
-		scale = transform.scale
-		current_x = transform.x
-		current_y = transform.y
-		update_transform()}
-	)
 
 	function handle_mouse_down(event: MouseEvent) {
 		event.preventDefault();
