@@ -11,6 +11,8 @@
 	let current_transform_state: {x: number, y: number, scale: number} = {x: 0, y: 0, scale: 1};
 	let graph_element: any;
 
+	let head_node: GraphNode;
+
 	
 	let zoompan_element: ZoomPan;
 	
@@ -22,9 +24,9 @@
 		const center_pos: {x: number, y: number} = {x: window_rect.width/2, y: window_rect.height/2}
 		const delta_scale = new_scale / current_transform_state.scale
 
-		/* For html reasons, this function assumes that rect.x is measured in screen-coordinates, 
+		/* For html reasons, this function assumes that rect.x is given in screen-coordinates, 
 		while the current_transform_state.x is measured relative to the left edge of the container. 
-		Corrected_x is supposed to be the number of pixels (in screen coordinates) between the current_transform_state.x and the center of rect. */
+		Corrected_x is supposed to be the number of pixels between the current_transform_state.x and the center of rect. */
 		const corrected_x = rect.x + rect.width / 2 - current_transform_state.x - window_rect.x
 		const corrected_y = rect.y + rect.height / 2 - current_transform_state.y - window_rect.y
 
@@ -37,6 +39,7 @@
 		const target_y = center_pos.y - corrected_and_rescaled_y;
 
 		zoompan_element.set_transform({x: target_x, y: target_y, scale: new_scale}, delay ?? 0);
+		head_node.propagate_position(current_transform_state.scale);
 	}
 	
 	let init_occupied: boolean = false;
@@ -69,6 +72,7 @@
 					const delta_y = current_transform_state.y - initial_transf.y;
 					move_to_center({...current_position, x: current_position.x + delta_x, y: current_position.y + delta_y}, 0.8, 500)
 				}
+				head_node.propagate_position(current_transform_state.scale);
 				break;
 			}
 		}
@@ -76,12 +80,18 @@
 
 	onMount(() => {
 		const rect: DOMRect = graph_element.getBoundingClientRect();
+		const half_width: number = 125;
+		const half_height: number = 100;
+		tick().then(() => {
+			move_to_center({x: rect.x + rect.width / 2 - half_width, y: rect.y + rect.height / 2 - half_height, width: 2*half_width, height: 2*half_height}, 0.8)
+			head_node.propagate_position(current_transform_state.scale);
+		})
 	})
 
 </script>
 
 <div id="graph" bind:this={graph_element}>
-	<GraphNode id={store.project_cache[store.project_id].head_map_id} graph_entities={modal_data.graph_entities} on_event={on_node_event}/>
+	<GraphNode id={store.project_cache[store.project_id].head_map_id} bind:this={head_node} graph_entities={modal_data.graph_entities} on_event={on_node_event}/>
 	<ZoomPan bind:this={zoompan_element} parent_selector='#graph' offset_limit={offset_limit} scale_limit={null} on_zoompan={on_zoompan}/>
 </div>
 
@@ -96,7 +106,6 @@
 		width: fit-content;
 		overflow-x: visible;
 		padding: 30% 50%;
-		border: 5px solid white;
 		user-select: none;
 	}
 

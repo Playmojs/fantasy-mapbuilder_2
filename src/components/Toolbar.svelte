@@ -197,14 +197,15 @@
 		});
 	}
 
-	function open_map_graph(){
+	async function open_map_graph(){
+		await dtb.fetch_all_from_project(store.project_id);
 		let graph = generate_map_graph();
 		let graph_entities: GraphModalData = {graph_entities: {}};
 		Object.entries(graph).forEach(([id, value]) => {
 			const entity: ModalEntity = {
 				title: store.map_cache[+id].title,
 				image: URL.createObjectURL(store.image_public_urls[store.map_cache[+id].image]),
-				on_click: () => {return } //gotoMap(+id)}
+				on_click: () => {gotoMap(+id)}
 			}
 			graph_entities.graph_entities[+id] = {
 				children: value,
@@ -236,7 +237,7 @@
 		</button>
 		<button
 			onclick={()=>{open_map_graph();}}
-			style="background-image: url('/assets/map_icon.png');"
+			style="background-image: url('/assets/graph_protoicon.png');"
 			>
 		</button>
 	</div>
