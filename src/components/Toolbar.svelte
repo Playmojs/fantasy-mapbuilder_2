@@ -19,7 +19,7 @@
 	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article} from '$lib/modal_manager';
 	import { push_article } from '$lib/article_stack';
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
-	import { generate_map_graph } from '$lib/graph_gen';
+	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen';
 
 	const add_map: ModalEntity = {
 		image: '/assets/plus.png',
@@ -200,25 +200,43 @@
 	async function open_map_graph(){
 		await dtb.fetch_all_from_project(store.project_id);
 		let graph = generate_map_graph();
-		let graph_entities: GraphModalData = {graph_entities: {}};
+		let graph_data: GraphModalData = {graph_entities: {}, head_id: store.project_cache[store.project_id].head_map_id};
 		Object.entries(graph).forEach(([id, value]) => {
 			const entity: ModalEntity = {
 				title: store.map_cache[+id].title,
 				image: URL.createObjectURL(store.image_public_urls[store.map_cache[+id].image]),
 				on_click: () => {gotoMap(+id)}
 			}
-			graph_entities.graph_entities[+id] = {
+			graph_data.graph_entities[+id] = {
 				children: value,
 				entity: entity
 			}
 		})
-		push_modal({type: 'graph_modal', data: graph_entities, use_search: false})
+		push_modal({type: 'graph_modal', data: graph_data, use_search: false})
 	}
 
 	let edit_visible: boolean;
 	store.write_access.subscribe((value: boolean) => {
 		edit_visible = value;
 	});
+
+	async function open_category_graph(){
+		await dtb.fetch_all_from_project(store.project_id);
+		let graph = generate_category_graph();
+		let graph_data: GraphModalData = {graph_entities: {}, head_id: -1};
+		Object.entries(graph).forEach(([id, value]) => {
+			const entity: ModalEntity = {
+				title: +id === -1 ? 'Categories' : store.category_cache[+id].name,
+				image: null,
+				on_click: () => {return}
+			};
+			graph_data.graph_entities[+id] = {
+				children: value,
+				entity: entity
+			}
+		})
+		push_modal({type: 'graph_modal', data: graph_data, use_search: false})
+	}
 </script>
 
 <div id="toolbar">
@@ -238,6 +256,11 @@
 		<button
 			onclick={()=>{open_map_graph();}}
 			style="background-image: url('/assets/graph_protoicon.png');"
+			>
+		</button>
+		<button
+			onclick={()=>{open_category_graph();}}
+			style="background-image: url('/assets/map_icon.png');"
 			>
 		</button>
 	</div>

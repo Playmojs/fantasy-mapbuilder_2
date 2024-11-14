@@ -5,7 +5,7 @@
 	import { fly } from 'svelte/transition';
 	import dtb from '$lib/dtb';
 	import edit_mode from '../store';
-	import { choose_map_or_article, link_article, push_modal } from '$lib/modal_manager';
+	import { choose_map_or_article, get_article_to_category_modal, link_article, push_modal } from '$lib/modal_manager';
 	import KeyWordRenderer from './KeyWordRenderer.svelte';
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
 	import type { ChooseModal, CompositeModal, UploadModal } from '$lib/types';
@@ -108,7 +108,7 @@
 			type: 'composite_modal',
 			data: {
 				'Article Image': article_image_modal,
-				'Categories': {type: 'category_modal', article_id: store.article.id}
+				'Categories': {type: 'category_modal', data: get_article_to_category_modal(store.article.id)}
 			}
 		}
 

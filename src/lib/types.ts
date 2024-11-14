@@ -81,8 +81,17 @@ export type GraphEntity = {
 	entity: ModalEntity
 }
 
+export type CategoryModalData = {
+	child_id: number,
+	parent_to_children_ids: {[parent_id: number]: number[]},
+	add_child_to_parent: (parent_id: number) => Promise<void>,
+	remove_child_from_parent: (parent_id: number) => Promise<void>,
+	toggle_main_func: ((parent_id: number) => Promise<void>) | null
+}
+
 export type GraphModalData = {
-	graph_entities: {[id: number]: GraphEntity}
+	graph_entities: {[id: number]: GraphEntity},
+	head_id: number;
 }
 
 export type CompositeModal = {
@@ -93,7 +102,7 @@ export type CompositeModal = {
 
 export type CategoryModal = {
 	type: 'category_modal';
-	article_id: number;
+	data: CategoryModalData
 	on_close?: (success: boolean) => void;
 }
 

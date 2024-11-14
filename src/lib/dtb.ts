@@ -429,6 +429,21 @@ export default {
         }
     },
 
+    async insert_category_link(project_id: number, parent_category_id: number, child_category_id: number){
+        assert(project_id === store.category_cache[parent_category_id].project_id && project_id == store.category_cache[child_category_id].project_id, "Project ids for child- or parent article did not match provided project id")
+        assert(!store.category_links[parent_category_id] || !store.category_links[parent_category_id].includes(child_category_id), "Parent category is already a parent to this child category")
+        const response = await supabase.from('category_to_category').insert({child_id: child_category_id, parent_id: parent_category_id}).select().single();
+        if(response.error){console.error(`Failed to add category link, error ${response.error.message}`)}
+        else if (response.data){
+            if(!store.category_links[parent_category_id]){
+                store.category_links[parent_category_id] = [child_category_id]
+            }
+            else{
+                store.category_links[parent_category_id].push(child_category_id)
+            }
+        }
+    },
+
     async delete_article_category_link(project_id: number, category_id: number, article_id: number){
         assert(project_id === store.category_cache[category_id].project_id && project_id === store.article_cache[article_id].project_id, "Project ids for category and article did not match provided project id")
         assert(store.article_category_links[category_id].includes(article_id), "Article does not have this category")
@@ -436,6 +451,16 @@ export default {
         if (response.error){console.error(`Failed to delete article category link, error: ${response.error.message}`)}
         else if (response.data){
             store.article_category_links[category_id].splice(store.article_category_links[category_id].indexOf(article_id), 1)
+        }
+    },
+
+    async delete_category_link(project_id: number, parent_category_id: number, child_category_id: number){
+        assert(project_id === store.category_cache[parent_category_id].project_id && project_id === store.category_cache[child_category_id].project_id, "Project ids for parent- or child category did not match provided project id")
+        assert(store.category_links[parent_category_id].includes(child_category_id), "Parent category does not have this category")
+        const response = await supabase.from('category_to_category').delete().eq('child_id', child_category_id).eq('parent_id', parent_category_id).select().single()
+        if (response.error){console.error(`Failed to delete article category link, error: ${response.error.message}`)}
+        else if (response.data){
+            store.category_links[parent_category_id].splice(store.category_links[parent_category_id].indexOf(child_category_id), 1)
         }
     },
 

@@ -2,13 +2,20 @@
 	import { type CompositeModalData, type ModalType, type ModalEntity } from '$lib/types';
 	import Modal from './Modal.svelte';
 
-	let{close, modal_data, on_close}:{close: any, modal_data: CompositeModalData, on_close: ((success: boolean) => Promise<void> | void) | undefined} = $props()
+	let{close, modal_data, on_close, window_rect}:{close: any, modal_data: CompositeModalData, on_close: ((success: boolean) => Promise<void> | void) | undefined, window_rect: DOMRect} = $props()
 
 	async function handle_entity_click(entity: ModalEntity) {
 		await entity.on_click();
 		if (on_close){on_close(true);}
 		close()
 	}
+
+	let modal_head: HTMLDivElement;
+	function modal_head_size(){
+		return (modal_head.getBoundingClientRect())
+	}
+
+	let modal_rect = $derived.by(() => {const head_size = modal_head_size(); return {...window_rect, y: window_rect.y - head_size.height, height: window_rect.height - head_size.height, top: window_rect.top - head_size.top} })
 
 	let current_tab = $state<string>(Object.keys(modal_data)[0]);
     let current_modal = $derived<ModalType>(modal_data[current_tab])
@@ -32,7 +39,7 @@
 	</div>	
 {/if}
 <div id='current_modal'>
-    <Modal close={close} modal={current_modal}/>
+    <Modal close={close} modal={current_modal} window_rect={modal_rect}/>
 </div>
 
 

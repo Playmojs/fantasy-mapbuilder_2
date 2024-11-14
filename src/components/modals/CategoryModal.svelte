@@ -1,80 +1,29 @@
 <script lang="ts">
 	import { get_modal_entity_themes, theme_entities } from "$lib/data.svelte";
 	import dtb from "$lib/dtb";
-	import { push_modal, push_promise_modal } from "$lib/modal_manager";
-	import type { Category, ConfirmModalData, ModalEntity, UploadModal } from "$lib/types";
+	import { edit_category_modal, get_add_category_modal, get_composite_category_modal, push_modal, push_promise_modal } from "$lib/modal_manager";
+	import type { Category, CategoryModalData, ConfirmModalData, ModalEntity, UploadModal } from "$lib/types";
 	import { store } from "../../store.svelte";
 	import Modal from "./Modal.svelte";
 
-    let { close, article_id }: {close: any, article_id: number } = $props();
+    let { data }: {data: CategoryModalData} = $props();
 
-    const remove_category = (category_id: number) => {dtb.delete_article_category_link(store.project_id, category_id, article_id)}
-
-    let categories = $derived<Category[]>(Object.entries(store.article_category_links).filter((value) => {return value[1].includes(article_id)}).map(([category, articles]) => {return store.category_cache[+category]}))
-
-    const get_add_category_modal: (value: {id: number | null}) => UploadModal = (value) => {
-    return {type: 'upload_modal',
-        data: {
-            submit_func: async (file: File | null, title: string, theme_id: number | null) => {
-                if(file !== null || title === '' || title === 'Add Category'){return}
-                const response = await dtb.create_category(store.project_id, title, theme_id ?? 0);
-                if(response===undefined){return}
-                else{value.id = response.id;}
-            },
-            validation_func(file: Blob | File | null, title: string) {
-                return title !== '';
-            },
-            link_func: async (val) => {await push_promise_modal({type: 'choose_modal', data: {Themes: get_modal_entity_themes(val)}, use_search: true})},
-            button_title: 'Create Category',
-            initial_image_blob: null,
-            initial_map_title: '',
-            initial_link: {id: null, title: ""},
-            allow_no_file: null}};
-    }
-
-    const edit_category_modal: (category: Category) => UploadModal = (category: Category) => {
-    return {type: 'upload_modal',
-        data: {
-            submit_func: async (file: File | null, title: string, theme_id: number | null) => {
-                if(title === '' || title === 'Add Category'){return}
-                category.name = title;
-                category.theme_id = theme_id ?? 0
-                await dtb.update_category(category)
-            },
-            validation_func(file: Blob | File | null, title: string, link_id: number | null) {
-                return title !== '' && !(title === category.name && link_id === category.theme_id);
-            },
-            link_func: async (val) => {await push_promise_modal({type: 'choose_modal', data: {Themes: get_modal_entity_themes(val)}, use_search: true})},
-            button_title: 'Update Category',
-            initial_image_blob: null,
-            initial_map_title: category.name,
-            initial_link: {id: category.theme_id, title: theme_entities[category.theme_id].title},
-            allow_no_file: null}};
-    }
+    let categories = $derived<Category[]>(Object.entries(data.parent_to_children_ids).filter(([parent_id, child_ids]) => {return child_ids.includes(data.child_id)}).map(([parent_id, child_ids]) => {return store.category_cache[+parent_id]}))
 
     const open_filtered_category_modal = async () => {
-        const a_id = article_id;
+        const a_id = data.child_id;
         const add_category: ModalEntity = {image: null, title: 'Create New Category', on_click: async () => {
             let value: {id: number | null} = {id: null};
             await push_promise_modal(get_add_category_modal(value));
             if(value.id !== null){
-                await dtb.insert_article_category_link(store.project_id, value.id, a_id)
+                await data.add_child_to_parent(value.id)
             }
         }}
         
         const modal_entities: ModalEntity[] = [add_category].concat(Object.values(store.category_cache)
             .filter((category) => {return !categories.includes(category)})
-            .map((category)=>{return {image: null, title: category.name, on_click: ()=>{dtb.insert_article_category_link(store.project_id, category.id, a_id)}, optional_func: ()=>{push_modal(edit_category_modal({...category}))}}}))
+            .map((category)=>{return {image: null, title: category.name, on_click: async () => {await data.add_child_to_parent(category.id)}, optional_func: ()=>{push_modal(get_composite_category_modal({...category}))}}}))
         push_promise_modal({type: 'choose_modal', data: {Categories: modal_entities}, use_search: true})
-    }
-
-    async function toggle_main_category(category_id: number){
-        let article = await dtb.get_article(store.project_id, article_id);
-        if(!article){return;}
-        const new_main_category_id: number | null = category_id === article.main_category ? null : category_id;
-        article.main_category = new_main_category_id;
-        dtb.update_article(article);
-        
     }
 
 </script>
@@ -86,11 +35,13 @@
 <div id="category_grid">
 	{#each categories as category}
         <div class="category_display" style='background-image: url("{theme_entities[category.theme_id].image}");'>
-            <input class='category_checkbox' type="checkbox" checked={category.id === store.article_cache[article_id].main_category} onchange={()=> {toggle_main_category(category.id)}}/>
+            {#if data.toggle_main_func !== null}
+                <input class='category_checkbox' type="checkbox" checked={category.id === store.article_cache[data.child_id].main_category} onchange={()=> {if(data.toggle_main_func)data.toggle_main_func(category.id)}}/>
+            {/if}
             <p class="category_name">{category.name}</p>
-            <button class='option_button' onclick={(e: Event)=>{push_modal(edit_category_modal({...category}))}}>
+            <button class='option_button' onclick={(e: Event)=>{push_modal(get_composite_category_modal({...category}))}}>
             </button>	
-            <span class="close" onclick={()=>{remove_category(category.id)}}>&times;</span>
+            <span class="close" onclick={()=>{data.remove_child_from_parent(category.id)}}>&times;</span>
         </div>
     {/each}
 </div>

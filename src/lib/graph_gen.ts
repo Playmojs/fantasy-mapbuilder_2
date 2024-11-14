@@ -72,3 +72,19 @@ export function generate_map_graph(): {[map_id: number]: number[]}{
 
     return graph
 }
+
+export function generate_category_graph() {
+    let category_ids: Set<number> = new Set(Object.entries(store.category_cache).map(([id, category]) => {return +id}));
+    
+    let non_orphan_ids: Set<number> = new Set();
+        Object.values(store.category_links).forEach((child_ids) => {
+            child_ids.forEach(child_id => non_orphan_ids.add(child_id))
+        }
+    )
+
+    let orphan_ids = category_ids.difference(non_orphan_ids)
+
+    let graph = {...store.category_links};
+    graph[-1] = Array.from(orphan_ids)
+    return(graph)
+}

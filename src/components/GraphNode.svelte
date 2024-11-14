@@ -8,6 +8,8 @@
     let isOpen = $state<boolean>(false);
     
     let children = $state<Array<Self>>(new Array<Self>(graph_entities[id].children.length));
+
+    let has_image = $derived<boolean>(graph_entities[id].entity.image !== null)
     
     let edge_start = $state<{x: number, y: number}>({x: 0, y: 0});
     // let edge_ends = $state<Array<{x: number, y: number}>>(new Array(children.length))
@@ -24,7 +26,7 @@
             children.forEach((child, id) =>{
                 let edge_end = child.propagate_position(scale)
                 edge_end.x = (edge_end.x - svg_offset.left) / scale;
-                edge_end.y = (edge_end.y - svg_offset.top - 10) / scale;
+                edge_end.y = (edge_end.y - svg_offset.top) / scale - 10;
                 bezier_paths[id] = get_bezier_path(edge_start, edge_end)
             }
             )
@@ -34,9 +36,10 @@
     }
 
     function get_bezier_path(parent_position: {x: number, y: number}, child_position: {x: number, y: number}) {
+        const bezier_factor = Math.abs(parent_position.x - child_position.x) ** 0.7 ;
         const p1 = parent_position;
-        const p2 = { x: p1.x, y: p1.y + 25 };
-        const p3 = { x: child_position.x, y: child_position.y - 25 };
+        const p2 = { x: p1.x, y: p1.y + bezier_factor  };
+        const p3 = { x: child_position.x, y: child_position.y - bezier_factor };
         const p4 = child_position;
         return `M ${p1.x} ${p1.y} C ${p2.x} ${p2.y}, ${p3.x} ${p3.y}, ${p4.x} ${p4.y}`;
     }
@@ -64,10 +67,13 @@
 </script>
 
 <div class="node">
-    <div class='entity' bind:this={node_element}>
-        <div class='image-container' onclick={graph_entities[id].entity.on_click}>
-            <img class='entity-image' src={graph_entities[id].entity.image}/>
-        </div>
+    <div class='entity' bind:this={node_element} class:enlarged_text={!has_image}>
+        {#if has_image}
+            <div class='image-container' onclick={graph_entities[id].entity.on_click}>
+                <img class='entity-image' src={graph_entities[id].entity.image}/>
+            </div>
+        {/if}
+        
         {#if graph_entities[id].children.length > 0}
             <div class="label" onclick={toggle}>
                 {isOpen ? '▼' : '▶'} {graph_entities[id].entity.title}
@@ -82,7 +88,7 @@
         <svg class='edge_canvas' bind:this={svg_element}>
             {#each bezier_paths as path}
                 {#if path}
-                    <path d={path} fill="transparent"/>
+                    <path d={path} fill="transparent" stroke-linecap="round"/>
                 {/if}
             {/each}
         </svg>
@@ -101,12 +107,12 @@
         flex-direction: column;
         align-items: center;
     }
+
     .label {
         cursor: pointer;
         font-weight: bold;
         margin-top: 0;
         color: var(--main_white);
-        font-size: large;
         font-family: 'Cormorant Garamond';
     }
 
@@ -117,10 +123,11 @@
         top: 0;
         left: 0;
         width: 100%;
-        height: 40px;
+        height: 60px;
         padding: 0px;
         z-index: 0;
     }
+    
     path {
         stroke: var(--main_gold);
         filter: drop-shadow(5px 5px 2px rgb(10, 10, 10));
@@ -129,8 +136,8 @@
 
     .children {
         display: flex;
-        flex-direction: row; /* Display children in a row */
-        gap: 1rem; /* Add space between child nodes */
+        flex-direction: row;
+        gap: 1rem;
     }
 
     .entity {
@@ -144,11 +151,17 @@
         background-color: rgb(50, 50, 50);
         border-radius: 10px;
         box-shadow: 5px 5px 5px rgb(10, 10, 10);
+		width: 250px;
+        font-size: x-large;
+    }
+    
+    .entity.enlarged_text{
+        font-size: xx-large;
     }
 
     .image-container {
 		position: relative;
-		width: 250px;
+        width: 250px;
 		aspect-ratio: 4/3;
 		overflow: hidden;
 	}

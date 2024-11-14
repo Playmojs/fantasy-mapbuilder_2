@@ -51,11 +51,11 @@
 			pop_modal();
 		}}
 		on_close={modal.on_close}
+		window_rect={window_rect}
 	/>
 {:else if modal.type === 'category_modal'}
 	<CategoryModal
-		close={() => {pop_modal();}}
-		article_id={modal.article_id}
+		data={modal.data}
 	/>
 {:else if modal.type === 'graph_modal'}
 	<GraphModal

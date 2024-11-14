@@ -1,6 +1,8 @@
+import CategoryModal from '../components/modals/CategoryModal.svelte';
 import { store } from '../store.svelte';
+import { get_modal_entity_themes, theme_entities } from './data.svelte';
 import dtb from './dtb';
-import type { ChooseModalData, ModalType, ModalEntity, UploadModal } from './types';
+import type { ChooseModalData, ModalType, ModalEntity, UploadModal, CategoryModalData, Category, CompositeModal } from './types';
 import { assert_unreachable } from './utils';
 
 
@@ -140,3 +142,79 @@ export const choose_map_or_article: (value: {map_id: number | null, article_id: 
         })
     }
 }
+
+export const get_article_to_category_modal: (article_id: number) => CategoryModalData = (article_id: number) => {
+    return {
+        child_id: article_id,
+        parent_to_children_ids: store.article_category_links,
+        add_child_to_parent: (category_id: number) => {return dtb.insert_article_category_link(store.project_id, category_id, article_id)},
+        remove_child_from_parent: (category_id: number) => {return dtb.delete_article_category_link(store.project_id, category_id, article_id)},
+        async toggle_main_func(parent_id) {
+            let article = await dtb.get_article(store.project_id, article_id);
+            if(!article){return;}
+            const new_main_category_id: number | null = parent_id === article.main_category ? null : parent_id;
+            article.main_category = new_main_category_id;
+            dtb.update_article(article);
+        },
+    }
+}
+
+export const get_category_to_category_modal: (child_category_id: number) => CategoryModalData = (child_category_id: number) => {
+    return {
+        child_id: child_category_id,
+        parent_to_children_ids: store.category_links,
+        add_child_to_parent: (parent_category_id: number) => {return dtb.insert_category_link (store.project_id, parent_category_id, child_category_id)},
+        remove_child_from_parent: (parent_category_id: number) => {return dtb.delete_category_link (store.project_id, parent_category_id, child_category_id)},
+        toggle_main_func: null
+    }
+}
+
+export const get_add_category_modal: (value: {id: number | null}) => UploadModal = (value) => {
+    return {type: 'upload_modal',
+        data: {
+            submit_func: async (file: File | null, title: string, theme_id: number | null) => {
+                if(file !== null || title === '' || title === 'Add Category'){return}
+                const response = await dtb.create_category(store.project_id, title, theme_id ?? 0);
+                if(response===undefined){return}
+                else{value.id = response.id;}
+            },
+            validation_func(file: Blob | File | null, title: string) {
+                return title !== '';
+            },
+            link_func: async (val) => {await push_promise_modal({type: 'choose_modal', data: {Themes: get_modal_entity_themes(val)}, use_search: true})},
+            button_title: 'Create Category',
+            initial_image_blob: null,
+            initial_map_title: '',
+            initial_link: {id: null, title: ""},
+            allow_no_file: null}};
+}
+
+export const edit_category_modal: (category: Category) => UploadModal = (category: Category) => {
+    return {type: 'upload_modal',
+        data: {
+            submit_func: async (file: File | null, title: string, theme_id: number | null) => {
+                if(title === '' || title === 'Add Category'){return}
+                category.name = title;
+                category.theme_id = theme_id ?? 0
+                await dtb.update_category(category)
+            },
+            validation_func(file: Blob | File | null, title: string, link_id: number | null) {
+                return title !== '' && !(title === category.name && link_id === category.theme_id);
+            },
+            link_func: async (val) => {await push_promise_modal({type: 'choose_modal', data: {Themes: get_modal_entity_themes(val)}, use_search: true})},
+            button_title: 'Update Category',
+            initial_image_blob: null,
+            initial_map_title: category.name,
+            initial_link: {id: category.theme_id, title: theme_entities[category.theme_id].title},
+            allow_no_file: null}};
+ }
+
+ export const get_composite_category_modal: (category: Category) => CompositeModal = (category: Category) => {
+    return({
+        type: 'composite_modal',
+        data: {
+            'Category Data': edit_category_modal(category),
+            'Parent Categories': {type: 'category_modal', data: get_category_to_category_modal(category.id)}
+        }
+    })
+ }

@@ -91,7 +91,7 @@
 </script>
 
 <div id="graph" bind:this={graph_element}>
-	<GraphNode id={store.project_cache[store.project_id].head_map_id} bind:this={head_node} graph_entities={modal_data.graph_entities} on_event={on_node_event}/>
+	<GraphNode id={modal_data.head_id} bind:this={head_node} graph_entities={modal_data.graph_entities} on_event={on_node_event}/>
 	<ZoomPan bind:this={zoompan_element} parent_selector='#graph' offset_limit={offset_limit} scale_limit={null} on_zoompan={on_zoompan}/>
 </div>
 
@@ -107,6 +107,7 @@
 		overflow-x: visible;
 		padding: 30% 50%;
 		user-select: none;
+		border-radius: 20px;
 	}
 
 </style>
