@@ -12,7 +12,7 @@
 
     const open_filtered_category_modal = async () => {
         const a_id = data.child_id;
-        const add_category: ModalEntity = {image: null, title: 'Create New Category', on_click: async () => {
+        const add_category: ModalEntity = {image: null, title: 'New Category', on_click: async () => {
             let value: {id: number | null} = {id: null};
             await push_promise_modal(get_add_category_modal(value));
             if(value.id !== null){
@@ -22,7 +22,7 @@
         
         const modal_entities: ModalEntity[] = [add_category].concat(Object.values(store.category_cache)
             .filter((category) => {return !categories.includes(category)})
-            .map((category)=>{return {image: null, title: category.name, on_click: async () => {await data.add_child_to_parent(category.id)}, optional_func: ()=>{push_modal(get_composite_category_modal({...category}))}}}))
+            .map((category)=>{return {image: null, title: category.name, background_image: theme_entities[category.theme_id].image, on_click: async () => {await data.add_child_to_parent(category.id)}, optional_func: ()=>{push_modal(get_composite_category_modal({...category}))}}}))
         push_promise_modal({type: 'choose_modal', data: {Categories: modal_entities}, use_search: true})
     }
 
@@ -41,7 +41,7 @@
             <p class="category_name">{category.name}</p>
             <button class='option_button' onclick={(e: Event)=>{push_modal(get_composite_category_modal({...category}))}}>
             </button>	
-            <span class="close" onclick={()=>{data.remove_child_from_parent(category.id)}}>&times;</span>
+            <span class="remove_link" onclick={()=>{data.remove_child_from_parent(category.id)}}>&times;</span>
         </div>
     {/each}
 </div>
@@ -74,7 +74,7 @@
     #category_grid{
         position: relative;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 
         width: 96%;
         height: 90%;
@@ -119,7 +119,7 @@
 
     .option_button {
         position: relative;
-        width: 20px;
+        width: 30px;
         aspect-ratio: 1;
 		background-color: transparent;
 		background-image: url('/assets/more_vert.png');
@@ -134,8 +134,13 @@
 		opacity: 0.7;
 	}
 
-    .close {
+    .remove_link {
 		cursor: pointer;
+        font-size: x-large;
+	}
+
+    .remove_link:hover{
+		opacity: 0.7;
 	}
 
     h1{

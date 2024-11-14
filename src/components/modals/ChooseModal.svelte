@@ -48,7 +48,10 @@
 					onclick={() => {
 						handle_entity_click(entity);
 					}}
-				>
+						style={entity.background_image ? `background-image: url("${entity.background_image}");`: ''}
+					>
+
+
 					{#if entity.optional_func}
 						<button class='option_button' onclick={(e: Event)=>{if(entity.optional_func)entity.optional_func(); e.stopPropagation();}}>
 						</button>	
@@ -126,6 +129,8 @@
 		border-radius: 10px;
 		display: flex;
 		flex-direction: column;
+		background-position: top right;
+        background-size: 100%;
 	}
 
 	.option_button {

@@ -16,10 +16,11 @@
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { gotoMap } from '$lib/goto_map';
-	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article} from '$lib/modal_manager';
+	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article, edit_category_modal, get_composite_category_modal} from '$lib/modal_manager';
 	import { push_article } from '$lib/article_stack';
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen';
+	import { theme_entities } from '$lib/data.svelte';
 
 	const add_map: ModalEntity = {
 		image: '/assets/plus.png',
@@ -228,7 +229,9 @@
 			const entity: ModalEntity = {
 				title: +id === -1 ? 'Categories' : store.category_cache[+id].name,
 				image: null,
-				on_click: () => {return}
+				background_image: theme_entities[store.category_cache[+id]?.theme_id]?.image,
+				on_click: () => {return},
+				optional_func: +id !== -1 ? ()=>{push_modal(get_composite_category_modal({...store.category_cache[+id]}))} : undefined
 			};
 			graph_data.graph_entities[+id] = {
 				children: value,
@@ -260,15 +263,13 @@
 		</button>
 		<button
 			onclick={()=>{open_category_graph();}}
-			style="background-image: url('/assets/map_icon.png');"
+			style="background-image: url('/assets/category_graph_protoicon.png');"
 			>
 		</button>
 	</div>
 	<div>
 		<DropdownMapAndArticleSearch/>
 	</div>
-	<div class="button_group"></div>
-	<div class="button_group"></div>
 	<div class="button_group">
 		<button
 			onclick={confirm_delete_map}
@@ -336,8 +337,6 @@
 		touch-action: none;
 		position: fixed;
 		top: 0;
-		left: 0;
-		right: 0;
 		width: 100%;
 		height: 50px; /* TODO: Define once */
 		background-color: #333;

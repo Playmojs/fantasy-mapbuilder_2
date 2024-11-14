@@ -23,6 +23,7 @@ export type ModalEntity = {
 	image: string | null;
 	title: string;
 	on_click: () => Promise<void> | void;
+	background_image?: string | null;
 	optional_func?: () => Promise<void> | void;
 }
 

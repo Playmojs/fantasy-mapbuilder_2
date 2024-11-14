@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type { GraphEntity } from "$lib/types";
+	import type { GraphEntity, ModalEntity } from "$lib/types";
 	import { onMount, tick } from "svelte";
     import Self from './GraphNode.svelte';
     import { type NodeEvent } from "$lib/types";
@@ -10,6 +10,8 @@
     let children = $state<Array<Self>>(new Array<Self>(graph_entities[id].children.length));
 
     let has_image = $derived<boolean>(graph_entities[id].entity.image !== null)
+
+    let entity = $derived<ModalEntity>(graph_entities[id].entity)
     
     let edge_start = $state<{x: number, y: number}>({x: 0, y: 0});
     // let edge_ends = $state<Array<{x: number, y: number}>>(new Array(children.length))
@@ -67,22 +69,32 @@
 </script>
 
 <div class="node">
-    <div class='entity' bind:this={node_element} class:enlarged_text={!has_image}>
-        {#if has_image}
-            <div class='image-container' onclick={graph_entities[id].entity.on_click}>
-                <img class='entity-image' src={graph_entities[id].entity.image}/>
-            </div>
-        {/if}
+    <div class='entity' bind:this={node_element} 
+        class:enlarged_text={!has_image}
+        style={entity.background_image ? `background-image: url("${entity.background_image}");`: ''}>
         
-        {#if graph_entities[id].children.length > 0}
-            <div class="label" onclick={toggle}>
-                {isOpen ? '▼' : '▶'} {graph_entities[id].entity.title}
-            </div>
-        {:else}
-            <div class="label">
-                {graph_entities[id].entity.title}
+        {#if has_image}
+            <div class='image-container' onclick={entity.on_click}>
+                <img class='entity-image' src={entity.image}/>
             </div>
         {/if}
+
+        <div class='text_row'>
+            {#if children.length > 0}
+            <div class="label" onclick={toggle}>
+                {isOpen ? '▼' : '▶'} {entity.title}
+            </div>
+            {:else}
+            <div class="label">
+                {entity.title}
+            </div>
+            {/if}
+
+            {#if entity.optional_func}
+            <button class='option_button' class:no_image={!has_image} onclick={(e: Event)=>{if(entity.optional_func)entity.optional_func(); e.stopPropagation();}}>
+            </button>	
+            {/if}
+        </div>
     </div>
     {#if isOpen && graph_entities[id].children.length > 0}
         <svg class='edge_canvas' bind:this={svg_element}>
@@ -108,13 +120,45 @@
         align-items: center;
     }
 
+    .text_row{
+        position: relative;
+        display: flex;
+        justify-content: end;
+        align-items: center;
+    }
+
     .label {
         cursor: pointer;
         font-weight: bold;
-        margin-top: 0;
+        margin: 0;
         color: var(--main_white);
         font-family: 'Cormorant Garamond';
+        text-align: center;
+        min-width: 220px;
     }
+
+    .option_button {
+		position: relative;
+		width: 30px;
+		aspect-ratio: 0.5;
+		background-color: transparent;
+		background-image: url('/assets/more_vert.png');
+		background-size: contain;
+		background-repeat: no-repeat;
+		border: none;
+		cursor: pointer;
+	}
+
+    .option_button.no_image{
+        width: 40px;
+        aspect-ratio: 1;
+        background-position: center center;
+
+    }
+
+	.option_button:hover{
+		opacity: 0.7;
+	}
 
     .edge_canvas {
         position: relative;
@@ -149,6 +193,9 @@
         margin: 10px 0px;
         padding: 10px;
         background-color: rgb(50, 50, 50);
+        background-position: top right;
+        background-size: 100%;
+
         border-radius: 10px;
         box-shadow: 5px 5px 5px rgb(10, 10, 10);
 		width: 250px;
