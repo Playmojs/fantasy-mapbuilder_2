@@ -3,7 +3,7 @@ import { store } from '../store.svelte';
 import { get_modal_entity_themes, theme_entities } from './data.svelte';
 import dtb from './dtb';
 import type { ChooseModalData, ModalType, ModalEntity, UploadModal, CategoryModalData, Category, CompositeModal } from './types';
-import { assert_unreachable } from './utils';
+import { assert_unreachable, invert_many_to_many } from './utils';
 
 
 export function push_modal(modal: ModalType): void {store.modals = [...store.modals, modal]}
@@ -169,6 +169,16 @@ export const get_category_to_category_modal: (child_category_id: number) => Cate
     }
 }
 
+export const get_inverse_category_to_category_modal: (parent_category_id: number) => CategoryModalData = (parent_category_id: number) => {
+    return {
+        child_id: parent_category_id,
+        parent_to_children_ids: invert_many_to_many(store.category_links),
+        add_child_to_parent: (child_category_id: number) => {return dtb.insert_category_link(store.project_id, parent_category_id, child_category_id)},
+        remove_child_from_parent: (child_category_id: number) => {return dtb.delete_category_link(store.project_id, parent_category_id, child_category_id)},
+        toggle_main_func: null,
+    }
+}
+
 export const get_add_category_modal: (value: {id: number | null}) => UploadModal = (value) => {
     return {type: 'upload_modal',
         data: {
@@ -214,7 +224,8 @@ export const edit_category_modal: (category: Category) => UploadModal = (categor
         type: 'composite_modal',
         data: {
             'Category Data': edit_category_modal(category),
-            'Parent Categories': {type: 'category_modal', data: get_category_to_category_modal(category.id)}
+            'Parent Categories': {type: 'category_modal', data: get_category_to_category_modal(category.id)},
+            'Child Categories': {type: 'category_modal', data: get_inverse_category_to_category_modal(category.id)}
         }
     })
  }

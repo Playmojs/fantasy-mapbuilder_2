@@ -21,6 +21,7 @@
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen';
 	import { theme_entities } from '$lib/data.svelte';
+	import GraphModal from './modals/GraphModal.svelte';
 
 	const add_map: ModalEntity = {
 		image: '/assets/plus.png',
@@ -223,21 +224,21 @@
 
 	async function open_category_graph(){
 		await dtb.fetch_all_from_project(store.project_id);
-		let graph = generate_category_graph();
+		let graph =  generate_category_graph();
 		let graph_data: GraphModalData = {graph_entities: {}, head_id: -1};
-		Object.entries(graph).forEach(([id, value]) => {
-			const entity: ModalEntity = {
-				title: +id === -1 ? 'Categories' : store.category_cache[+id].name,
-				image: null,
-				background_image: theme_entities[store.category_cache[+id]?.theme_id]?.image,
-				on_click: () => {return},
-				optional_func: +id !== -1 ? ()=>{push_modal(get_composite_category_modal({...store.category_cache[+id]}))} : undefined
-			};
-			graph_data.graph_entities[+id] = {
-				children: value,
-				entity: entity
-			}
-		})
+			Object.entries(graph).forEach(([id, value]) => {
+				const entity: ModalEntity = {
+					title: +id === -1 ? 'Categories' : store.category_cache[+id].name,
+					image: null,
+					background_image: theme_entities[store.category_cache[+id]?.theme_id]?.image,
+					on_click: () => {return},
+					optional_func: +id !== -1 ? ()=>{push_modal(get_composite_category_modal({...store.category_cache[+id]}))} : undefined
+				};
+				graph_data.graph_entities[+id] = {
+					children: value,
+					entity: entity
+				}
+			})
 		push_modal({type: 'graph_modal', data: graph_data, use_search: false})
 	}
 </script>
@@ -249,21 +250,25 @@
 				goto('/projects');
 			}}
 			style="background-image: url('/assets/house.png');"
+			aria-label="Home Button"
 		>
 		</button>
 		<button
 			onclick={()=>{go_to_article_or_map_modal();}}
 			style="background-image: url('/assets/old_map.png');"
+			aria-label="Go to Map or Article"
 			>
 		</button>
 		<button
 			onclick={()=>{open_map_graph();}}
 			style="background-image: url('/assets/graph_protoicon.png');"
+			aria-label="Open Map Graph"
 			>
 		</button>
 		<button
 			onclick={()=>{open_category_graph();}}
 			style="background-image: url('/assets/category_graph_protoicon.png');"
+			aria-label="Open Category Graph"
 			>
 		</button>
 	</div>
@@ -276,6 +281,7 @@
 			class:hidden={!store.edit_mode}
 			style="background-image: url('/assets/old_trashcan.png');"
 			title="Delete map"
+			aria-label="Delete Map"
 		></button>
 
 		<button
@@ -283,6 +289,7 @@
 			class:hidden={!store.edit_mode}
 			style="background-image: url('/assets/old_map.png');"
 			title="Edit map"
+			aria-label="Edit Map"
 		></button>
 	</div>
 	
@@ -295,6 +302,7 @@
 			style="background-image: url('/assets/quill and scroll.png');"
 			title="Set target of selected marker"
 			class:hidden={!store.edit_mode}
+			aria-label="Set Marker Target"
 		></button>
 		<button
 			onclick={() => dtb.delete_marker(store.selected_marker)}
@@ -302,6 +310,7 @@
 			disabled={store.selected_marker === null}
 			style="background-image: url('/assets/+ and - -.png');"
 			title="Delete selected marker"
+			aria-label="Delete Marker"
 		></button>
 
 		<button
@@ -309,6 +318,7 @@
 			class:hidden={!store.edit_mode}
 			style="background-image: url('/assets/+ and - +.png');"
 			title="Add new marker to map"
+			aria-label="Add New Marker"
 		></button>
 	</div>
 
@@ -318,6 +328,7 @@
 			class:edit_mode={store.edit_mode}
 			onclick={toggleEditable}
 			class:hidden={!edit_visible}
+			aria-label="Edit Project"
 		></button>
 	</div>
 
@@ -328,6 +339,7 @@
 			style="background-image: url('/assets/{store.informatic_minimized
 				? 'Arrows_left'
 				: 'Arrows_right'}.png');"
+			aria-label="Toggle Informatic"
 		></button>
 	</div>
 </div>
@@ -404,10 +416,6 @@
 
 	#edit_content_button.edit_mode {
 		background-color: #111;
-	}
-
-	#increment_text_size_button {
-		margin-left: 5%;
 	}
 
 	.hidden {
