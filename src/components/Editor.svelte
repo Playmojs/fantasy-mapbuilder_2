@@ -2,7 +2,7 @@
 	import { onDestroy, onMount, untrack } from 'svelte';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
-	import { choose_article_by_id, choose_existing_map, push_promise_modal } from '$lib/modal_manager';
+	import { choose_article_by_id, choose_existing_map, push_promise_modal } from '$lib/modal_manager.svelte';
 	import { keywords } from '$lib/keyword_manager';
 
 	let editorElement = $state<HTMLDivElement>();

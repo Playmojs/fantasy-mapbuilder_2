@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type {ModalType } from '$lib/types';
-	import { pop_modal } from '$lib/modal_manager';
+	import { pop_modal } from '$lib/modal_manager.svelte';
 	import ConfirmModal from './ConfirmModal.svelte';
 	import ChooseModal from './ChooseModal.svelte';
 	import UploadModal from './UploadModal.svelte';

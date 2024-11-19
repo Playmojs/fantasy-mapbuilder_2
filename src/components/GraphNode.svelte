@@ -3,11 +3,19 @@
 	import { onMount, tick } from "svelte";
     import Self from './GraphNode.svelte';
     import { type NodeEvent } from "$lib/types";
+	import { store } from "../store.svelte";
+	import { get } from "svelte/store";
 
     let {id, graph_entities, on_event} : {id: number, graph_entities: {[id: number]: GraphEntity}, on_event: (event: NodeEvent, previous_position: {x: number, y: number, width: number, height: number}, current_position: {x: number, y: number, width: number, height: number}) => void} = $props()
     let isOpen = $state<boolean>(false);
     
     let children = $state<Array<Self>>(new Array<Self>(graph_entities[id].children.length));
+
+    $effect(()=> {
+        if(children.length !== graph_entities[id].children.length){
+            children = new Array<Self>(graph_entities[id].children.length)
+        }
+    })
 
     let has_image = $derived<boolean>(graph_entities[id].entity.image !== null)
 
@@ -19,13 +27,15 @@
 
     export const propagate_position: (scale: number) => {x: number, y: number} = (scale) => {
         // I need scale to convert from svg / div - scale to pixel scale (I think), and I need svg-offset because the getBoundingClient is relative to screen, while the svg-element takes coordinates relative to the svg-div.
-
+        
         const svg_offset = svg_element?.getBoundingClientRect() ?? {left: 0, top: 0, width: 0, height: 0}
         const rect = node_element.getBoundingClientRect()
         edge_start = {x: svg_offset.width/2 / scale, y: 0}
+        if(bezier_paths.length !== children.length){
+            bezier_paths = new Array(children.length)}
         if (isOpen && graph_entities[id].children.length > 0)
         {
-            children.forEach((child, id) =>{
+            children.forEach((child, id) => {
                 let edge_end = child.propagate_position(scale)
                 edge_end.x = (edge_end.x - svg_offset.left) / scale;
                 edge_end.y = (edge_end.y - svg_offset.top) / scale - 10;
@@ -90,7 +100,7 @@
             </div>
             {/if}
 
-            {#if entity.optional_func}
+            {#if entity.optional_func && get(store.write_access)}
             <button class='option_button' class:no_image={!has_image} onclick={(e: Event)=>{if(entity.optional_func)entity.optional_func(); e.stopPropagation();}}>
             </button>	
             {/if}
@@ -173,7 +183,7 @@
     }
     
     path {
-        stroke: var(--main_gold);
+        stroke: var(--bright_gold);
         filter: drop-shadow(5px 5px 2px rgb(10, 10, 10));
         stroke-width: 4;
     }

@@ -74,6 +74,8 @@ export function generate_map_graph(): {[map_id: number]: number[]}{
 }
 
 export function generate_category_graph() {
+    if(Object.keys(store.category_cache).length === 0){return {}}
+
     let category_ids: Set<number> = new Set(Object.entries(store.category_cache).map(([id, category]) => {return +id}));
     
     let non_orphan_ids: Set<number> = new Set();
@@ -81,7 +83,8 @@ export function generate_category_graph() {
             child_ids.forEach(child_id => non_orphan_ids.add(child_id))
         }
     )
-
+    
+    if(!category_ids.difference){return {}} // On debugging, this somehow returns true even though category_ids was instantiated and with a valid entry.
     let orphan_ids = category_ids.difference(non_orphan_ids)
 
     let graph = {...store.category_links};

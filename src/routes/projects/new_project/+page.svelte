@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import dtb from "$lib/dtb";
-	import { pop_modal, push_modal } from "$lib/modal_manager";
+	import { pop_modal, push_modal } from "$lib/modal_manager.svelte";
+	import type { UploadModalData } from "$lib/types";
 	import { assert_unreachable } from "$lib/utils";
 	import Homebar from "../../../components/Homebar.svelte";
 	import ModalWindow from "../../../components/modals/ModalWindow.svelte";
@@ -16,7 +17,9 @@
 
     function open_map_option(){
         push_modal({
-            type:'upload_modal', data: {submit_func: (file: File | null, title: string) => {
+            type:'upload_modal', 
+            data: {
+            submit_func: (file: File | null, title: string, link_id: number | null) => {
                 if(file === null){
                     assert_unreachable("No file selected error"); 
                     return;
@@ -28,11 +31,12 @@
                 return(file !== null && title !== '')
             },
             link_func: null,
-            initial_link: null,
+            initial_link: {id: null, title: ""},
             button_title: 'Choose Map',
             initial_image_blob: main_map_file,
             initial_map_title: main_map_title ?? '',
             allow_no_file: false,}
+
         })
     }
 

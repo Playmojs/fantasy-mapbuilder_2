@@ -458,7 +458,7 @@ export default {
         assert(project_id === store.category_cache[parent_category_id].project_id && project_id === store.category_cache[child_category_id].project_id, "Project ids for parent- or child category did not match provided project id")
         assert(store.category_links[parent_category_id].includes(child_category_id), "Parent category does not have this category")
         const response = await supabase.from('category_to_category').delete().eq('child_id', child_category_id).eq('parent_id', parent_category_id).select().single()
-        if (response.error){console.error(`Failed to delete article category link, error: ${response.error.message}`)}
+        if (response.error){console.error(`Failed to delete category link, error: ${response.error.message}`)}
         else if (response.data){
             store.category_links[parent_category_id].splice(store.category_links[parent_category_id].indexOf(child_category_id), 1)
         }

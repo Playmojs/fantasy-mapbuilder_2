@@ -16,7 +16,7 @@
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { gotoMap } from '$lib/goto_map';
-	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article, edit_category_modal, get_composite_category_modal} from '$lib/modal_manager';
+	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article, edit_category_modal, get_composite_category_modal} from '$lib/modal_manager.svelte';
 	import { push_article } from '$lib/article_stack';
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen';
@@ -221,25 +221,32 @@
 	store.write_access.subscribe((value: boolean) => {
 		edit_visible = value;
 	});
+	
+	let category_graph_data = $derived.by<GraphModalData>(()=> {
+		const category_graph = generate_category_graph()
+		let graph_data: GraphModalData = {graph_entities: {}, head_id: -1};
+		Object.entries(category_graph).forEach(([id, value]) => {
+			const entity: ModalEntity = {
+				title: +id === -1 ? 'Categories' : store.category_cache[+id].name,
+				image: null,
+				background_image: theme_entities[store.category_cache[+id]?.theme_id]?.image,
+				on_click: () => {return},
+				optional_func: +id !== -1 ? ()=>{push_modal(get_composite_category_modal({...store.category_cache[+id]}))} : undefined
+			};
+			graph_data.graph_entities[+id] = {
+				children: value,
+				entity: entity
+			}
+		})
+        return graph_data;
+	})
+
+
 
 	async function open_category_graph(){
+		if(!category_graph_data){return}
 		await dtb.fetch_all_from_project(store.project_id);
-		let graph =  generate_category_graph();
-		let graph_data: GraphModalData = {graph_entities: {}, head_id: -1};
-			Object.entries(graph).forEach(([id, value]) => {
-				const entity: ModalEntity = {
-					title: +id === -1 ? 'Categories' : store.category_cache[+id].name,
-					image: null,
-					background_image: theme_entities[store.category_cache[+id]?.theme_id]?.image,
-					on_click: () => {return},
-					optional_func: +id !== -1 ? ()=>{push_modal(get_composite_category_modal({...store.category_cache[+id]}))} : undefined
-				};
-				graph_data.graph_entities[+id] = {
-					children: value,
-					entity: entity
-				}
-			})
-		push_modal({type: 'graph_modal', data: graph_data, use_search: false})
+		push_modal({type: 'graph_modal', data: category_graph_data, use_search: false})
 	}
 </script>
 

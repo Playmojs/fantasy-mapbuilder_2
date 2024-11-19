@@ -7,7 +7,7 @@
 	import { gotoMap } from '$lib/goto_map';
 	import { type ModalEntity, type ChooseModal, type ChooseModalData } from '$lib/types';
 	import dtb from '$lib/dtb';
-	import { choose_existing_map, get_new_map_data, push_modal, push_promise_modal } from '$lib/modal_manager';
+	import { choose_existing_map, get_new_map_data, push_modal, push_promise_modal } from '$lib/modal_manager.svelte';
 	
 	onMount(() => {
 		parentMap.addEventListener('click', (event) => parent_func(event, store.map.parent_id));

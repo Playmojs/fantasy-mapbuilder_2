@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { get_modal_entity_themes, theme_entities } from "$lib/data.svelte";
 	import dtb from "$lib/dtb";
-	import { edit_category_modal, get_add_category_modal, get_composite_category_modal, push_modal, push_promise_modal } from "$lib/modal_manager";
+	import { edit_category_modal, get_add_category_modal, get_composite_category_modal, push_modal, push_promise_modal } from "$lib/modal_manager.svelte";
 	import type { Category, CategoryModalData, ConfirmModalData, ModalEntity, UploadModal } from "$lib/types";
+	import { invert_many_to_many } from "$lib/utils";
 	import { store } from "../../store.svelte";
 	import Modal from "./Modal.svelte";
 
     let { data }: {data: CategoryModalData} = $props();
 
     let categories = $derived<Category[]>(Object.entries(data.parent_to_children_ids).filter(([parent_id, child_ids]) => {return child_ids.includes(data.child_id)}).map(([parent_id, child_ids]) => {return store.category_cache[+parent_id]}))
-
+    
     const open_filtered_category_modal = async () => {
         const a_id = data.child_id;
         const add_category: ModalEntity = {image: null, title: 'New Category', on_click: async () => {
@@ -25,6 +26,12 @@
             .map((category)=>{return {image: null, title: category.name, background_image: theme_entities[category.theme_id].image, on_click: async () => {await data.add_child_to_parent(category.id)}, optional_func: ()=>{push_modal(get_composite_category_modal({...category}))}}}))
         push_promise_modal({type: 'choose_modal', data: {Categories: modal_entities}, use_search: true})
     }
+
+    $inspect(data.parent_to_children_ids)
+    $effect(()=>{
+    store.inv_cat_test = invert_many_to_many(store.category_links)
+    })
+    $inspect(store.inv_cat_test)
 
 </script>
 

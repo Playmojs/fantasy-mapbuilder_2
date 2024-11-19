@@ -8,7 +8,7 @@
 	import { page } from '$app/stores';
 	import dtb from '$lib/dtb';
 	import { onDestroy } from 'svelte';
-	import { pop_modal } from '$lib/modal_manager';
+	import { pop_modal } from '$lib/modal_manager.svelte';
 	import { push_article } from '$lib/article_stack';
 	import ModalWindow from '../../../../components/modals/ModalWindow.svelte';
 

@@ -39,7 +39,19 @@ class Store {
     user_projects = $state<number[]>([]);
     
     article_category_links = $state<{[id: number]: number[]}>({});
-    category_links = $state<{[id: number]: number[]}>({})    
+    category_links = $state<{[id: number]: number[]}>({})
+    inverted_category_links = $derived.by(()=> { let inverted_list: {[from: number]: number[]} = {}
+        Object.entries(this.category_links).forEach(([from, tos]) => {tos.forEach(to => {
+                if(to in inverted_list){
+                    inverted_list[to].push(+from)
+                }
+                else{
+                    inverted_list[to] = [+from]
+                }
+            })
+        })
+    return inverted_list;})
+    inv_cat_test = $state<{[id: number]: number[]}>({})
     
     markers = $derived<MarkerData[]>(this.marker_cache[this.map.id] ?? [])
     article_history = $state<number[]>([]);

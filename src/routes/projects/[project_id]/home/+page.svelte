@@ -1,6 +1,6 @@
 <script lang="ts">
 	import dtb from '$lib/dtb';
-	import { choose_existing_map, get_new_map_data, pop_modal, push_modal, push_promise_modal } from '$lib/modal_manager';
+	import { choose_existing_map, get_new_map_data, pop_modal, push_modal, push_promise_modal } from '$lib/modal_manager.svelte';
 	import { type MapData, type Project, type ModalEntity } from '$lib/types';
 	import { assert_unreachable } from '$lib/utils';
 	import Homebar from '../../../../components/Homebar.svelte';

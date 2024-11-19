@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { type GraphModalData, type ModalEntity, type NodeEvent } from '$lib/types';
-	import { onMount, tick } from 'svelte';
-	import { store } from '../../store.svelte';
+	import { type GraphModalData, type NodeEvent } from '$lib/types';
+	import { onMount, tick, untrack } from 'svelte';
 	import GraphNode from '../GraphNode.svelte';
 	import ZoomPan from '../ZoomPan.svelte';
+	import Modal from './Modal.svelte';
+	import { store } from '../../store.svelte';
 
 	let{close, modal_data, on_close, use_search, window_rect}:{close: any, modal_data: GraphModalData, on_close: ((success: boolean) => Promise<void> | void) | undefined, use_search: boolean, window_rect: DOMRect} = $props()
 
@@ -50,7 +51,7 @@
 			case 'init' : {
 				/* This is written somewhat fragile - it will typically be called immediately followed by a 'toggle'-call, 
 				which is prone to override any change made here. As a temporary work-around, I made the set_transform in the
-				not-autoscalling toggle to only set x-transform, but that assumption is for instance violated. */
+				not-autoscalling toggle only set x-transform. */
 
 				const overflow_y = current_position.y + current_position.height - (window_rect.y + window_rect.height);
 				if(!init_occupied && current_transform_state.scale < autoscale_limit && overflow_y > 0)
@@ -77,6 +78,11 @@
 			}
 		}
 	}
+
+	$effect(() => {
+		modal_data;
+		untrack(()=> {head_node.propagate_position(current_transform_state.scale)})
+	})
 
 	onMount(() => {
 		const rect: DOMRect = graph_element.getBoundingClientRect();

@@ -1,7 +1,7 @@
 import { store } from "../store.svelte";
 import { push_article } from "./article_stack";
 import { gotoMap } from "./goto_map";
-import { choose_article_by_id, choose_existing_map, push_promise_modal } from "./modal_manager";
+import { choose_article_by_id, choose_existing_map, push_promise_modal } from "./modal_manager.svelte";
 
 type Keyword = {
     choose_modal: (value: any) => Promise<number | void>;
@@ -19,7 +19,7 @@ export const keywords: {[key: string] : Keyword} = {
 
     },
     "article": {
-        choose_modal: async(value: {id: number | null})=>{
+        choose_modal: async(value: {id: number | null, title: string})=>{
             await push_promise_modal({type: 'choose_modal', data: {Articles: await choose_article_by_id(value)}, use_search: true})
         },
         regex: /\/article=(\d*)+/g,

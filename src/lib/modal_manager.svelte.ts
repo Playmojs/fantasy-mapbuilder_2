@@ -169,10 +169,12 @@ export const get_category_to_category_modal: (child_category_id: number) => Cate
     }
 }
 
+
+
 export const get_inverse_category_to_category_modal: (parent_category_id: number) => CategoryModalData = (parent_category_id: number) => {
     return {
         child_id: parent_category_id,
-        parent_to_children_ids: invert_many_to_many(store.category_links),
+        parent_to_children_ids: store.inv_cat_test,
         add_child_to_parent: (child_category_id: number) => {return dtb.insert_category_link(store.project_id, parent_category_id, child_category_id)},
         remove_child_from_parent: (child_category_id: number) => {return dtb.delete_category_link(store.project_id, parent_category_id, child_category_id)},
         toggle_main_func: null,

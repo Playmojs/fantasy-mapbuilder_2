@@ -1,5 +1,6 @@
 import { store } from "../store.svelte"
 import type { ModalEntity } from "./types"
+import { invert_many_to_many } from "./utils"
 
 export const getModalEntityMaps = () => {
     return []
