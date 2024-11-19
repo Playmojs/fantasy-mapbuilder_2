@@ -87,7 +87,8 @@ export type CategoryModalData = {
 	parent_to_children_ids: {[parent_id: number]: number[]},
 	add_child_to_parent: (parent_id: number) => Promise<void>,
 	remove_child_from_parent: (parent_id: number) => Promise<void>,
-	toggle_main_func: ((parent_id: number) => Promise<void>) | null
+	toggle_main_func: ((parent_id: number) => Promise<void>) | null,
+	inverted?: boolean
 }
 
 export type GraphModalData = {

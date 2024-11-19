@@ -9,7 +9,10 @@
 
     let { data }: {data: CategoryModalData} = $props();
 
-    let categories = $derived<Category[]>(Object.entries(data.parent_to_children_ids).filter(([parent_id, child_ids]) => {return child_ids.includes(data.child_id)}).map(([parent_id, child_ids]) => {return store.category_cache[+parent_id]}))
+    let categories = $derived<Category[]>(data.inverted ? 
+            data.parent_to_children_ids[data.child_id].map(child_id => {return store.category_cache[child_id]}) :
+            Object.entries(data.parent_to_children_ids).filter(([parent_id, child_ids]) => {return child_ids.includes(data.child_id)}).map(([parent_id, child_ids]) => {return store.category_cache[+parent_id]})
+        )
     
     const open_filtered_category_modal = async () => {
         const a_id = data.child_id;
@@ -26,12 +29,6 @@
             .map((category)=>{return {image: null, title: category.name, background_image: theme_entities[category.theme_id].image, on_click: async () => {await data.add_child_to_parent(category.id)}, optional_func: ()=>{push_modal(get_composite_category_modal({...category}))}}}))
         push_promise_modal({type: 'choose_modal', data: {Categories: modal_entities}, use_search: true})
     }
-
-    $inspect(data.parent_to_children_ids)
-    $effect(()=>{
-    store.inv_cat_test = invert_many_to_many(store.category_links)
-    })
-    $inspect(store.inv_cat_test)
 
 </script>
 

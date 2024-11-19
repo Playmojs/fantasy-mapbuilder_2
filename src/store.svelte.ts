@@ -51,7 +51,6 @@ class Store {
             })
         })
     return inverted_list;})
-    inv_cat_test = $state<{[id: number]: number[]}>({})
     
     markers = $derived<MarkerData[]>(this.marker_cache[this.map.id] ?? [])
     article_history = $state<number[]>([]);
