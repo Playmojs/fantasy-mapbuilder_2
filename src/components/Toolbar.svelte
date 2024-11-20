@@ -1,13 +1,9 @@
 <script lang="ts">
 	import {
-		type UploadModalData,
-		type MapData,
 		type ModalEntity,
-		type UploadModal,
-
-		type ChooseModalData,
-
-		type GraphModalData
+		type UploadModalType,
+		type GraphModalData,
+		type MapUpload,
 
 
 	} from '$lib/types';
@@ -49,43 +45,58 @@
 	};
 
 	async function open_edit_map_modal() {
-		push_modal({
+		const upload_modal: UploadModalType<MapUpload> = {
 			type: 'upload_modal',
 			data: {
-				submit_func: async (file: File | null, title: string) => {
-					if (file !== null) {
-						let image_id = await dtb.upload_image(store.project_id, file, 'maps', null);
+				inputs: [
+					{type: 'text', name: 'title', label: 'Title', required: true },
+					{type: 'file', name: 'file', label: 'Upload File', required: false},
+					{type: 'button', name: 'article_link', label: 'Link Article', on_click: async (state: MapUpload) => {
+						let value: {id: number | null, title: string} = {id: null, title: ''};
+						await link_article(value);
+						state.article_link = value;
+					},
+					display_text(state) {
+						return (state.article_link.title)
+					},},
+					{type: 'number', name: 'scale', label: 'Map Scale', required: false }, 
+				],
+				initial_state: {title: store.map.title, file: store.image_public_urls[store.map.image], article_link: {id: store.map.article_id, title: store.article_cache[store.map.article_id].title}, scale: store.map.scale},
+				validation_func: (state) => {
+					return (
+						(state.scale !== undefined) && state.file !== null && state.title !== '' && state.article_link !== null && (state.file !== store.image_public_urls[store.map.image] || state.title !== store.map.title || state.article_link.id !== store.map.article_id || state.scale !== store.map.scale)
+					);
+				},
+				submit_func: async (state) => {
+					if (state.file instanceof File) {
+						let image_id = await dtb.upload_image(store.project_id, state.file, 'maps', null);
 						if (!image_id) {
 							console.error('Image upload failed');
 							return;
 						}
-						store.image_public_urls[image_id] = file;
+						store.image_public_urls[image_id] = state.file;
 						store.map.image = image_id;
 					}
-					store.map.title = title;
+					store.map.title = state.title;
+					if(state.article_link.id !== null){
+						store.map.article_id = state.article_link.id;
+					}
+					if(state.scale === undefined){store.map.scale = null}
+					else{store.map.scale = state.scale}
+
 					await dtb.update_map(store.map);
 
 					return;
 				},
-				validation_func(file: File | Blob | null, title, article_id) {
-					return (
-						file !== null && title !== '' && article_id !== null && (file instanceof File || title !== store.map.title || article_id !== store.map.article_id)
-					);
+				determine_preview(state) {
+					if(state.file === null){return null}
+					return URL.createObjectURL(state.file)
 				},
-				link_func: async (value) => {
-					await push_promise_modal({
-						type: 'choose_modal',
-						data: { Articles: choose_article_by_id(value)},
-						use_search: true
-					});
-				},
-				button_title: 'Update Map',
-				initial_map_title: store.map.title,
-				initial_image_blob: store.image_public_urls[store.map.image] ?? null,
-				initial_link: {id: store.map.article_id, title: store.article_cache[store.map.article_id].title},
-				allow_no_file: false
-			}
-		});
+				button_title: 'Update Map'
+				}
+		}
+
+		push_modal(upload_modal);
 	}
 
 	async function confirm_delete_map() {
@@ -217,10 +228,7 @@
 		push_modal({type: 'graph_modal', data: graph_data, use_search: false})
 	}
 
-	let edit_visible: boolean;
-	store.write_access.subscribe((value: boolean) => {
-		edit_visible = value;
-	});
+	let edit_visible = $derived<boolean>(store.write_access);
 	
 	let category_graph_data = $derived.by<GraphModalData>(()=> {
 		const category_graph = generate_category_graph()
@@ -266,6 +274,8 @@
 			aria-label="Go to Map or Article"
 			>
 		</button>
+	</div>
+	<div class='button_group'>
 		<button
 			onclick={()=>{open_map_graph();}}
 			style="background-image: url('/assets/graph_protoicon.png');"
@@ -373,7 +383,7 @@
 		gap: 10px;
 		align-items: center;
 		height: 100%;
-		width: 150px;
+		width: 10px;
 	}
 
 	#toolbar button {

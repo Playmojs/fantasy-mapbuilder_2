@@ -24,8 +24,8 @@ export const theme_entities: {[id: number]: Theme} = {
     5: {image: '/assets/BG1.jpg', title: 'Dark'},
 }
 
-export const get_modal_entity_themes: (value: {id: number | null, title: string}) => ModalEntity[] = (value) => {
+export const get_modal_entity_themes: (value: {id: number, title: string}) => ModalEntity[] = (value) => {
     return Object.entries(theme_entities).map(([id, theme]) => {
-        return {title: theme.title, image: theme.image, on_click: () => {value.id = +id; value.title = `Theme: ${theme.title}`} }
+        return {title: theme.title, image: theme.image, on_click: () => {value.id = +id; value.title = theme.title  } }
     })
 }

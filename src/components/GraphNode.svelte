@@ -100,7 +100,7 @@
             </div>
             {/if}
 
-            {#if entity.optional_func && get(store.write_access)}
+            {#if entity.optional_func && store.write_access}
             <button class='option_button' class:no_image={!has_image} onclick={(e: Event)=>{if(entity.optional_func)entity.optional_func(); e.stopPropagation();}}>
             </button>	
             {/if}

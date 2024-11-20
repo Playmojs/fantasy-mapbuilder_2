@@ -167,6 +167,7 @@ export type Database = {
           parent_id: number | null
           parent_image: string | null
           project_id: number
+          scale: number | null
           title: string
         }
         Insert: {
@@ -177,6 +178,7 @@ export type Database = {
           parent_id?: number | null
           parent_image?: string | null
           project_id: number
+          scale?: number | null
           title?: string
         }
         Update: {
@@ -187,6 +189,7 @@ export type Database = {
           parent_id?: number | null
           parent_image?: string | null
           project_id?: number
+          scale?: number | null
           title?: string
         }
         Relationships: [

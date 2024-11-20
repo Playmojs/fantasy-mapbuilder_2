@@ -2,10 +2,11 @@
 	import { goto } from "$app/navigation";
 	import dtb from "$lib/dtb";
 	import { pop_modal, push_modal } from "$lib/modal_manager.svelte";
-	import type { UploadModalData } from "$lib/types";
+	import type { MapUpload, UploadModalData, UploadModalType} from "$lib/types";
 	import { assert_unreachable } from "$lib/utils";
 	import Homebar from "../../../components/Homebar.svelte";
 	import ModalWindow from "../../../components/modals/ModalWindow.svelte";
+	import UploadModal from "../../../components/modals/UploadModal.svelte";
 	import { store } from "../../../store.svelte";
 
     let project_title = $state<string>('')
@@ -15,35 +16,42 @@
         project_title = title_input.value;
     }
 
-    function open_map_option(){
-        push_modal({
-            type:'upload_modal', 
-            data: {
-            submit_func: (file: File | null, title: string, link_id: number | null) => {
-                if(file === null){
-                    assert_unreachable("No file selected error"); 
-                    return;
-                }
-                main_map_title = title;
-                main_map_file = file;
-            },
-            validation_func(file, title) {
-                return(file !== null && title !== '')
-            },
-            link_func: null,
-            initial_link: {id: null, title: ""},
-            button_title: 'Choose Map',
-            initial_image_blob: main_map_file,
-            initial_map_title: main_map_title ?? '',
-            allow_no_file: false,}
-
-        })
+    type InitialMap = {
+        title: string,
+        file: File | null
     }
 
-    function valid_project(){return main_map_file===null || main_map_title==='' || project_title === ''}
+    function open_map_option(){
+        const map_modal: UploadModalType<InitialMap> = {
+            type: 'upload_modal',
+            data: {
+				inputs: [
+					{type: 'text', name: 'title', label: 'Title', required: true },
+					{type: 'file', name: 'file', label: 'Upload File', required: false},
+				],
+				initial_state: {title: main_map.title, file: main_map.file},
+				validation_func: (state) => {
+					return (
+						state.file !== null && state.title !== '' && (state.file !== main_map.file || state.title !== main_map.title)
+					);
+				},
+				submit_func: async (state) => {
+                    if(state.file === null){
+                        assert_unreachable("No file selected error"); 
+                        return;
+                    }
+                    main_map = state;
+				},
+				button_title: 'Update Map'
+			}
+        }
+        push_modal(map_modal)
+    }
+
+    function valid_project(){return main_map.file===null || main_map.title==='' || project_title === ''}
     async function add_project(){
-        if (main_map_file === null || main_map_title === '' || !main_map_title || project_title === ''){return;}
-        let project = await dtb.create_new_project(project_title, main_map_title, main_map_file);
+        if (main_map.file === null || main_map.title === '' || !main_map.title || project_title === ''){return;}
+        let project = await dtb.create_new_project(project_title, main_map.title, main_map.file);
         if(project){
             store.project_id = project.id
             store.project_cache[store.project_id] = project;
@@ -51,12 +59,9 @@
         }
     }
 
-    let main_map_title = $state<string>()
-    let main_map_file = $state<File | null>(null)
+    let main_map = $state<InitialMap>({title: '', file: null})
 
-
-
-	let main_map_preview = $derived<string | null>(main_map_file ? URL.createObjectURL(main_map_file) : null)
+	let main_map_preview = $derived<string | null>(main_map.file ? URL.createObjectURL(main_map.file) : null)
 </script>
 
 <Homebar/>
@@ -82,8 +87,8 @@
                 />
             </div>
             <div id="head_map">
-                <p id="head_map_label"> {`Main Map: ${main_map_title ?? 'Not added'}`}</p>
-                <button id='set_main_map_button' onclick={open_map_option}>{main_map_file ? 'Change' : 'Choose'}</button>
+                <p id="head_map_label"> {`Main Map: ${main_map.title ?? 'Not added'}`}</p>
+                <button id='set_main_map_button' onclick={open_map_option}>{main_map.file ? 'Change' : 'Choose'}</button>
             </div>
 
             <button id="add_project_button" onclick={add_project} disabled={valid_project()}>Add Project</button>

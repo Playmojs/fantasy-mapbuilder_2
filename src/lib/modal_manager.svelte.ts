@@ -2,7 +2,7 @@ import CategoryModal from '../components/modals/CategoryModal.svelte';
 import { store } from '../store.svelte';
 import { get_modal_entity_themes, theme_entities } from './data.svelte';
 import dtb from './dtb';
-import type { ChooseModalData, ModalType, ModalEntity, UploadModal, CategoryModalData, Category, CompositeModal } from './types';
+import type { ChooseModalData, ModalType, ModalEntity, UploadModalType, CategoryModalData, Category, CompositeModalType, MapUpload, CategoryUpload } from './types';
 import { assert_unreachable, invert_many_to_many } from './utils';
 
 
@@ -33,7 +33,7 @@ export const choose_article_by_id: (value: {id: number | null, title: string}) =
             title: article.title,
             on_click: () => {
                 value.id = article.id;
-                value.title = `Article: ${article.title}`;
+                value.title = article.title;
             }
         };
     });
@@ -89,23 +89,38 @@ export const link_article: (value: {id: number | null, title: string}) => Promis
 }
 
 export const get_new_map_data: (value: {file: File | null, title: string, article_id: number | null}) => Promise<void> = (value) => {
-    let modal: UploadModal = {type: 'upload_modal',
+    let modal: UploadModalType<MapUpload> = {type: 'upload_modal',
         data: {
-            submit_func: async (file: File | null, title: string, article_id: number | null) => {
-                if(file === null || title === ''){return}
-                value.file = file;
-                value.title = title;
-                value.article_id = article_id;
+            inputs: [
+                {type: 'text', name: 'title', label: 'Title', required: true },
+                {type: 'file', name: 'file', label: 'Upload File', required: true},
+                {type: 'button', name: 'article_link', label: 'Link Article', on_click: async (state) => {
+                    let value: {id: number | null, title: string} = {id: null, title: ''};
+                    await link_article(value);
+                    state.article_link = value;
+                },
+                display_text(state){return (state.article_link && state.article_link.id !== null) ? state.article_link.title : 'No Article Link'}} 
+            ],
+            initial_state: {file: null, title: ''},
+            validation_func: (state) => {
+                return state.file !== null && state.title !== '';
             },
-            validation_func(file: Blob | File | null, title: string) {
-                return file !== null && title !== '';
+            submit_func: async (state) => {
+                if(!(state.file instanceof File) || state.title === ''){
+                    assert_unreachable('Tried to commit map with insufficient data')
+                    return
+                }
+                value.file = state.file;
+                value.title = state.title;
+                value.article_id = state.article_link.id;
             },
-            link_func: link_article,
-            button_title: 'Create Map',
-            initial_image_blob: null,
-            initial_map_title: '',
-            initial_link: {id: null, title: ""},
-            allow_no_file: false}};
+            determine_preview(state) {
+                if(state.file === null){return null}
+                return URL.createObjectURL(state.file)
+            },
+            button_title: 'Create Map'
+        }
+    }
 
     return push_promise_modal(modal)
 }
@@ -182,47 +197,67 @@ export const get_inverse_category_to_category_modal: (parent_category_id: number
     }
 }
 
-export const get_add_category_modal: (value: {id: number | null}) => UploadModal = (value) => {
+export const get_add_category_modal: (value: {id: number}) => UploadModalType<CategoryUpload> = (value) => {
     return {type: 'upload_modal',
         data: {
-            submit_func: async (file: File | null, title: string, theme_id: number | null) => {
-                if(file !== null || title === '' || title === 'Add Category'){return}
-                const response = await dtb.create_category(store.project_id, title, theme_id ?? 0);
-                if(response===undefined){return}
-                else{value.id = response.id;}
+            inputs: [
+                {type: 'text', name: 'title', label: 'Category Title', required: true},
+                {type: 'button', name: 'theme', label: 'Select Theme', on_click: async (state) => {
+                    let theme: {id: number, title: string} = {id: state.theme.id, title: state.theme.title}
+                    await push_promise_modal({type:'choose_modal', data: {Themes: get_modal_entity_themes(theme)}, use_search: true})
+                    state.theme = theme;
+                },
+                display_text(state) {
+                    return(state.theme.title)
+                },
+            }
+            ],
+            initial_state: {theme: {id: 0, title: theme_entities[0].title}},
+            validation_func: (state) => {return !!state.title},
+            submit_func: async(state) => {
+                const response = await dtb.create_category(store.project_id, state.title, state.theme.id)
+                if (response !== undefined){
+                    value.id = response.id;
+                }
             },
-            validation_func(file: Blob | File | null, title: string) {
-                return title !== '';
+            determine_preview(state) {
+                return(theme_entities[state.theme.id].image)
             },
-            link_func: async (val) => {await push_promise_modal({type: 'choose_modal', data: {Themes: get_modal_entity_themes(val)}, use_search: true})},
-            button_title: 'Create Category',
-            initial_image_blob: null,
-            initial_map_title: '',
-            initial_link: {id: null, title: ""},
-            allow_no_file: null}};
+            button_title: 'Create Category'
+        }};
 }
 
-export const edit_category_modal: (category: Category) => UploadModal = (category: Category) => {
+
+export const edit_category_modal: (category: Category) => UploadModalType<CategoryUpload> = (category: Category) => {
     return {type: 'upload_modal',
         data: {
-            submit_func: async (file: File | null, title: string, theme_id: number | null) => {
-                if(title === '' || title === 'Add Category'){return}
-                category.name = title;
-                category.theme_id = theme_id ?? 0
+            inputs: [
+                {type: 'text', name: 'title', label: 'Category Title', required: true},
+                {type: 'button', name: 'theme', label: 'Select Theme', on_click: async (state) => {
+                    let theme: {id: number, title: string} = {id: state.theme.id, title: state.theme.title}
+                    await push_promise_modal({type:'choose_modal', data: {Themes: get_modal_entity_themes(theme)}, use_search: true})
+                    state.theme = theme;
+                },
+                display_text(state){
+                    return(state.theme.title)
+                }}
+            ],
+            initial_state: {title: category.name, theme: {id: category.theme_id, title: theme_entities[category.theme_id].title}},
+            validation_func: (state) => {return !!state.title},
+            submit_func: async(state) => {
+                if(state.title === '' || state.title === 'Add Category'){return}
+                category.name = state.title;
+                category.theme_id = state.theme.id ?? 0
                 await dtb.update_category(category)
             },
-            validation_func(file: Blob | File | null, title: string, link_id: number | null) {
-                return title !== '' && !(title === category.name && link_id === category.theme_id);
+            determine_preview(state) {
+                return(theme_entities[state.theme.id].image)
             },
-            link_func: async (val) => {await push_promise_modal({type: 'choose_modal', data: {Themes: get_modal_entity_themes(val)}, use_search: true})},
-            button_title: 'Update Category',
-            initial_image_blob: null,
-            initial_map_title: category.name,
-            initial_link: {id: category.theme_id, title: theme_entities[category.theme_id].title},
-            allow_no_file: null}};
+            button_title: 'Update Category'
+        }};
  }
 
- export const get_composite_category_modal: (category: Category) => CompositeModal = (category: Category) => {
+ export const get_composite_category_modal: (category: Category) => CompositeModalType = (category: Category) => {
     return({
         type: 'composite_modal',
         data: {

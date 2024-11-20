@@ -13,13 +13,10 @@ class Store {
     selected_marker = $state<number | null>(null); // TODO: Could this be a MarkerData instead of an id?
     informatic_width = $state(66);
     text_size = $state(150);
-    //modal_data = $state<ChooseModalData | null>(null);
     map_transform = $state({ x: 0, y: 0, scale: 1 });
     user = $state<User | null>(null);
     project_id: number = 0;
-    write_access = writable(false);
-    //edit_map_window = $state<UploadModalData | null>(null);
-    //confirm_modal = $state<ConfirmModalData | null>(null);
+    write_access = $state<boolean>(false);
     modals = $state<ModalType[]>([])
 
     map_article_link=$state<number | null>()
@@ -58,7 +55,7 @@ class Store {
     article = $derived.by<Article>(() => {const id = this.article_history.at(-1); return (id === undefined || !this.article_cache[id]) ? default_article :  {...this.article_cache[id]}});
 }
 
-const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "map.jpg", parent_id: null, parent_image: null, project_id: 0 }
+const default_map: MapData = { article_id: -1, title: "", created_at: "", id: -1, image: "map.jpg", parent_id: null, parent_image: null, project_id: 0, scale: null }
 const default_article: Article = { id: -1, title: "", created_at: "", content: "", image: null, project_id: 0, main_category: 0 }
 
 export const store = new Store()

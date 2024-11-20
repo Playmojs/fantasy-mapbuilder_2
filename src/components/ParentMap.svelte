@@ -5,7 +5,7 @@
 
 	import { store } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
-	import { type ModalEntity, type ChooseModal, type ChooseModalData } from '$lib/types';
+	import { type ModalEntity, type ChooseModalType, type ChooseModalData } from '$lib/types';
 	import dtb from '$lib/dtb';
 	import { choose_existing_map, get_new_map_data, push_modal, push_promise_modal } from '$lib/modal_manager.svelte';
 	

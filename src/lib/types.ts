@@ -31,21 +31,53 @@ export type NodeEvent = 'toggle' | 'init' | 'zoom'
 
 export type ModalName = 'upload_modal' | 'choose_modal' | 'confirm_modal' | 'composite_modal' | 'category_modal' | 'graph_modal'
 
-export type UploadModalData = {
-	submit_func: (file: File | null, title: string, link_id: number | null) => Promise<void> | void;
-	validation_func: (file: File | Blob | null, title: string, link_id: number | null) => boolean;
-	link_func: ((value: {id: number | null, title: string}) => Promise<void>) | null;
-	button_title: string;
-	initial_map_title: string | null;
-	initial_image_blob: Blob | null;
-	initial_link: {id: number | null, title: string};
-	allow_no_file: boolean | null; 
+// export type UploadModalData = {
+// 	submit_func: (file: File | null, title: string, link_id: number | null) => Promise<void> | void;
+// 	validation_func: (file_preview: string | null, title: string, link_id: number | null) => boolean;
+// 	link_func: ((value: {id: number | null, title: string}) => Promise<void>) | null;
+// 	preview_func: (file: File | null, title: string, link_id: number | null) => string | null;
+// 	button_title: string;
+// 	initial_map_title: string | null;
+// 	initial_image_url: string | null;
+// 	initial_link: {id: number | null, title: string};
+// 	allow_no_file: boolean | null; 
+// };
+
+export type UploadModalInput<TState> = 
+  | { type: 'text'; name: keyof TState & string; label?: string; placeholder?: string; required?: boolean; }
+  | { type: 'file'; name: keyof TState & string; label?: string; accept?: string; required?: boolean; }
+  | { type: 'button'; name: keyof TState & string; label?: string; on_click: (state: TState) => Promise<void>, display_text?: (state: TState) => string }
+  | { type: 'number'; name: keyof TState & string; label?: string; placeholder?: string; required?: boolean; }
+
+export type UploadModalData<TState> = {
+  inputs: UploadModalInput<TState>[]; // List of inputs to render
+  initial_state?: Partial<TState>; // Pre-fill values
+  determine_preview?: (state: TState) => string | null; // Optional preview logic
+  validation_func: (state: TState) => boolean; // Form validation
+  submit_func: (state: TState) => Promise<void>; // Submission logic
+  button_title: string; // Submit button text
 };
 
-export type UploadModal = {
+export type UploadModalType<TState> = {
 	type: "upload_modal";
 	on_close?: (success: boolean) => void;
-	data: UploadModalData;
+	data: UploadModalData<TState>;
+}
+
+export type MapUpload = {
+	title: string,
+	file: File | Blob | null,
+	article_link: {id: number | null, title: string},
+	scale: number | null
+}
+
+export type ImageUpload = {
+	file: File | Blob | null
+}
+
+export type CategoryUpload = {
+	title: string,
+	theme: {id: number, title: string},
 }
 
 export type ConfirmModalData = {
@@ -53,7 +85,7 @@ export type ConfirmModalData = {
 	text: string;
 }
 
-export type ConfirmModal = {
+export type ConfirmModalType = {
 	type: "confirm_modal";
 	on_close?: (success: boolean) => void;
 	data: ConfirmModalData;
@@ -62,7 +94,7 @@ export type ConfirmModal = {
 export type ChooseModalData= { [modal_tab: string]: ModalEntity[]; };
 
 
-export type ChooseModal = {
+export type ChooseModalType = {
 	type: 'choose_modal';
 	on_close?: (success: boolean) => void;
 	data: ChooseModalData;
@@ -96,19 +128,19 @@ export type GraphModalData = {
 	head_id: number;
 }
 
-export type CompositeModal = {
+export type CompositeModalType = {
 	type: 'composite_modal';
 	on_close?: (success: boolean) => void;
 	data: CompositeModalData;
 }
 
-export type CategoryModal = {
+export type CategoryModalType = {
 	type: 'category_modal';
 	data: CategoryModalData
 	on_close?: (success: boolean) => void;
 }
 
-export type GraphModal = {
+export type GraphModalType = {
 	type: 'graph_modal';
 	data: GraphModalData;
 	on_close?: (success: boolean) => void;
@@ -117,4 +149,4 @@ export type GraphModal = {
 
 
 export type Folder = "maps" | "articles"
-export type ModalType = ChooseModal | UploadModal | ConfirmModal | CompositeModal | CategoryModal | GraphModal
+export type ModalType = ChooseModalType | UploadModalType<any> | ConfirmModalType | CompositeModalType | CategoryModalType | GraphModalType

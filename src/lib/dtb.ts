@@ -473,7 +473,7 @@ export default {
             console.error(`Failed to delete marker. Response: ${response.error.message}`);
         }
         if (response.data) {
-            store.markers = store.markers.filter(marker => marker.id !== marker_id);
+            store.marker_cache[store.map.id] = store.marker_cache[store.map.id].filter(marker => {return marker.id !== marker_id});
         }
     },
 
