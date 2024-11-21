@@ -10,7 +10,7 @@
 
 	let {
 		close,
-		modal,
+		modal = $bindable(),
 		window_rect,
 	}: {
 		close: any;

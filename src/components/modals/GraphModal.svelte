@@ -14,7 +14,6 @@
 
 	let head_node: GraphNode;
 
-	
 	let zoompan_element: ZoomPan;
 	
 	function on_zoompan(transf: {x: number, y: number, scale: number}){
@@ -81,7 +80,7 @@
 
 	$effect(() => {
 		modal_data;
-		untrack(()=> {head_node.propagate_position(current_transform_state.scale)})
+		untrack(()=>head_node.propagate_position(current_transform_state.scale))
 	})
 
 	onMount(() => {

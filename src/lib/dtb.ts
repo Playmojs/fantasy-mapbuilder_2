@@ -411,6 +411,8 @@ export default {
         if(error){console.error(`Failed to create category, error: ${error}`)}
         else if(data){
             store.category_cache[data.id] = data;
+            store.category_links[data.id] = [];
+            store.article_category_links[data.id] = [];
             return data;
         }
     },

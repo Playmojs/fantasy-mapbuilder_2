@@ -5,7 +5,7 @@
 
 	let {
 		close,
-		modal
+		modal = $bindable()
 	}: {
 		close: any;
 		modal: ModalType;

@@ -2,7 +2,7 @@
 	import { get_modal_entity_themes, theme_entities } from "$lib/data.svelte";
 	import dtb from "$lib/dtb";
 	import { edit_category_modal, get_add_category_modal, get_composite_category_modal, push_modal, push_promise_modal } from "$lib/modal_manager.svelte";
-	import type { Category, CategoryModalData, ConfirmModalData, ModalEntity, UploadModal } from "$lib/types";
+	import type { Category, CategoryModalData, ConfirmModalData, ModalEntity, UploadModalType } from "$lib/types";
 	import { invert_many_to_many } from "$lib/utils";
 	import { store } from "../../store.svelte";
 	import Modal from "./Modal.svelte";

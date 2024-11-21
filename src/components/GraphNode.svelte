@@ -1,28 +1,40 @@
 <script lang='ts'>
 	import type { GraphEntity, ModalEntity } from "$lib/types";
-	import { onMount, tick } from "svelte";
+	import { onMount, tick, untrack } from "svelte";
     import Self from './GraphNode.svelte';
     import { type NodeEvent } from "$lib/types";
 	import { store } from "../store.svelte";
 	import { get } from "svelte/store";
+	import type { SvelteMap } from "svelte/reactivity";
 
     let {id, graph_entities, on_event} : {id: number, graph_entities: {[id: number]: GraphEntity}, on_event: (event: NodeEvent, previous_position: {x: number, y: number, width: number, height: number}, current_position: {x: number, y: number, width: number, height: number}) => void} = $props()
     let isOpen = $state<boolean>(false);
+
+    let graph_entity = $derived(graph_entities[id])
+
+    let children_ids = $derived(graph_entity.children)
     
-    let children = $state<Array<Self>>(new Array<Self>(graph_entities[id].children.length));
+    /*This is a little strange: Svelte will reflexively populate this list if children are missing, 
+    and set their values to null if they are deleted. I've just added overhead to make sure the list is pruned, which is a little bad.*/
+    let children = $state<Array<Self>>(new Array<Self>(0));
+
+    const prune_children = async () => {
+        tick().then(() => {
+            children = children.filter((child) => {return child !== null})
+        })
+    }
 
     $effect(()=> {
-        if(children.length !== graph_entities[id].children.length){
-            children = new Array<Self>(graph_entities[id].children.length)
-        }
+        if(untrack(()=>children.length) !== children_ids.length)
+        prune_children()
     })
 
-    let has_image = $derived<boolean>(graph_entities[id].entity.image !== null)
+    let entity = $derived<ModalEntity>(graph_entity.entity)
+    let has_image = $derived<boolean>(entity.image !== null)
 
-    let entity = $derived<ModalEntity>(graph_entities[id].entity)
     
     let edge_start = $state<{x: number, y: number}>({x: 0, y: 0});
-    // let edge_ends = $state<Array<{x: number, y: number}>>(new Array(children.length))
+
     let bezier_paths = $state<Array<string>>(new Array(children.length))
 
     export const propagate_position: (scale: number) => {x: number, y: number} = (scale) => {
@@ -31,11 +43,14 @@
         const svg_offset = svg_element?.getBoundingClientRect() ?? {left: 0, top: 0, width: 0, height: 0}
         const rect = node_element.getBoundingClientRect()
         edge_start = {x: svg_offset.width/2 / scale, y: 0}
-        if(bezier_paths.length !== children.length){
-            bezier_paths = new Array(children.length)}
-        if (isOpen && graph_entities[id].children.length > 0)
+        // if(bezier_paths.length !== children.length){
+        //     bezier_paths = new Array(children.length)}
+        bezier_paths = new Array(children_ids.length)
+        if (isOpen && children_ids.length > 0)
         {
+            console.log(children.length)
             children.forEach((child, id) => {
+                if(!child){return}
                 let edge_end = child.propagate_position(scale)
                 edge_end.x = (edge_end.x - svg_offset.left) / scale;
                 edge_end.y = (edge_end.y - svg_offset.top) / scale - 10;
@@ -90,7 +105,7 @@
         {/if}
 
         <div class='text_row'>
-            {#if children.length > 0}
+            {#if children_ids.length > 0}
             <div class="label" onclick={toggle}>
                 {isOpen ? '▼' : '▶'} {entity.title}
             </div>
@@ -106,7 +121,7 @@
             {/if}
         </div>
     </div>
-    {#if isOpen && graph_entities[id].children.length > 0}
+    {#if isOpen && children_ids.length > 0}
         <svg class='edge_canvas' bind:this={svg_element}>
             {#each bezier_paths as path}
                 {#if path}
@@ -115,7 +130,7 @@
             {/each}
         </svg>
         <div class="children">
-            {#each graph_entities[id].children as child_id, index}
+            {#each children_ids as child_id, index (child_id)}
                 <Self bind:this={children[index]} id={child_id} graph_entities={graph_entities} on_event={on_event}/>
             {/each}
         </div>

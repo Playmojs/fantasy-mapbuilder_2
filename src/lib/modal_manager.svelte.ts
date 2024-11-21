@@ -197,7 +197,7 @@ export const get_inverse_category_to_category_modal: (parent_category_id: number
     }
 }
 
-export const get_add_category_modal: (value: {id: number}) => UploadModalType<CategoryUpload> = (value) => {
+export const get_add_category_modal: (value: {id: number | null}) => UploadModalType<CategoryUpload> = (value) => {
     return {type: 'upload_modal',
         data: {
             inputs: [

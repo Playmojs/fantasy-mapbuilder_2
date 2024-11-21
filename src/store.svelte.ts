@@ -1,5 +1,6 @@
-import { type Article, type MapData, type MarkerData, type ModalType, type Project, type Category } from "$lib/types";
-import type { User } from "@supabase/supabase-js";
+import { theme_entities } from "$lib/data.svelte";
+import { type User } from "@supabase/supabase-js";
+import { type Article, type MapData, type MarkerData, type ModalType, type Project, type Category} from "$lib/types";
 import { untrack } from "svelte";
 import { readable, writable } from "svelte/store";
 
@@ -35,19 +36,8 @@ class Store {
     image_public_urls = $state<{ [image: string]: Blob }>({});
     user_projects = $state<number[]>([]);
     
-    article_category_links = $state<{[id: number]: number[]}>({});
+    article_category_links = $state<{[category_id: number]: number[]}>({});
     category_links = $state<{[id: number]: number[]}>({})
-    inverted_category_links = $derived.by(()=> { let inverted_list: {[from: number]: number[]} = {}
-        Object.entries(this.category_links).forEach(([from, tos]) => {tos.forEach(to => {
-                if(to in inverted_list){
-                    inverted_list[to].push(+from)
-                }
-                else{
-                    inverted_list[to] = [+from]
-                }
-            })
-        })
-    return inverted_list;})
     
     markers = $derived<MarkerData[]>(this.marker_cache[this.map.id] ?? [])
     article_history = $state<number[]>([]);
