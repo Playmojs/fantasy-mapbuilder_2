@@ -254,7 +254,19 @@
 	async function open_category_graph(){
 		if(!category_graph_data){return}
 		await dtb.fetch_all_from_project(store.project_id);
-		push_modal({type: 'graph_modal', data: category_graph_data, use_search: false})
+		const article_entities: {[id: number]: ModalEntity} = {};
+		Object.entries(store.article_cache).forEach(([key, article]) => 
+			{
+				article_entities[+key] = {
+					image: null,
+					title: article.title,
+					on_click(){},
+					background_image: article.main_category !== null ? theme_entities[store.category_cache[article.main_category].theme_id].image : null
+				}
+			}
+		)
+
+		push_modal({type: 'filter_modal', data: {graph_data: category_graph_data, filter_link: store.article_category_links, choose_data: article_entities}, use_search: true})
 	}
 </script>
 

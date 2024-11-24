@@ -243,7 +243,7 @@ export const edit_category_modal: (category: Category) => UploadModalType<Catego
                 }}
             ],
             initial_state: {title: category.name, theme: {id: category.theme_id, title: theme_entities[category.theme_id].title}},
-            validation_func: (state) => {return !!state.title},
+            validation_func: (state) => {return !!state.title && (state.title != category.name || state.theme.id !== category.theme_id)},
             submit_func: async(state) => {
                 if(state.title === '' || state.title === 'Add Category'){return}
                 category.name = state.title;

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { type ChooseModalData, type ModalEntity } from '$lib/types';
 	import SearchInput from '../SearchInput.svelte';
+	import Modal from './Modal.svelte';
 
 	let{close, modal_data, on_close, use_search}:{close: any, modal_data: ChooseModalData, on_close: ((success: boolean) => Promise<void> | void) | undefined, use_search: boolean} = $props()
 
@@ -29,6 +30,7 @@
 				<button
 					class="tab"
 					class:current_tab={tab === current_tab}
+					class:only_tab={Object.keys(modal_data).length === 1}
 					disabled={tab === current_tab}
 					onclick={() => {
 						current_tab = tab;
@@ -36,7 +38,11 @@
 				>
 			{/each}
 		</div>
-		<SearchInput searchDomain={modal_data[current_tab]} bind:filtered={search_output}/>
+		{#if use_search}
+			<div id='search_wrapper'>
+				<SearchInput searchDomain={modal_data[current_tab]} bind:filtered={search_output}/>
+			</div>
+		{/if}
 	</div>	
 {/if}
 {#if current_entities}
@@ -50,7 +56,6 @@
 					}}
 						style={entity.background_image ? `background-image: url("${entity.background_image}");`: ''}
 					>
-
 
 					{#if entity.optional_func}
 						<button class='option_button' onclick={(e: Event)=>{if(entity.optional_func)entity.optional_func(); e.stopPropagation();}}>
@@ -71,15 +76,12 @@
 
 
 <style>
-	
-
 	#modal_head{
 		display: flex;
 		justify-content: space-around;
-		gap: 50%;
+		gap: 10%;
 		height: 40px;
-		margin-bottom: 30px;
-		margin-right: 25px;
+		margin-bottom: 2%;
 	}
 
 	.tab_row {
@@ -87,6 +89,7 @@
 		justify-content: start;
 		align-items: center;
 		gap: 1px;
+		flex: 1;
 	}
 
 	.tab {
@@ -104,13 +107,24 @@
 		box-shadow: none;
 	}
 
+	.only_tab{
+		background-color: transparent;
+		border: none;
+	}
+
+	#search_wrapper{
+		width: 50%;
+	}
+
 	#grid-container {
-		max-height: calc(100vh - 300px);
+		max-height: 65vh;
 		overflow-y: scroll;
 		padding: 15px 15px 30px;
 		background-color: rgb(100, 100, 100);
 		border-radius: 15px;
 		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
+		
+        box-sizing: padding-box;
 	}
 
 	#grid {

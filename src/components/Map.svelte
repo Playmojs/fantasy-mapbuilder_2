@@ -5,6 +5,7 @@
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 	import { push_article } from '$lib/article_stack';
+	import ScaleBar from './ScaleBar.svelte';
 
 	let mapContainer: HTMLDivElement;
 	let map_: HTMLImageElement;
@@ -97,6 +98,10 @@
 	{#each store.markers as marker}
 		<Marker marker_data={marker} {get_relative_movement} />
 	{/each}
+	{#if store.map.scale !== null}
+		<!-- <ScaleBar start_pos={{x: 500, y: 500}} end_pos={{x: 1000, y: 1000}} scale={1}/> -->
+		<ScaleBar/>
+	{/if}
 	<ZoomPan bind:this={zoompan_element} parent_selector="#map-container" offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
 </div>
 
