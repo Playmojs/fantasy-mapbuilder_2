@@ -22,6 +22,11 @@ export const theme_entities: {[id: number]: Theme} = {
     3: {image: '/assets/BG2.jpg', title: 'Plants'},
     4: {image: '/assets/BG4.jpg', title: 'Rocks'},
     5: {image: '/assets/BG1.jpg', title: 'Dark'},
+    6: {image: '/assets/Character.jpg', title: 'Character'},
+    7: {image: '/assets/Location.jpg', title: 'Location'},
+    8: {image: '/assets/Magic2.jpg', title: 'Magic2'},
+    9: {image: '/assets/Culture.jpg', title: 'Culture'},
+    10: {image: '/assets/Religion.jpg', title: 'Religion'},
 }
 
 export const get_modal_entity_themes: (value: {id: number, title: string}) => ModalEntity[] = (value) => {
