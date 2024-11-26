@@ -23,6 +23,7 @@
 
 </script>
 
+<div id=choose_modal>
 {#if modal_data}
 	<div id=modal_head>
 		<div class="tab_row">
@@ -51,6 +52,7 @@
 			{#each current_entities as entity}
 				<div
 					class="entity-item"
+					title={entity.title}
 					onclick={() => {
 						handle_entity_click(entity);
 					}}
@@ -72,15 +74,24 @@
 		</div>
 	</div>
 {/if}
+</div>
 
 
 
 <style>
+	#choose_modal{
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		width: 100%;
+		overflow: hidden;
+	}
+
 	#modal_head{
 		display: flex;
 		justify-content: space-around;
 		gap: 10%;
-		height: 40px;
+		flex: 0 0 auto;
 		margin-bottom: 2%;
 	}
 
@@ -117,19 +128,18 @@
 	}
 
 	#grid-container {
-		max-height: 65vh;
-		overflow-y: scroll;
+		flex: 1 1 65vh;
+		overflow-y: auto;
 		padding: 15px 15px 30px;
 		background-color: rgb(100, 100, 100);
 		border-radius: 15px;
 		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
-		
-        box-sizing: padding-box;
 	}
-
+	
 	#grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		justify-content: space-around;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 100px));
 		gap: 20px;
 	}
 
@@ -187,6 +197,9 @@
 		font-family: 'Cormorant Garamond';
 		font-size: x-large;
 		margin: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap; 
 	}
 
 	#grid-container::-webkit-scrollbar {
