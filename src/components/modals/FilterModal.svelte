@@ -36,18 +36,16 @@
     
     // Filter graph ids is a list of lists - for each selected graph_id, there is a list of all graph_ids that will influence the final list of articles.
     let filter_graph_ids = $derived.by<number[][]>(() => {
-        if (!propagate_filter){return intersect_filter? selected_graph_ids.map(val => {return [val]}) : [selected_graph_ids]}
-        else if (!intersect_filter){
-            let included_ids: number[] = []
-            selected_graph_ids.forEach(id => populate_child_ids(included_ids, id))
-            return [included_ids]
-        }
+        if (!propagate_filter){return selected_graph_ids.map(val => {return [val]})}
+       
         let included_ids: number[][] = Array.from({ length: selected_graph_ids.length }, () => []);;
         selected_graph_ids.forEach((id, index) => populate_child_ids(included_ids[index], id))
         return included_ids
     })
     
-    let filter_choose_ids = $derived<number[]>(Array.from(filter_graph_ids.map(list => {return new Set(Object.entries(modal_data.filter_link).filter(([graph_id, choose_ids]) => {return list.includes(+graph_id)}).flatMap(([graph_id, choose_ids]) => {return choose_ids}))}).reduce((acc, set) => {return acc.intersection(set)})))
+    let filter_choose_ids = $derived<number[]>(Array.from((intersect_filter ? filter_graph_ids : [filter_graph_ids.flat()])
+            .map(list => {return new Set(list.map(graph_id => {return modal_data.filter_link[graph_id] ?? []}).flat())})
+        .reduce((acc, set) => {return acc.intersection(set)})))
     
     let filtered_choose_modal_data = $derived<ChooseModalData>({"Articles": filter_choose_ids.map(id => {return modal_data.choose_data[id]})})
         
@@ -55,10 +53,8 @@
    
     let superfluous_categories = $derived<number[]>(
         propagate_filter ? intersect_filter ? selected_graph_ids.filter(id => {return !!filter_graph_ids.some(list => {return list[0]===id && selected_graph_ids.some(other_id => other_id !== id && list.includes(other_id))})}) : 
-        [] :
-        [])
-
-    $inspect(superfluous_categories)
+        selected_graph_ids.filter(id => {return !!filter_graph_ids.some(list => {return list[0] !== id && list.includes(id)})}) :
+        selected_graph_ids.filter(id => {return !Object.keys(modal_data.filter_link).includes(`${id}`)}))
     
     let graph_window: HTMLDivElement;
     let graph_rect = $state<DOMRect>({height: 0, width: 0, x: 0, y: 0, top: 0, right: 0, bottom: 0, left: 0, toJSON: () => {}});
@@ -98,7 +94,7 @@
                     onclick={()=>{propagate_filter= !propagate_filter}}></button>
                 <button 
                     class:selected={intersect_filter}
-                    style='background-image: url(/assets/fantasyvenn.png);'
+                    style={`background-image: url(/assets/fantasy_${intersect_filter ? 'intersect' : 'union'}.png);`}
                     title='Only include articles with all of the categories above'
                     onclick={()=>{intersect_filter= !intersect_filter}}></button>
             </div>

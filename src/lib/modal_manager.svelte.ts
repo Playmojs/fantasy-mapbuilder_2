@@ -2,7 +2,7 @@ import CategoryModal from '../components/modals/CategoryModal.svelte';
 import { store } from '../store.svelte';
 import { get_modal_entity_themes, theme_entities } from './data.svelte';
 import dtb from './dtb';
-import type { ChooseModalData, ModalType, ModalEntity, UploadModalType, CategoryModalData, Category, CompositeModalType, MapUpload, CategoryUpload } from './types';
+import type { ChooseModalData, ModalType, ModalEntity, UploadModalType, CategoryModalData, Category, CompositeModalType, MapUpload, CategoryUpload, ChooseModalType } from './types';
 import { assert_unreachable, invert_many_to_many } from './utils';
 
 
@@ -266,4 +266,25 @@ export const edit_category_modal: (category: Category) => UploadModalType<Catego
             'Child Categories': {type: 'category_modal', data: get_inverse_category_to_category_modal(category.id)}
         }
     })
+ }
+
+ export const get_choose_category_to_edit_modal: () => ChooseModalType = () => {
+    return {
+        type: 'choose_modal',
+        use_search: true,
+        data: {
+            Categories: [{
+                image: null,
+                title: 'Add Category',
+                on_click: async ()=>{
+                    await push_promise_modal(get_add_category_modal({id: null}))}
+            }].concat(Object.values(store.category_cache)
+                .map(category => {return {
+                    image: null, 
+                    title: category.name,
+                    on_click: async ()=> {await push_promise_modal(get_composite_category_modal(category))},
+                    background_image: theme_entities[category.theme_id].image
+                    }}))
+        }
+    }
  }
