@@ -10,6 +10,7 @@
         
     let propagate_filter = $state<boolean>(true)
     let intersect_filter = $state<boolean>(false)
+    let invert_filter = $state<boolean>(false)
         
     let selected_graph_ids = $state<number[]>([])
     let selected_entities = $derived<[number, ModalEntity][]>(selected_graph_ids.map(id=>[id, modal_data.graph_data.graph_entities[id].entity]));
@@ -43,9 +44,13 @@
         return included_ids
     })
     
-    let filter_choose_ids = $derived<number[]>(Array.from((intersect_filter ? filter_graph_ids : [filter_graph_ids.flat()])
+    let filter_choose_ids = $derived.by<number[]>(() => {
+        let arr = Array.from((intersect_filter ? filter_graph_ids : [filter_graph_ids.flat()])
             .map(list => {return new Set(list.map(graph_id => {return modal_data.filter_link[graph_id] ?? []}).flat())})
-        .reduce((acc, set) => {return acc.intersection(set)})))
+        .reduce((acc, set) => {return acc.intersection(set)}))
+        if(invert_filter){arr = Object.keys(modal_data.choose_data).filter(choose_id=> {return !arr.includes(+choose_id)}).map(choose_id => {return +choose_id})}
+        return arr
+    })
     
     let filtered_choose_modal_data = $derived<ChooseModalData>({"Articles": filter_choose_ids.map(id => {return modal_data.choose_data[id]})})
         
@@ -54,7 +59,7 @@
     let superfluous_categories = $derived<number[]>(
         propagate_filter ? intersect_filter ? selected_graph_ids.filter(id => {return !!filter_graph_ids.some(list => {return list[0]===id && selected_graph_ids.some(other_id => other_id !== id && list.includes(other_id))})}) : 
         selected_graph_ids.filter(id => {return !!filter_graph_ids.some(list => {return list[0] !== id && list.includes(id)})}) :
-        selected_graph_ids.filter(id => {return !Object.keys(modal_data.filter_link).includes(`${id}`)}))
+        [])
     
     let graph_window: HTMLDivElement;
     let graph_rect = $state<DOMRect>({height: 0, width: 0, x: 0, y: 0, top: 0, right: 0, bottom: 0, left: 0, toJSON: () => {}});
@@ -97,6 +102,10 @@
                     style={`background-image: url(/assets/fantasy_${intersect_filter ? 'intersect' : 'union'}.png);`}
                     title='Only include articles with all of the categories above'
                     onclick={()=>{intersect_filter= !intersect_filter}}></button>
+                <button 
+                    class:selected={invert_filter}
+                    title='Invert search'
+                    onclick={()=>{invert_filter= !invert_filter}}></button>
             </div>
             <ChooseModal close={()=>{}} on_close={()=>{}} use_search={use_search} modal_data={filtered_choose_modal_data}/>
         </div>

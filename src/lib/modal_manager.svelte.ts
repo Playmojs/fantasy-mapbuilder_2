@@ -2,7 +2,7 @@ import CategoryModal from '../components/modals/CategoryModal.svelte';
 import { store } from '../store.svelte';
 import { get_modal_entity_themes, theme_entities } from './data.svelte';
 import dtb from './dtb';
-import type { ChooseModalData, ModalType, ModalEntity, UploadModalType, CategoryModalData, Category, CompositeModalType, MapUpload, CategoryUpload, ChooseModalType } from './types';
+import type { ChooseModalData, ModalType, ModalEntity, UploadModalType, CategoryModalData, Category, CompositeModalType, MapUpload, CategoryUpload, ChooseModalType, ImageUpload } from './types';
 import { assert_unreachable, invert_many_to_many } from './utils';
 
 
@@ -288,3 +288,53 @@ export const edit_category_modal: (category: Category) => UploadModalType<Catego
         }
     }
  }
+
+ export const get_article_image_modal: (article_id: number) => UploadModalType<ImageUpload> = (article_id: number) => {
+    let article = {...store.article_cache[article_id]};
+    return {
+        type: 'upload_modal',
+        data: {	
+            inputs: [
+                {type: 'file', name: 'file', label: 'Article Image', required: false}
+            ],
+            initial_state: {file: article.image ? store.image_public_urls[article.image] : null},
+            validation_func: (state) => {
+                return (article.image === null && state.file !== null) || (article.image !== null && store.image_public_urls[article.image] !== state.file)
+            },
+            submit_func: async (state) => {
+                if (!(state.file instanceof File) && state.file !== null){
+                    assert_unreachable('Try to submit false')
+                    return
+                }
+                if (state.file === null){
+                    article.image = null;
+                }
+                else{
+                    let image_id = await dtb.upload_image(store.project_id, state.file, 'articles', null)
+                    if(!image_id){
+                        console.error("Image upload failed");
+                        return;
+                    }
+                    store.image_public_urls[image_id] = state.file;
+                    article.image = image_id;
+                }	
+                await dtb.update_article(article);
+                return;
+            },
+            determine_preview(state) {
+                return(state.file !== null ? URL.createObjectURL(state.file) : null)
+            },
+            button_title: 'Update Article Image'
+        }
+    }
+}
+
+export function get_article_options(article_id: number): CompositeModalType{
+    return {
+        type: 'composite_modal',
+        data: {
+            'Article Image': get_article_image_modal(article_id),
+            'Categories': {type: 'category_modal', data: get_article_to_category_modal(article_id)}
+        }
+    }
+}

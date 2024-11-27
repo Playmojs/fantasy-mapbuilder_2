@@ -5,7 +5,7 @@
 	import { fly } from 'svelte/transition';
 	import dtb from '$lib/dtb';
 	import edit_mode from '../store';
-	import { choose_map_or_article, get_article_to_category_modal, link_article, push_modal } from '$lib/modal_manager.svelte';
+	import { choose_map_or_article, get_article_image_modal, get_article_options, get_article_to_category_modal, link_article, push_modal } from '$lib/modal_manager.svelte';
 	import KeyWordRenderer from './KeyWordRenderer.svelte';
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
 	import type { ChooseModalType, CompositeModalType, ImageUpload, UploadModalType } from '$lib/types';
@@ -72,56 +72,9 @@
 		window.removeEventListener('touchmove', resizeTouch);
 		window.removeEventListener('touchend', stopResize);
 	}
-
-	const get_article_image_modal: () => UploadModalType<ImageUpload> = () => {
-		return {
-			type: 'upload_modal',
-			data: {	
-				inputs: [
-					{type: 'file', name: 'file', label: 'Article Image', required: false}
-				],
-				initial_state: {file: store.article.image ? store.image_public_urls[store.article.image] : null},
-				validation_func: (state) => {
-					return (store.article.image === null && state.file === null) || (store.article.image !== null && store.image_public_urls[store.article.image] !== state.file)
-				},
-				submit_func: async (state) => {
-					if (!(state.file instanceof File) && state.file !== null){
-						assert_unreachable('Try to submit false ')
-						return
-					}
-					if (state.file === null){
-						store.article.image = null;
-					}
-					else{
-						let image_id = await dtb.upload_image(store.project_id, state.file, 'articles', null)
-						if(!image_id){
-							console.error("Image upload failed");
-							return;
-						}
-						store.image_public_urls[image_id] = state.file;
-						store.article.image = image_id;
-					}	
-					await dtb.update_article(store.article);
-					return;
-				},
-				determine_preview(state) {
-					return(state.file !== null ? URL.createObjectURL(state.file) : null)
-				},
-				button_title: 'Update Article Image'
-			}
-		}
-	}
 	
-	async function open_article_options(){
-		const composite_modal_data: CompositeModalType = {
-			type: 'composite_modal',
-			data: {
-				'Article Image': get_article_image_modal(),
-				'Categories': {type: 'category_modal', data: get_article_to_category_modal(store.article.id)}
-			}
-		}
-
-		push_modal(composite_modal_data)
+	function open_article_options(){
+		push_modal(get_article_options(store.article.id))
 	}
 	
 

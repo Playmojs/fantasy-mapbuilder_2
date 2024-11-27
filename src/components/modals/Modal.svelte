@@ -8,6 +8,7 @@
 	import CategoryModal from './CategoryModal.svelte';
 	import GraphModal from './GraphModal.svelte';
 	import FilterModal from './FilterModal.svelte';
+	import ArticleModal from './ArticleModal.svelte';
 
 	let {
 		close,
@@ -64,5 +65,11 @@
 		modal_data={modal.data}
 		on_close={modal.on_close}
 		use_search={modal.use_search}
+	/>
+{:else if modal.type === 'article_modal'}
+	<ArticleModal
+		close={close}
+		article={modal.data}
+		on_close={modal.on_close}
 	/>
 {/if}
