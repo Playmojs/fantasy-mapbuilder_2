@@ -11,7 +11,9 @@
 	let article_title: HTMLHeadElement;
 
 
-    let {close, article, on_close} : {close: () => void, article: Article, on_close?: (success: boolean) => void} = $props()
+    let {close, article_id, on_close} : {close: () => void, article_id: number, on_close?: (success: boolean) => void} = $props()
+
+	let article = $derived({...store.article_cache[article_id]})
 
 	function updateTitle() {
 		const title: string = article_title.innerText;
@@ -167,10 +169,17 @@
         align-items: center;
         overflow-y: auto;
         gap: 20px;
-        padding: 1  0px;
+        padding: 30px 0px;
+		border-radius: 20px;
         
         box-shadow: inset 5px 0px 5px rgb(20, 20, 20);
     }
+	
+	#image_container{
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 
     #article_image {
         position: relative;
@@ -181,9 +190,7 @@
     #article_content {
         position: relative;
         height: 90%;
-        left: 0;
-        right: 0;
-        background-color: inherit;
+        width: 90%;
         font-family: 'Garamond Regular';
         text-align: justify;
         padding: 0px 10px;
@@ -277,9 +284,6 @@
 		background-color: #888;
 	}
 
-	#image_container{
-		display: flex;
-	}
 
 
 	#article_image.hidden {

@@ -262,7 +262,7 @@
 					title: article.title,
 					on_click(){
 						push_article(article.id, false);
-						push_modal({type: 'article_modal', data: article})},
+						push_modal({type: 'article_modal', data: article.id})},
 					background_image: article.main_category !== null ? theme_entities[store.category_cache[article.main_category].theme_id].image : null,
 					optional_func(){push_modal({type: 'category_modal', data: get_article_to_category_modal(+key)})},
 				}

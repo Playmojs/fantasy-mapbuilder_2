@@ -69,7 +69,7 @@
 {:else if modal.type === 'article_modal'}
 	<ArticleModal
 		close={close}
-		article={modal.data}
+		article_id={modal.data}
 		on_close={modal.on_close}
 	/>
 {/if}

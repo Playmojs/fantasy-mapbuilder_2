@@ -151,7 +151,7 @@ export type FilterModalType = {
 
 export type ArticleModalType = {
 	type: 'article_modal';
-	data: Article;
+	data: number;
 	on_close?: (success: boolean) => void;
 }
 
