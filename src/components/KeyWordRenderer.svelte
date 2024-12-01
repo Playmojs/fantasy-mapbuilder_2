@@ -1,15 +1,6 @@
 <script lang='ts'>
 	import { keywords } from '$lib/keyword_manager';
 	import MarkerWindow from './MarkerWindow.svelte';
-  
-  // Function to handle `/map` and `/article` cases
-  function handleMap(id: number) {
-    alert(`Map function called with ID: ${id}`);
-  }
-
-  function handleArticle(id: number) {
-    alert(`Article function called with ID: ${id}`);
-  }
 
   const {href, title, text, raw, tokens}: {href: string, title: string | null, text: string, raw: string, tokens: any} = $props()
   
@@ -28,6 +19,7 @@
       regex.lastIndex = 0;
     })
   })
+  
 </script>
 
 {#if id !== null}

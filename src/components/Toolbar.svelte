@@ -357,7 +357,7 @@
 	<div class="button_group">
 		<button
 			id="edit_content_button"
-			class:edit_mode={store.edit_mode}
+			class:pressed={store.edit_mode}
 			onclick={toggleEditable}
 			class:hidden={!edit_visible}
 			aria-label="Edit Project"
@@ -365,6 +365,12 @@
 	</div>
 
 	<div class="button_group">
+		<button 
+			onclick={()=>{store.drawing_path = !store.drawing_path}} 
+			class:hidden={store.map.scale === null}
+			class:pressed={store.drawing_path}
+			style="background-image: url('/assets/measure_tool.png')">
+		</button>	
 		<button
 			id="minimize_button"
 			onclick={toggleMinimize}
@@ -443,10 +449,9 @@
 
 	#edit_content_button {
 		background: url('/assets/quill.png');
-		margin-left: 10%;
 	}
 
-	#edit_content_button.edit_mode {
+	#toolbar button.pressed {
 		background-color: #111;
 	}
 
