@@ -105,6 +105,7 @@
                 <button 
                     class:selected={invert_filter}
                     title='Invert search'
+                    style={`background-image: url(/assets/inverse.png);`}
                     onclick={()=>{invert_filter= !invert_filter}}></button>
             </div>
             <ChooseModal close={()=>{}} on_close={()=>{}} use_search={use_search} modal_data={filtered_choose_modal_data}/>

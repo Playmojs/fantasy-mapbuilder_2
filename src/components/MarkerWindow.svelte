@@ -80,6 +80,7 @@
 		top: 10px;
 		border-radius: 10px;
 		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
+		text-overflow: ellipsis;
 	}
 
 	@media(max-width: 1300px){

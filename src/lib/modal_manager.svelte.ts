@@ -52,7 +52,7 @@ export const choose_existing_map: (value: {id: number | null}) => Promise<ModalE
     });
 };
 
-export const add_article: ModalEntity =
+export const add_article_to_marker: ModalEntity =
 {
 	image: "/assets/plus.png",
 	title: "Add Article",
@@ -71,6 +71,15 @@ export const add_article: ModalEntity =
             dtb.update_marker(selected_marker);
         }}
 }
+
+// export const add_article_by_id: (value: {id: number | null, title: string}) => ModalEntity = (value) => {return{
+//     image: "/assets/fantasy_plus.png",
+//     title: "New Article",
+//     on_click: async() => {
+
+//     }
+//     }
+// }
 
 export const choose_no_article: (value: {id: null | number}) => ModalEntity = (value) => {
     return{

@@ -12,7 +12,7 @@
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { gotoMap } from '$lib/goto_map';
-	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article, edit_category_modal, get_composite_category_modal, get_choose_category_to_edit_modal, get_article_options, get_article_to_category_modal} from '$lib/modal_manager.svelte';
+	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article_to_marker, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article, edit_category_modal, get_composite_category_modal, get_choose_category_to_edit_modal, get_article_options, get_article_to_category_modal} from '$lib/modal_manager.svelte';
 	import { push_article } from '$lib/article_stack';
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen.svelte';
@@ -185,7 +185,7 @@
 						};
 					})
 				),
-				Articles: [add_article].concat(
+				Articles: [add_article_to_marker].concat(
 					Object.entries(store.article_cache).map(([id, article]) => {
 						return {
 							image:

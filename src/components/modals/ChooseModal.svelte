@@ -24,7 +24,6 @@
 </script>
 
 <div id=choose_modal>
-{#if modal_data}
 	<div id=modal_head>
 		<div class="tab_row">
 			{#each Object.keys(modal_data) as tab}
@@ -44,8 +43,7 @@
 				<SearchInput searchDomain={modal_data[current_tab]} bind:filtered={search_output}/>
 			</div>
 		{/if}
-	</div>	
-{/if}
+	</div>
 {#if current_entities}
 	<div id="grid-container">
 		<div id="grid">
@@ -59,16 +57,18 @@
 						style={entity.background_image ? `background-image: url("${entity.background_image}");`: ''}
 					>
 
-					{#if entity.optional_func}
-						<button class='option_button' onclick={(e: Event)=>{if(entity.optional_func)entity.optional_func(); e.stopPropagation();}}>
-						</button>	
-					{/if}
 					{#if entity.image !== null}
-						<div class="image-container">
-							<img class="entity-image" src={entity.image} alt={entity.title}/>
-						</div>
+					<div class="image-container">
+						<img class="entity-image" src={entity.image} alt={entity.title}/>
+					</div>
 					{/if}
-					<p>{entity.title}</p>
+					<div class='title_row'>
+						<p>{entity.title}</p>
+						{#if entity.optional_func}
+							<button class='option_button' onclick={(e: Event)=>{if(entity.optional_func)entity.optional_func(); e.stopPropagation();}}>
+							</button>	
+						{/if}
+					</div>
 				</div>
 			{/each}
 		</div>
@@ -157,12 +157,46 @@
         background-size: 100%;
 	}
 
-	.option_button {
+	.image-container {
+		position: relative;
+		width: 100%;
+		height: 150px;
+		overflow: hidden;
+		margin-bottom: 10px;
+	}
+	
+	.entity-image {
 		position: absolute;
-		top: 10px;
-		width: 30px;
-		right: 10px;
-		aspect-ratio: 0.5;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		max-width: 100%;
+		max-height: 100%;
+	}
+
+	.title_row {
+		display: flex;
+		width: 100%;
+		justify-content: end;
+	}
+
+	.title_row p {
+		color: var(--main_white);
+		font-family: 'Cormorant Garamond';
+		font-size: x-large;
+		text-align: left;
+
+		flex: 1;
+		margin: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap; 
+	}
+	
+	.option_button {
+		position: relative;
+		flex: 0 0 30px;
+		aspect-ratio: 1;
 		background-color: transparent;
 		background-image: url('/assets/more_vert.png');
 		background-size: contain;
@@ -173,33 +207,6 @@
 
 	.option_button:hover{
 		opacity: 0.7;
-	}
-
-	.image-container {
-		position: relative;
-		width: 100%;
-		height: 150px;
-		overflow: hidden;
-		margin-bottom: 10px;
-	}
-
-	.entity-image {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		max-width: 100%;
-		max-height: 100%;
-	}
-
-	.entity-item p {
-		color: var(--main_white);
-		font-family: 'Cormorant Garamond';
-		font-size: x-large;
-		margin: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap; 
 	}
 
 	#grid-container::-webkit-scrollbar {

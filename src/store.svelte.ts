@@ -20,6 +20,7 @@ class Store {
     project_id: number = 0;
     write_access = $state<boolean>(false);
     modals = $state<ModalType[]>([])
+    article_modal_articles = $state<number[]>([])
 
     map_article_link=$state<number | null>()
 

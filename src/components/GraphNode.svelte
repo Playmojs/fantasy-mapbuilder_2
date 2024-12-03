@@ -177,7 +177,7 @@
     }
     
     .entity.enlarged_text{
-        font-size: xx-large;
+        font-size: 1.8rem;
     }
     
     .image-container {
@@ -248,6 +248,10 @@
         font-family: 'Cormorant Garamond';
         flex: 1;
         max-width: 70%;
+
+        overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap; 
     }
 
     .option_button {
