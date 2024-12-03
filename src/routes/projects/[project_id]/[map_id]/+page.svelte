@@ -7,10 +7,11 @@
 
 	import { page } from '$app/stores';
 	import dtb from '$lib/dtb';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { pop_modal } from '$lib/modal_manager.svelte';
 	import { push_article } from '$lib/article_stack';
 	import ModalWindow from '../../../../components/modals/ModalWindow.svelte';
+	import ScaleBar from '../../../../components/ScaleBar.svelte';
 
 	function reset_modals() {
 		store.modals = [];
@@ -30,16 +31,23 @@
 		if (article) {
 			push_article(article.id, false);
 		}
-		// const current_markers = await dtb.get_markers(store.map.id);
-		// if (current_markers) {
-		// 	store.markers = current_markers;
-		// }
-		// await dtb.fetch_all_from_project(store.project_id)
 	});
 
 	onDestroy(() => {
 		unsubscribe();
 	});
+
+	let window_dims = $state<{height: number, width: number}>({height: 0, width: 0})
+
+	const update_window_dims = () => {
+		window_dims.height = window.innerHeight;
+		window_dims.width = window.innerWidth
+	}
+
+	onMount(()=>{
+		window.addEventListener('resize', update_window_dims)
+		update_window_dims()
+	})
 </script>
 
 <Toolbar />
@@ -47,6 +55,9 @@
 <ParentMap />
 {#if !store.informatic_minimized}
 	<Informatic />
+{/if}
+{#if store.map.scale !== null}
+	<ScaleBar path_nodes={[{x: window_dims.width * ((store.informatic_minimized ? 1 : store.informatic_width / 100) - 0.15), y: window_dims.height - 30},  {x: window_dims.width * ((store.informatic_minimized ? 1 : store.informatic_width / 100) - 0.05), y: window_dims.height - 30}]} scale={store.map.scale / store.map_transform.scale}/>
 {/if}
 
 {#each store.modals as modal (modal)}

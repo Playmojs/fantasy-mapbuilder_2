@@ -12,7 +12,7 @@
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { gotoMap } from '$lib/goto_map';
-	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article, edit_category_modal, get_composite_category_modal} from '$lib/modal_manager.svelte';
+	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article, edit_category_modal, get_composite_category_modal, get_choose_category_to_edit_modal, get_article_options, get_article_to_category_modal} from '$lib/modal_manager.svelte';
 	import { push_article } from '$lib/article_stack';
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen.svelte';
@@ -242,7 +242,7 @@
 				image: null,
 				background_image: theme_entities[store.category_cache[+id]?.theme_id]?.image,
 				on_click: () => {return},
-				optional_func: +id !== -1 ? ()=>{push_modal(get_composite_category_modal({...store.category_cache[+id]}))} : undefined
+				optional_func: ()=>{push_modal(+id !== -1 ? get_composite_category_modal({...store.category_cache[+id]}) : get_choose_category_to_edit_modal())}
 			};
 			category_graph_data.graph_entities[+id] = {
 				children: value,
@@ -254,7 +254,22 @@
 	async function open_category_graph(){
 		if(!category_graph_data){return}
 		await dtb.fetch_all_from_project(store.project_id);
-		push_modal({type: 'graph_modal', data: category_graph_data, use_search: false})
+		const article_entities: {[id: number]: ModalEntity} = {};
+		Object.entries(store.article_cache).forEach(([key, article]) => 
+			{
+				article_entities[+key] = {
+					image: null,
+					title: article.title,
+					on_click(){
+						push_article(article.id, false);
+						push_modal({type: 'article_modal', data: article.id})},
+					background_image: article.main_category !== null ? theme_entities[store.category_cache[article.main_category].theme_id].image : null,
+					optional_func(){push_modal({type: 'category_modal', data: get_article_to_category_modal(+key)})},
+				}
+			}
+		)
+
+		push_modal({type: 'filter_modal', data: {graph_data: category_graph_data, filter_link: store.article_category_links, choose_data: article_entities}, use_search: true})
 	}
 </script>
 
@@ -342,7 +357,7 @@
 	<div class="button_group">
 		<button
 			id="edit_content_button"
-			class:edit_mode={store.edit_mode}
+			class:pressed={store.edit_mode}
 			onclick={toggleEditable}
 			class:hidden={!edit_visible}
 			aria-label="Edit Project"
@@ -350,6 +365,12 @@
 	</div>
 
 	<div class="button_group">
+		<button 
+			onclick={()=>{store.drawing_path = !store.drawing_path}} 
+			class:hidden={store.map.scale === null}
+			class:pressed={store.drawing_path}
+			style="background-image: url('/assets/measure_tool.png')">
+		</button>	
 		<button
 			id="minimize_button"
 			onclick={toggleMinimize}
@@ -428,10 +449,9 @@
 
 	#edit_content_button {
 		background: url('/assets/quill.png');
-		margin-left: 10%;
 	}
 
-	#edit_content_button.edit_mode {
+	#toolbar button.pressed {
 		background-color: #111;
 	}
 

@@ -27,21 +27,9 @@ export type ModalEntity = {
 	optional_func?: () => Promise<void> | void;
 }
 
-export type NodeEvent = 'toggle' | 'init' | 'zoom'
+export type NodeEvent = 'toggle' | 'init' | 'zoom' | 'optional'
 
-export type ModalName = 'upload_modal' | 'choose_modal' | 'confirm_modal' | 'composite_modal' | 'category_modal' | 'graph_modal'
-
-// export type UploadModalData = {
-// 	submit_func: (file: File | null, title: string, link_id: number | null) => Promise<void> | void;
-// 	validation_func: (file_preview: string | null, title: string, link_id: number | null) => boolean;
-// 	link_func: ((value: {id: number | null, title: string}) => Promise<void>) | null;
-// 	preview_func: (file: File | null, title: string, link_id: number | null) => string | null;
-// 	button_title: string;
-// 	initial_map_title: string | null;
-// 	initial_image_url: string | null;
-// 	initial_link: {id: number | null, title: string};
-// 	allow_no_file: boolean | null; 
-// };
+export type ModalName = 'upload_modal' | 'choose_modal' | 'confirm_modal' | 'composite_modal' | 'category_modal' | 'graph_modal' | 'filter_modal' | 'article_modal'
 
 export type UploadModalInput<TState> = 
   | { type: 'text'; name: keyof TState & string; label?: string; placeholder?: string; required?: boolean; }
@@ -126,6 +114,13 @@ export type CategoryModalData = {
 export type GraphModalData = {
 	graph_entities: {[id: number]: GraphEntity},
 	head_id: number;
+	modal_event?: {func: (id: number) => void, images: {[id: number]: string}};
+}
+
+export type FilterModalData = {
+	graph_data: GraphModalData
+	choose_data: {[choose_id: number]: ModalEntity}
+	filter_link: {[graph_id: number]: number[]}
 }
 
 export type CompositeModalType = {
@@ -147,6 +142,19 @@ export type GraphModalType = {
 	use_search: boolean;
 }
 
+export type FilterModalType = {
+	type: 'filter_modal';
+	data: FilterModalData;
+	on_close?: (success: boolean) => void;
+	use_search: boolean;
+}
+
+export type ArticleModalType = {
+	type: 'article_modal';
+	data: number;
+	on_close?: (success: boolean) => void;
+}
+
 
 export type Folder = "maps" | "articles"
-export type ModalType = ChooseModalType | UploadModalType<any> | ConfirmModalType | CompositeModalType | CategoryModalType | GraphModalType
+export type ModalType = ChooseModalType | UploadModalType<any> | ConfirmModalType | CompositeModalType | CategoryModalType | GraphModalType | FilterModalType | ArticleModalType

@@ -43,7 +43,7 @@
 	}
 	
 	let init_occupied: boolean = false;
-	async function on_node_event(event: NodeEvent, previous_position: {x: number, y: number, width: number, height: number}, current_position: {x: number, y: number, width: number, height: number})
+	async function on_node_event(event: NodeEvent, id: number, previous_position: {x: number, y: number, width: number, height: number}, current_position: {x: number, y: number, width: number, height: number})
 	{
 		const autoscale_limit = 0.5
 		switch(event){
@@ -51,6 +51,10 @@
 				/* This is written somewhat fragile - it will typically be called immediately followed by a 'toggle'-call, 
 				which is prone to override any change made here. As a temporary work-around, I made the set_transform in the
 				not-autoscalling toggle only set x-transform. */
+				if(modal_data.modal_event && !(id in modal_data.modal_event.images))
+				{
+					modal_data.modal_event.func(id)
+				}
 
 				const overflow_y = current_position.y + current_position.height - (window_rect.y + window_rect.height);
 				if(!init_occupied && current_transform_state.scale < autoscale_limit && overflow_y > 0)
@@ -75,6 +79,21 @@
 				head_node.propagate_position(current_transform_state.scale);
 				break;
 			}
+			case 'zoom':  {
+				if (current_transform_state.scale < autoscale_limit){
+					move_to_center(current_position, current_transform_state.scale, 500)
+				}
+				else{
+					move_to_center(current_position, 0.8, 500)
+				}
+				break;
+			}
+
+			case 'optional': {
+				if(!modal_data.modal_event){return;}
+				modal_data.modal_event.func(id)
+				break;
+			}
 		}
 	}
 
@@ -93,12 +112,17 @@
 		})
 	})
 
+	let show_article_column = $state<boolean>(false)
+
 </script>
 
+
 <div id="graph" bind:this={graph_element}>
-	<GraphNode id={modal_data.head_id} bind:this={head_node} graph_entities={modal_data.graph_entities} on_event={on_node_event}/>
+	<GraphNode id={modal_data.head_id} bind:this={head_node} graph_entities={modal_data.graph_entities} on_event={on_node_event} optional_event_prop={{display: !!modal_data.modal_event, images: modal_data.modal_event?.images ?? {}}}/>
 	<ZoomPan bind:this={zoompan_element} parent_selector='#graph' offset_limit={offset_limit} scale_limit={null} on_zoompan={on_zoompan}/>
 </div>
+
+
 
 <style>
 	#graph {

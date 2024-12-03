@@ -108,7 +108,7 @@
 	function handle_wheel(event: WheelEvent) {
 		event.preventDefault();
 		const delta = Math.sign(event.deltaY);
-		const new_scale = scale_limit ? clamp(scale * (1 + delta * -0.1), scale_limit.min, scale_limit.max) : scale * (1 + delta * -0.1);
+		const new_scale = scale_limit ? clamp(scale * (1 + delta * -0.05), scale_limit.min, scale_limit.max) : scale * (1 + delta * -0.05);
 		zoom_at(event.clientX, event.clientY, new_scale);
 		update_transform();
 	}

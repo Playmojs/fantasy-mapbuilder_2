@@ -50,7 +50,7 @@
 
 	.close {
 		position: absolute;
-		top: 10px;
+		top: 5px;
 		right: 10px;
 		cursor: pointer;
 		color: var(--main_white);

@@ -5,11 +5,14 @@
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 	import { push_article } from '$lib/article_stack';
+	import ScaleBar from './ScaleBar.svelte';
 
 	let mapContainer: HTMLDivElement;
 	let map_: HTMLImageElement;
 
 	let click_pos: { x: number; y: number } = { x: 0, y: 0 };
+
+	let nodes = $state<{x: number, y: number}[]>([])
 
 	function detectClick(e: MouseEvent) {
 		click_pos.x = e.x;
@@ -20,7 +23,7 @@
 	function detectTouch(e: TouchEvent) {
 		click_pos.x = e.touches[0].pageX;
 		click_pos.y = e.touches[0].pageY;
-		map_.addEventListener('touchend', touchRelease);
+		map_.addEventListener('touchend', touchRelease);1
 	}
 
 	async function touchRelease(e: TouchEvent) {
@@ -35,15 +38,19 @@
 		if (Math.abs(click_pos.x - release_pos.x) > 20 || Math.abs(click_pos.y - release_pos.y) > 20) {
 			return;
 		}
-		const article = await dtb.get_article(store.project_id, store.map.article_id);
-		if (article && article.id !== store.article.id) {
-				push_article(article.id, true);
-				if (store.informatic_opened_by_marker){
-					store.informatic_minimized = true;
+		if (!store.drawing_path){
+			const article = await dtb.get_article(store.project_id, store.map.article_id);
+			if (article && article.id !== store.article.id) {
+					push_article(article.id, true);
+					if (store.informatic_opened_by_marker){
+						store.informatic_minimized = true;
+				}
 			}
+			store.selected_marker = null;
+			nodes = [];
+			return;
 		}
-		store.selected_marker = null;
-		return;
+		nodes.push({x: (release_pos.x - store.map_transform.x)/store.map_transform.scale, y: (release_pos.y - store.map_transform.y)/store.map_transform.scale})
 	}
 
 	onMount(() => {
@@ -59,15 +66,9 @@
 		let position: { x: number; y: number } = { x: rel_x, y: rel_y };
 		return position;
 	}
+
+	let image_source = $derived<string>(store.map.image && store.image_public_urls[store.map.image] ? URL.createObjectURL(store.image_public_urls[store.map.image]) : '')
 	
-	let image_source = $state('');
-	$effect(() => {
-		if (store.map.image && store.image_public_urls[store.map.image]) {
-			image_source = URL.createObjectURL(store.image_public_urls[store.map.image]);
-		}
-	});
-	
-	type transform={x: number; y: number; scale: number}
 	let zoompan_element: ZoomPan
 		
 	function update_scale(){
@@ -93,10 +94,17 @@
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
-	<img id="map" alt="Map" bind:this={map_} src={image_source} onload={()=>{update_scale()}} />
-	{#each store.markers as marker}
-		<Marker marker_data={marker} {get_relative_movement} />
-	{/each}
+	<img id="map" alt="Map" bind:this={map_} src={image_source} onload={()=>{update_scale(); nodes = []; store.drawing_path = false;}} />
+	{#if !store.drawing_path}
+		{#each store.markers as marker}
+			<Marker marker_data={marker} {get_relative_movement} />
+		{/each}
+	{/if}
+
+	{#if store.map.scale !== null}
+		<ScaleBar path_nodes={nodes} scale={store.map.scale}/>
+	{/if}
+
 	<ZoomPan bind:this={zoompan_element} parent_selector="#map-container" offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
 </div>
 

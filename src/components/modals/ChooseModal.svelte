@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { type ChooseModalData, type ModalEntity } from '$lib/types';
 	import SearchInput from '../SearchInput.svelte';
+	import Modal from './Modal.svelte';
 
 	let{close, modal_data, on_close, use_search}:{close: any, modal_data: ChooseModalData, on_close: ((success: boolean) => Promise<void> | void) | undefined, use_search: boolean} = $props()
 
@@ -22,6 +23,7 @@
 
 </script>
 
+<div id=choose_modal>
 {#if modal_data}
 	<div id=modal_head>
 		<div class="tab_row">
@@ -29,6 +31,7 @@
 				<button
 					class="tab"
 					class:current_tab={tab === current_tab}
+					class:only_tab={Object.keys(modal_data).length === 1}
 					disabled={tab === current_tab}
 					onclick={() => {
 						current_tab = tab;
@@ -36,7 +39,11 @@
 				>
 			{/each}
 		</div>
-		<SearchInput searchDomain={modal_data[current_tab]} bind:filtered={search_output}/>
+		{#if use_search}
+			<div id='search_wrapper'>
+				<SearchInput searchDomain={modal_data[current_tab]} bind:filtered={search_output}/>
+			</div>
+		{/if}
 	</div>	
 {/if}
 {#if current_entities}
@@ -45,12 +52,12 @@
 			{#each current_entities as entity}
 				<div
 					class="entity-item"
+					title={entity.title}
 					onclick={() => {
 						handle_entity_click(entity);
 					}}
 						style={entity.background_image ? `background-image: url("${entity.background_image}");`: ''}
 					>
-
 
 					{#if entity.optional_func}
 						<button class='option_button' onclick={(e: Event)=>{if(entity.optional_func)entity.optional_func(); e.stopPropagation();}}>
@@ -67,19 +74,25 @@
 		</div>
 	</div>
 {/if}
+</div>
 
 
 
 <style>
-	
+	#choose_modal{
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		width: 100%;
+		overflow: hidden;
+	}
 
 	#modal_head{
 		display: flex;
 		justify-content: space-around;
-		gap: 50%;
-		height: 40px;
-		margin-bottom: 30px;
-		margin-right: 25px;
+		gap: 10%;
+		flex: 0 0 auto;
+		margin-bottom: 2%;
 	}
 
 	.tab_row {
@@ -87,6 +100,7 @@
 		justify-content: start;
 		align-items: center;
 		gap: 1px;
+		flex: 1;
 	}
 
 	.tab {
@@ -104,18 +118,28 @@
 		box-shadow: none;
 	}
 
+	.only_tab{
+		background-color: transparent;
+		border: none;
+	}
+
+	#search_wrapper{
+		width: 50%;
+	}
+
 	#grid-container {
-		max-height: calc(100vh - 300px);
-		overflow-y: scroll;
+		flex: 1 1 65vh;
+		overflow-y: auto;
 		padding: 15px 15px 30px;
 		background-color: rgb(100, 100, 100);
 		border-radius: 15px;
 		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
 	}
-
+	
 	#grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		justify-content: space-around;
+		grid-template-columns: repeat(auto-fill, minmax(200px, 100px));
 		gap: 20px;
 	}
 
@@ -173,6 +197,9 @@
 		font-family: 'Cormorant Garamond';
 		font-size: x-large;
 		margin: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap; 
 	}
 
 	#grid-container::-webkit-scrollbar {
