@@ -37,7 +37,7 @@
 
 <svg>
     <text text-anchor="start" dy="-10">
-        <textPath href="#{id}" startOffset="calc(100% - 100px)">{`${scale_bar_text}`}</textPath>
+        <textPath href="#{id}" startOffset="50%">{`${scale_bar_text}`}</textPath>
     </text>
     <path id={id} d={path} stroke='black' stroke-width=4px fill='none'/>
 </svg>

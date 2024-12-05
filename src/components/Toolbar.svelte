@@ -281,26 +281,30 @@
 			}}
 			style="background-image: url('/assets/house.png');"
 			aria-label="Home Button"
+			title="Home"
 		>
 		</button>
 		<button
 			onclick={()=>{go_to_article_or_map_modal();}}
 			style="background-image: url('/assets/old_map.png');"
 			aria-label="Go to Map or Article"
+			title="Go to Map or Article"
 			>
 		</button>
 	</div>
 	<div class='button_group'>
 		<button
 			onclick={()=>{open_map_graph();}}
-			style="background-image: url('/assets/graph_protoicon.png');"
+			style="background-image: url('/assets/Map_icon (2).png');"
 			aria-label="Open Map Graph"
+			title="Open Map Graph"
 			>
 		</button>
 		<button
 			onclick={()=>{open_category_graph();}}
-			style="background-image: url('/assets/category_graph_protoicon.png');"
+			style="background-image: url('/assets/Article_icon (2).png');"
 			aria-label="Open Category Graph"
+			title="Open Category Graph"
 			>
 		</button>
 	</div>
@@ -369,7 +373,7 @@
 			onclick={()=>{store.drawing_path = !store.drawing_path}} 
 			class:hidden={store.map.scale === null}
 			class:pressed={store.drawing_path}
-			style="background-image: url('/assets/measure_tool.png')">
+			style="background-image: url('/assets/Measure_line.png')">
 		</button>	
 		<button
 			id="minimize_button"
@@ -453,6 +457,7 @@
 
 	#toolbar button.pressed {
 		background-color: #111;
+		filter: brightness(40%);
 	}
 
 	.hidden {
