@@ -8,6 +8,7 @@ let replace_head: boolean = false;
 export function push_article(id: number, is_replaced: boolean){
     if(store.edit_mode && store.article_history.at(-1)){dtb.update_article(store.article)}
     if (replace_head){pop_article()}
+    if(!is_replaced){store.article_history = store.article_history.filter(val => {return val !== id})}
     store.article_history.push(id)
     replace_head = is_replaced;
     store.undone_articles = [];

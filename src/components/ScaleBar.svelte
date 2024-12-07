@@ -13,14 +13,16 @@
 
     let line_length = $derived<number>(path_nodes.slice(1).map((node, index) => {return Math.sqrt(Math.pow(node.x - path_nodes[index].x, 2) + Math.pow(node.y - path_nodes[index].y, 2))}).reduce((total, distance) => total + distance, 0) / window_width);
     
-    let scale_bar_text = $derived(round_to_three_counting_digits(scale * line_length))
+    let scale_bar_text = $derived(round_to_n_counting_digits(scale * line_length, 3))
 
-    function round_to_three_counting_digits(value: number): number {
+    let side = $derived(path_nodes.length > 1 && (path_nodes.at(-1)?.x ?? 0) - (path_nodes.at(-2)?.x ?? 0) > 0 ? 'right' : 'eft')
+
+    function round_to_n_counting_digits(value: number, n: number): number {
         if (value === 0) return 0;
         
         const magnitude = Math.floor(Math.log10(Math.abs(value)));
         
-        const scale = Math.pow(10, magnitude - 2);
+        const scale = Math.pow(10, magnitude + 1 - n);
         
         return Math.round(value / scale) * scale;
     }
@@ -35,7 +37,7 @@
 
 <svg>
     <text text-anchor="start" dy="-10">
-        <textPath href="#{id}" startOffset="calc(100% - 100px)">{`${scale_bar_text}`}</textPath>
+        <textPath href="#{id}" startOffset="50%">{`${scale_bar_text}`}</textPath>
     </text>
     <path id={id} d={path} stroke='black' stroke-width=4px fill='none'/>
 </svg>
@@ -52,7 +54,7 @@
     }
 
     text{
-        font-size: 2rem;
+        font-size: 30px;
         font-family: 'Cormorant Garamond';
         margin-bottom: 10px;
     }

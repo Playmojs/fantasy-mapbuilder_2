@@ -12,7 +12,7 @@
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { gotoMap } from '$lib/goto_map';
-	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article, edit_category_modal, get_composite_category_modal, get_choose_category_to_edit_modal, get_article_options, get_article_to_category_modal} from '$lib/modal_manager.svelte';
+	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article_to_marker, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article, edit_category_modal, get_composite_category_modal, get_choose_category_to_edit_modal, get_article_options, get_article_to_category_modal} from '$lib/modal_manager.svelte';
 	import { push_article } from '$lib/article_stack';
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen.svelte';
@@ -185,7 +185,7 @@
 						};
 					})
 				),
-				Articles: [add_article].concat(
+				Articles: [add_article_to_marker].concat(
 					Object.entries(store.article_cache).map(([id, article]) => {
 						return {
 							image:
@@ -281,26 +281,30 @@
 			}}
 			style="background-image: url('/assets/house.png');"
 			aria-label="Home Button"
+			title="Home"
 		>
 		</button>
 		<button
 			onclick={()=>{go_to_article_or_map_modal();}}
 			style="background-image: url('/assets/old_map.png');"
 			aria-label="Go to Map or Article"
+			title="Go to Map or Article"
 			>
 		</button>
 	</div>
 	<div class='button_group'>
 		<button
 			onclick={()=>{open_map_graph();}}
-			style="background-image: url('/assets/graph_protoicon.png');"
+			style="background-image: url('/assets/Map_icon (2).png');"
 			aria-label="Open Map Graph"
+			title="Open Map Graph"
 			>
 		</button>
 		<button
 			onclick={()=>{open_category_graph();}}
-			style="background-image: url('/assets/category_graph_protoicon.png');"
+			style="background-image: url('/assets/Article_icon (2).png');"
 			aria-label="Open Category Graph"
+			title="Open Category Graph"
 			>
 		</button>
 	</div>
@@ -369,7 +373,7 @@
 			onclick={()=>{store.drawing_path = !store.drawing_path}} 
 			class:hidden={store.map.scale === null}
 			class:pressed={store.drawing_path}
-			style="background-image: url('/assets/measure_tool.png')">
+			style="background-image: url('/assets/Measure_line.png')">
 		</button>	
 		<button
 			id="minimize_button"
@@ -453,6 +457,7 @@
 
 	#toolbar button.pressed {
 		background-color: #111;
+		filter: brightness(40%);
 	}
 
 	.hidden {
