@@ -29,7 +29,7 @@ export type ModalEntity = {
 
 export type NodeEvent = 'toggle' | 'init' | 'zoom' | 'optional'
 
-export type ModalName = 'upload_modal' | 'choose_modal' | 'confirm_modal' | 'composite_modal' | 'category_modal' | 'graph_modal' | 'filter_modal' | 'article_modal'
+export type ModalName = 'upload_modal' | 'choose_modal' | 'confirm_modal' | 'composite_modal' | 'category_modal' | 'graph_modal' | 'filter_modal' | 'article_modal' | 'unit_modal'
 
 export type UploadModalInput<TState> = 
   | { type: 'text'; name: keyof TState & string; label?: string; placeholder?: string; required?: boolean; }
@@ -155,6 +155,12 @@ export type ArticleModalType = {
 	on_close?: (success: boolean) => void;
 }
 
+export type UnitModalType = {
+	type: 'unit_modal';
+	data: number;
+	on_close?: (success: boolean) => void
+}
+
 
 export type Folder = "maps" | "articles"
-export type ModalType = ChooseModalType | UploadModalType<any> | ConfirmModalType | CompositeModalType | CategoryModalType | GraphModalType | FilterModalType | ArticleModalType
+export type ModalType = ChooseModalType | UploadModalType<any> | ConfirmModalType | CompositeModalType | CategoryModalType | GraphModalType | FilterModalType | ArticleModalType | UnitModalType

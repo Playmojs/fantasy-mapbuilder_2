@@ -12,7 +12,8 @@
 
 	let click_pos: { x: number; y: number } = { x: 0, y: 0 };
 
-	let nodes = $state<{x: number, y: number}[]>([])
+	let lines = $state<{x: number, y: number}[][]>([])
+	let current_line_index = 0
 	let tracking_node: boolean = false;
 
 	function detect_click(e: MouseEvent) {
@@ -50,12 +51,17 @@
 				}
 			}
 			store.selected_marker = null;
-			nodes = [];
+			lines = [];
 			return;
 		}
+		if (lines === undefined || current_line_index !== lines.length - 1)
+		{
+			current_line_index = lines.length
+			lines.push([])
+		}
 		const relative_position = get_relative_position(release_pos)
-		nodes.push(relative_position)
-		if(nodes.length === 1){nodes.push(relative_position)}
+		lines[current_line_index].push(relative_position)
+		if(lines[current_line_index].length === 1){lines[current_line_index].push(relative_position)}
 
 		map_.addEventListener('mousemove', track_latest_node)
 		tracking_node = true
@@ -63,7 +69,7 @@
 	
 	
 	function track_latest_node(e: MouseEvent){
-		nodes[nodes.length - 1] = get_relative_position({x: e.x, y: e.y})
+		lines[current_line_index][lines[current_line_index].length - 1] = get_relative_position({x: e.x, y: e.y})
 	}
 	
 	function detect_escape(e: KeyboardEvent){
@@ -71,10 +77,19 @@
 		if (tracking_node){
 			tracking_node = false;
 			map_.removeEventListener('mousemove', track_latest_node);
-			nodes.length > 2 ? nodes.pop() : nodes = [];
+			if (lines[current_line_index].length > 2)
+			{
+				lines[current_line_index].pop();
+				current_line_index += 1;
+			}
+			else
+			{
+				lines[current_line_index] = [];
+			}
+			
 			return;
 		}
-		nodes = []
+		lines = []
 	}
 	
 	function get_relative_position(position: {x: number, y: number}){
@@ -124,7 +139,7 @@
 </script>
 
 <div id="map-container" bind:this={mapContainer}>
-	<img id="map" alt="Map" bind:this={map_} src={image_source} onload={()=>{update_scale(); nodes = []; store.drawing_path = false;}} />
+	<img id="map" alt="Map" bind:this={map_} src={image_source} onload={()=>{update_scale(); lines = []; store.drawing_path = false;}} />
 	{#if !store.drawing_path}
 		{#each store.markers as marker}
 			<Marker marker_data={marker} {get_relative_movement} />
@@ -132,7 +147,9 @@
 	{/if}
 
 	{#if store.map.scale !== null}
-		<ScaleBar path_nodes={nodes} scale={store.map.scale}/>
+		{#each lines as line}
+			<ScaleBar path_nodes={line} scale={store.map.scale} unit_group={store.unit_group}/>
+		{/each}
 	{/if}
 
 	<ZoomPan bind:this={zoompan_element} parent_selector="#map-container" offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>

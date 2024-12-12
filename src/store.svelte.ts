@@ -21,6 +21,7 @@ class Store {
     write_access = $state<boolean>(false);
     modals = $state<ModalType[]>([])
     article_modal_articles = $state<number[]>([])
+    unit_group = $state<string>('Metric')
 
     map_article_link=$state<number | null>()
 

@@ -9,6 +9,7 @@
 	import GraphModal from './GraphModal.svelte';
 	import FilterModal from './FilterModal.svelte';
 	import ArticleModal from './ArticleModal.svelte';
+	import UnitModal from './UnitModal.svelte';
 
 	let {
 		close,
@@ -72,4 +73,9 @@
 		article_id={modal.data}
 		on_close={modal.on_close}
 	/>
+{:else if modal.type === 'unit_modal'}
+	<UnitModal
+		close={close}
+		number={modal.data}
+		on_close={modal.on_close}/>
 {/if}

@@ -57,7 +57,7 @@
 	<Informatic />
 {/if}
 {#if store.map.scale !== null}
-	<ScaleBar path_nodes={[{x: window_dims.width * ((store.informatic_minimized ? 1 : store.informatic_width / 100) - 0.15), y: window_dims.height - 30},  {x: window_dims.width * ((store.informatic_minimized ? 1 : store.informatic_width / 100) - 0.05), y: window_dims.height - 30}]} scale={store.map.scale / store.map_transform.scale}/>
+	<ScaleBar path_nodes={[{x: window_dims.width * ((store.informatic_minimized ? 1 : store.informatic_width / 100) - 0.15), y: window_dims.height - 30},  {x: window_dims.width * ((store.informatic_minimized ? 1 : store.informatic_width / 100) - 0.05), y: window_dims.height - 30}]} scale={store.map.scale / store.map_transform.scale} unit_group={store.unit_group}/>
 {/if}
 
 {#each store.modals as modal (modal)}

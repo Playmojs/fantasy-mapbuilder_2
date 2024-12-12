@@ -25,6 +25,7 @@
 		on_click: async () => {
 			let map_info: {file: File | null, title: string, article_id: number | null} = {file: null, title: '', article_id: null};
 			await get_new_map_data(map_info)
+			console.log('adding map')
 			if (map_info === undefined || map_info.file === null || map_info.title === ''){return}
 			
 			const selected_marker = store.markers.find((marker) => marker.id === store.selected_marker);
@@ -369,6 +370,10 @@
 	</div>
 
 	<div class="button_group">
+		<button
+			onclick={()=>{store.unit_group === 'Metric' ? store.unit_group = 'Imperial' : store.unit_group = 'Metric'}}
+			style="background-image: url('/assets/Measure_edit.png')">
+		</button>
 		<button 
 			onclick={()=>{store.drawing_path = !store.drawing_path}} 
 			class:hidden={store.map.scale === null}
