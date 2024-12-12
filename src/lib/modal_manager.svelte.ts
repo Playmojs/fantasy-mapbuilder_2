@@ -121,7 +121,6 @@ export const get_new_map_data: (value: {file: File | null, title: string, articl
                 }
                 value.file = state.file;
                 value.title = state.title;
-                value.article_id = state.article_link.id;
             },
             determine_preview(state) {
                 if(state.file === null){return null}
