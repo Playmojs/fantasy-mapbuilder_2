@@ -97,7 +97,7 @@ export const link_article: (value: {id: number | null, title: string}) => Promis
     });
 }
 
-export const get_new_map_data: (value: {file: File | null, title: string, article_id: number | null}) => Promise<void> = (value) => {
+export const get_new_map_data: (value: {file: File | null, title: string, article_id: number | null, scale: number | null}) => Promise<void> = (value) => {
     let modal: UploadModalType<MapUpload> = {type: 'upload_modal',
         data: {
             inputs: [
@@ -108,9 +108,10 @@ export const get_new_map_data: (value: {file: File | null, title: string, articl
                     await link_article(value);
                     state.article_link = value;
                 },
-                display_text(state){return (state.article_link && state.article_link.id !== null) ? state.article_link.title : 'No Article Link'}} 
+                display_text(state){return (state.article_link && state.article_link.id !== null) ? state.article_link.title : 'No Article Link'}},
+                {type: 'number', name: 'scale', label: 'Scale'} 
             ],
-            initial_state: {file: null, title: ''},
+            initial_state: {file: null, title: '', article_link: {id: null, title: ''}, scale: null},
             validation_func: (state) => {
                 return state.file !== null && state.title !== '';
             },
@@ -121,6 +122,8 @@ export const get_new_map_data: (value: {file: File | null, title: string, articl
                 }
                 value.file = state.file;
                 value.title = state.title;
+                value.article_id = state.article_link.id;
+                value.scale = state.scale;
             },
             determine_preview(state) {
                 if(state.file === null){return null}
@@ -220,7 +223,7 @@ export const get_add_category_modal: (value: {id: number | null}) => UploadModal
                 },
             }
             ],
-            initial_state: {theme: {id: 0, title: theme_entities[0].title}},
+            initial_state: {theme: {id: 0, title: theme_entities[0].title}, title: ''},
             validation_func: (state) => {return !!state.title},
             submit_func: async(state) => {
                 const response = await dtb.create_category(store.project_id, state.title, state.theme.id)

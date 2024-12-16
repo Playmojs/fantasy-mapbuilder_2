@@ -357,7 +357,7 @@ export default {
         }
     },
 
-    async insert_new_map(project_id: number, image: string, title: string, article_id: number | null) {
+    async insert_new_map(project_id: number, image: string, title: string, article_id: number | null, scale: number | null) {
         if (article_id === null){
             let article = await this.create_and_show_article(project_id, title);
             if(!article){
@@ -384,10 +384,10 @@ export default {
         return image_id;
     },
 
-    async create_new_map(project_id: number, image_file: File, title: string, article_id: number | null) {
+    async create_new_map(project_id: number, image_file: File, title: string, article_id: number | null, scale: number | null) {
         let image_id = await this.upload_image(project_id, image_file, 'maps', null);
         if (!image_id) { return null; }
-        let data = await this.insert_new_map(project_id, image_id, title, article_id);
+        let data = await this.insert_new_map(project_id, image_id, title, article_id, scale);
         if (!data) { return null; }
         return data
     },

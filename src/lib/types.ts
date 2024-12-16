@@ -39,7 +39,7 @@ export type UploadModalInput<TState> =
 
 export type UploadModalData<TState> = {
   inputs: UploadModalInput<TState>[]; // List of inputs to render
-  initial_state?: Partial<TState>; // Pre-fill values
+  initial_state?: TState; // Pre-fill values
   determine_preview?: (state: TState) => string | null; // Optional preview logic
   validation_func: (state: TState) => boolean; // Form validation
   submit_func: (state: TState) => Promise<void>; // Submission logic
