@@ -16,7 +16,7 @@
 	import { push_article } from '$lib/article_stack';
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen.svelte';
-	import { theme_entities } from '$lib/data.svelte';
+	import { theme_entities, units } from '$lib/data.svelte';
 	import GraphModal from './modals/GraphModal.svelte';
 
 	const add_map: ModalEntity = {
@@ -25,7 +25,7 @@
 		on_click: async () => {
 			let map_info: {file: File | null, title: string, article_id: number | null, scale: number | null} = {file: null, title: '', article_id: null, scale: null};
 			await get_new_map_data(map_info)
-			console.log('adding map')
+			console.log(map_info.scale)
 			if (map_info === undefined || map_info.file === null || map_info.title === ''){return}
 			
 			const selected_marker = store.markers.find((marker) => marker.id === store.selected_marker);
@@ -60,12 +60,14 @@
 					display_text(state) {
 						return (state.article_link.title)
 					},},
-					{type: 'number', name: 'scale', label: 'Map Scale', required: false }, 
+					{type: 'number', name: 'scale', label: 'Map Scale', required: false, unit: {units: Object.values(units).map(unit => {return {id: unit.id, name: unit.name}}), on_click(state, value) {
+						state.unit_id = value
+					}} }, 
 				],
-				initial_state: {title: store.map.title, file: store.image_public_urls[store.map.image], article_link: {id: store.map.article_id, title: store.article_cache[store.map.article_id].title}, scale: store.map.scale},
+				initial_state: {title: store.map.title, file: store.image_public_urls[store.map.image], article_link: {id: store.map.article_id, title: store.article_cache[store.map.article_id].title}, scale: store.map.scale, unit_id: 0},
 				validation_func: (state) => {
 					return (
-						(state.scale !== undefined) && state.file !== null && state.title !== '' && state.article_link !== null && (state.file !== store.image_public_urls[store.map.image] || state.title !== store.map.title || state.article_link.id !== store.map.article_id || state.scale !== store.map.scale)
+						(state.scale !== undefined) && state.file !== null && state.title !== '' && state.article_link !== null && (state.file !== store.image_public_urls[store.map.image] || state.title !== store.map.title || state.article_link.id !== store.map.article_id || state.scale !== store.map.scale || state.unit_id !== 0)
 					);
 				},
 				submit_func: async (state) => {
@@ -82,8 +84,8 @@
 					if(state.article_link.id !== null){
 						store.map.article_id = state.article_link.id;
 					}
-					if(state.scale === undefined){store.map.scale = null}
-					else{store.map.scale = state.scale}
+					if(state.scale === undefined || state.scale === null){store.map.scale = null}
+					else{store.map.scale = state.scale * (state.unit_id !== null ? units[state.unit_id].factor : 1)}
 
 					await dtb.update_map(store.map);
 

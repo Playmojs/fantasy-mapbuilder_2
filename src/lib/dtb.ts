@@ -366,7 +366,7 @@ export default {
             article_id = store.article.id;
         
         }
-        const response = await supabase.from('map').insert({ article_id: article_id, image: image, title: title, project_id: project_id }).select().single()
+        const response = await supabase.from('map').insert({ article_id: article_id, image: image, title: title, project_id: project_id, scale: scale }).select().single()
         if (response.error) {
             console.error(`Failed to insert response. Error: ${response.error.message}`);
         } else { return response.data }

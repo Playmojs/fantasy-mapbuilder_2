@@ -48,6 +48,13 @@
 			  required={input.required}
 			  on:input={(e) => {update_state(input.name, (e.target as HTMLInputElement).value)}}
 			/>
+			{#if input.unit}
+				<select id='select_unit' name='units' on:change={(event: any) => {if(input.unit)input.unit.on_click(state, event.target?.value)}}>
+					{#each input.unit.units as unit}
+						<option value={unit.id}>{unit.name}</option>
+					{/each}
+				</select>
+			{/if}
 		  </div>
 		{/if}
   
@@ -115,6 +122,7 @@
 	}
 	
 	form > div{
+		position: relative;
 		display: flex;
 		align-items: center;
 		background-color: rgb(60, 60, 60);
@@ -123,6 +131,7 @@
 		width: 90%;
 		height: 40px;
 		padding: 10px;
+		gap: 10px;
 	}
 
 	label {
@@ -130,6 +139,7 @@
 		font-size: 1.4rem;
 		margin: 0px 30px 0px 10px;
 		color: var(--main_white);
+		flex: 0 0 10%;
 	}
 
 	input[type=text] {
@@ -148,17 +158,15 @@
 		border-radius: 10px;
 		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 		padding: 10px 0px 10px 15px;
-		width: 90%;
+		width: 70%;
 		font-size: large;
 	}
 
 	input::-webkit-outer-spin-button,
 	input::-webkit-inner-spin-button {
-	-webkit-appearance: none;
-	margin: 0;
+		-webkit-appearance: none;
+		margin: 0;
 	}
-
-
 
 	input[type='file'] {
 		position: relative;
@@ -219,6 +227,15 @@
 		cursor: not-allowed;
 		border: none;
 		color: black;
+	}
+
+	select{
+		position: relative;
+		flex: 0 0 15%;
+		height: 100%;
+		border-radius: 10px;
+		background-color: rgb(130, 130, 130);
+		font-size: 1.2rem;
 	}
 
 	#preview {

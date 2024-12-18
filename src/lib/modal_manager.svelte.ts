@@ -1,6 +1,6 @@
 import CategoryModal from '../components/modals/CategoryModal.svelte';
 import { store } from '../store.svelte';
-import { get_modal_entity_themes, theme_entities } from './data.svelte';
+import { get_modal_entity_themes, theme_entities, units } from './data.svelte';
 import dtb from './dtb';
 import type { ChooseModalData, ModalType, ModalEntity, UploadModalType, CategoryModalData, Category, CompositeModalType, MapUpload, CategoryUpload, ChooseModalType, ImageUpload } from './types';
 import { assert_unreachable, invert_many_to_many } from './utils';
@@ -109,9 +109,11 @@ export const get_new_map_data: (value: {file: File | null, title: string, articl
                     state.article_link = value;
                 },
                 display_text(state){return (state.article_link && state.article_link.id !== null) ? state.article_link.title : 'No Article Link'}},
-                {type: 'number', name: 'scale', label: 'Scale'} 
+                {type: 'number', name: 'scale', label: 'Map Scale', required: false, unit: {units: Object.values(units).map(unit => {return {id: unit.id, name: unit.name}}), on_click(state, value) {
+                    state.unit_id = value
+                }}}
             ],
-            initial_state: {file: null, title: '', article_link: {id: null, title: ''}, scale: null},
+            initial_state: {file: null, title: '', article_link: {id: null, title: ''}, scale: null, unit_id: 0},
             validation_func: (state) => {
                 return state.file !== null && state.title !== '';
             },
@@ -123,7 +125,7 @@ export const get_new_map_data: (value: {file: File | null, title: string, articl
                 value.file = state.file;
                 value.title = state.title;
                 value.article_id = state.article_link.id;
-                value.scale = state.scale;
+                value.scale = state.scale !== null ? state.scale * (state.unit_id ? units[state.unit_id].factor: 1) : state.scale;
             },
             determine_preview(state) {
                 if(state.file === null){return null}

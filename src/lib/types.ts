@@ -35,15 +35,15 @@ export type UploadModalInput<TState> =
   | { type: 'text'; name: keyof TState & string; label?: string; placeholder?: string; required?: boolean; }
   | { type: 'file'; name: keyof TState & string; label?: string; accept?: string; required?: boolean; }
   | { type: 'button'; name: keyof TState & string; label?: string; on_click: (state: TState) => Promise<void>, display_text?: (state: TState) => string }
-  | { type: 'number'; name: keyof TState & string; label?: string; placeholder?: string; required?: boolean; }
+  | { type: 'number'; name: keyof TState & string; label?: string; placeholder?: string; required?: boolean; unit?: {units: {id: number, name: string}[], on_click: (state: TState, value: number) => void}}
 
 export type UploadModalData<TState> = {
-  inputs: UploadModalInput<TState>[]; // List of inputs to render
-  initial_state?: TState; // Pre-fill values
-  determine_preview?: (state: TState) => string | null; // Optional preview logic
-  validation_func: (state: TState) => boolean; // Form validation
-  submit_func: (state: TState) => Promise<void>; // Submission logic
-  button_title: string; // Submit button text
+  inputs: UploadModalInput<TState>[];
+  initial_state?: TState;
+  determine_preview?: (state: TState) => string | null;
+  validation_func: (state: TState) => boolean;
+  submit_func: (state: TState) => Promise<void>;
+  button_title: string;
 };
 
 export type UploadModalType<TState> = {
@@ -56,7 +56,8 @@ export type MapUpload = {
 	title: string,
 	file: File | Blob | null,
 	article_link: {id: number | null, title: string},
-	scale: number | null
+	scale: number | null,
+	unit_id: number | null
 }
 
 export type ImageUpload = {

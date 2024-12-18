@@ -2,7 +2,7 @@
 	import { onMount } from "svelte";
 	import { store } from "../store.svelte";
     import {v4 as uuidv4} from 'uuid'
-	import { units } from "$lib/data.svelte";
+	import { unit_groups, units, type Unit } from "$lib/data.svelte";
 
     let {path_nodes, scale, unit_group}: {path_nodes: {x: number, y: number}[], scale: number, unit_group: string} = $props()
 
@@ -14,19 +14,20 @@
 
     let raw_length = $derived<number>(path_nodes.slice(1).map((node, index) => {return Math.sqrt(Math.pow(node.x - path_nodes[index].x, 2) + Math.pow(node.y - path_nodes[index].y, 2))}).reduce((total, distance) => total + distance, 0) / window_width);
     
-    let unit_length = $derived<string>(find_appropriate_unit_and_round(scale*raw_length, 3 , unit_group))
+    let unit_length = $derived<string>(find_appropriate_unit_and_round(scale*raw_length, 3, unit_group))
 
     let text_pos = $derived.by<{x: number, y: number}>(()=> {
+        if(path_nodes.length === 0){return {x: 0, y: 0}}
         const pos_xs = path_nodes.map(val => val.x);
         const pos_ys = path_nodes.map(val => val.y);
+        
         return {x: (Math.max(...pos_xs) + Math.min(...pos_xs)) / 2, y: Math.min(...pos_ys)};
     })
 
     function find_appropriate_unit_and_round(value: number, n: number, unit_group: string){
-        if (!units[unit_group]){return(`${round_to_n_counting_digits(value, n)}`)}
-        const base_unit_length = value*units[unit_group].conversion_factor
-        const unit: string = Object.entries(units[unit_group].units).reduce(([unit, val], [new_unit, new_value]) => {return Math.abs(Math.log10(base_unit_length / new_value) - 3) < Math.abs(Math.log10(base_unit_length / val) - 3) ? [new_unit, new_value] : [unit, val]})[0]
-        return `${round_to_n_counting_digits(base_unit_length / units[unit_group].units[unit], n)} ${unit}`
+        if (!unit_groups[unit_group]){return(`${round_to_n_counting_digits(value, n)}`)}
+        const unit: Unit = unit_groups[unit_group].map(unit_id => {return units[unit_id]}).reduce((prev_unit, new_unit) => {return Math.abs(Math.log10(value / new_unit.factor) - 2.5) < Math.abs(Math.log10(value / prev_unit.factor) - 2.5) ? new_unit : prev_unit})
+        return `${round_to_n_counting_digits(value / unit.factor, n)} ${unit.name}`
     }
 
     function round_to_n_counting_digits(value: number, n: number): string{
@@ -48,9 +49,11 @@
 </script>
 
 <svg>
-    <text text-anchor="middle" x={text_pos.x} y={text_pos.y} dy="-10">
-        {unit_length}
-    </text>
+    <g id='text_wrapper'>
+        <text text-anchor="middle" x={text_pos.x} y={text_pos.y} dy="-10">
+            {unit_length}
+        </text>
+    <g>
     <path id={id} d={path} stroke='black' stroke-width=4px fill='none'/>
 </svg>
 
@@ -64,7 +67,7 @@
         pointer-events: none;
         z-index: 100;
     }
-
+    
     text{
         font-size: 30px;
         font-family: 'Cormorant Garamond';

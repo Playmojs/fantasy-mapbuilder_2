@@ -142,9 +142,17 @@
 			style="background-image: url('/assets/fantasy_minus.png');"
 			title="Decrease text size"
 			aria-label='Decrease Text Size Button'
-			></button>
+		></button>
 
-			<button 
+		<button
+			id="open_article_modal_button"
+			onclick={()=>{push_modal({type:'article_modal', data: store.article.id})}}
+			style="background-image: url('/assets/Parchment.png');"
+			title="View Article in Article Viewer"
+			aria-label="View Article in Article Viewer"
+		></button>
+
+		<button 
 			id="edit_image_button" 
 			onclick={open_article_options}
 			style="background-image: url('/assets/fantasy_cog.png');"
