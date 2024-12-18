@@ -38,5 +38,5 @@ export const get_modal_entity_themes: (value: {id: number, title: string}) => Mo
 type DerivedUnits={units: {[derived_unit: string]: number}, conversion_factor: number}
 export type Unit={id: number, factor: number, name: string}
 
-export const units: {[id: number]: Unit} = {0: {id: 0, factor: 1, name: "m"}, 1: {id: 1, factor: 1000, name: "km"}, 2: {id: 2, factor: 0.3, name: "ft"}, 3: {id: 3, factor: 1600, name: "mile"}}
+export const units: {[id: number]: Unit} = {0: {id: 0, factor: 1, name: "m"}, 1: {id: 1, factor: 1000, name: "km"}, 2: {id: 2, factor: 0.3, name: "ft"}, 3: {id: 3, factor: 1600, name: "miles"}}
 export const unit_groups: {[group_name: string]: number[]} = {Metric: [0, 1], Imperial: [2, 3]}
