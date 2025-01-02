@@ -277,7 +277,7 @@ export default {
             });
     },
 
-    async create_and_show_article(project_id: number, title: string = "Untitled") {
+    async create_article(project_id: number, title: string = "Untitled") {
         const response = await supabase.from('article').insert({ project_id: project_id, title: title }).select().single();
         const { data } = response
         if (response.error) {
@@ -285,8 +285,15 @@ export default {
         }
         if (data) {
             store.article_cache[data.id] = data;
-            push_article(data.id, false)
             return data;
+        }
+    },
+
+    async create_and_show_article(project_id: number, title: string = "Untitled") {
+        const response = await this.create_article(project_id, title)
+        if (response){
+            push_article(response.id, false)
+            return response
         }
     },
 

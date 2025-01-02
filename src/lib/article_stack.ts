@@ -1,3 +1,4 @@
+import { get_updated_content } from "../components/Informatic.svelte";
 import { store } from "../store.svelte";
 import dtb from "./dtb";
 import type { Article } from "./types";
@@ -5,8 +6,18 @@ import { assert, assert_unreachable } from "./utils";
 
 let replace_head: boolean = false;
 
+function synchronize_current_article_content(){
+    const prev_id = store.article_history.at(-1);
+    if(store.edit_mode && prev_id !== undefined){
+        const article_info = get_updated_content()
+        if (prev_id !== article_info.id || prev_id < 0){return}
+        dtb.update_article({...store.article_cache[prev_id], content: article_info.content})
+    }
+}
+
 export function push_article(id: number, is_replaced: boolean){
-    if(store.edit_mode && store.article_history.at(-1)){dtb.update_article(store.article)}
+    let prev_id = store.article_history.at(-1)
+    if(store.edit_mode){synchronize_current_article_content()}
     if (replace_head){pop_article()}
     if(!is_replaced){store.article_history = store.article_history.filter(val => {return val !== id})}
     store.article_history.push(id)
@@ -15,12 +26,13 @@ export function push_article(id: number, is_replaced: boolean){
 }
 
 export async function pop_article(){
+    if (store.edit_mode){
+        synchronize_current_article_content()}
     const current_id = store.article_history.pop();
     if(current_id === undefined){
         console.error('Invalid pop of article history');
         return;
     }
-    if (store.edit_mode){dtb.update_article(store.article_cache[current_id])}
     const validated = await validate_article_pop();
     if (!validated){
         store.article_history.push(current_id);
@@ -51,5 +63,6 @@ export async function undo_article_pop(){
     if (!await dtb.get_article(store.project_id, attempt_id)){
         undo_article_pop();
     }
+    if(store.edit_mode){synchronize_current_article_content()}
     store.article_history.push(attempt_id);
 }
