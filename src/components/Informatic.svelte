@@ -1,17 +1,21 @@
+<script module lang='ts'>
+	let editor = $state<Editor>();
+	export const get_updated_content: () => {id: number, content: string} = () => {
+		if(store.edit_mode && editor){return {id: store.article.id, content: editor.get_content()}}
+		else{return {id: store.article.id, content: store.article.content}}
+	}
+</script>
+
 <script lang="ts">
 	import SvelteMarkdown from 'svelte-markdown';
 	import { store } from '../store.svelte';
 	import Editor from './Editor.svelte';
 	import { fly } from 'svelte/transition';
 	import dtb from '$lib/dtb';
-	import edit_mode from '../store';
-	import { choose_map_or_article, get_article_image_modal, get_article_options, get_article_to_category_modal, link_article, push_modal } from '$lib/modal_manager.svelte';
+	import {get_article_options, push_modal } from '$lib/modal_manager.svelte';
 	import KeyWordRenderer from './KeyWordRenderer.svelte';
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
-	import type { ChooseModalType, CompositeModalType, ImageUpload, UploadModalType } from '$lib/types';
 	import { theme_entities } from '$lib/data.svelte';
-	import { untrack } from 'svelte';
-	import { assert_unreachable } from '$lib/utils';
 
 	let informaticWindow: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -19,6 +23,8 @@
 	let originalX: number;
 	let originalMouseX: number;
 	let windowWidth: number;
+
+	let original_article_content = $derived<string>(store.article.content)
 
 	function updateTitle() {
 		const title: string = article_title.innerText;
@@ -77,19 +83,18 @@
 		push_modal(get_article_options(store.article.id))
 	}
 	
+	function editor_on_destroy(){
+		if(!editor){return}
+		dtb.update_article({...store.article, content: editor.get_content()})
+	}
 
-	let image_source = $state('');
-	$effect(() => {
-		if (store.article.image && store.image_public_urls[store.article.image]) {
-			image_source = URL.createObjectURL(store.image_public_urls[store.article.image]);
-		}
-	});
+	let image_source = $derived<string>((store.article.image && store.image_public_urls[store.article.image]) ? URL.createObjectURL(store.image_public_urls[store.article.image]) : '')
 
 	function change_text_size(factor: number) {
 		store.text_size = store.text_size * factor;
 	}
-
 </script>
+
 
 <div
 	id="informaticWindow"
@@ -171,7 +176,7 @@
 	>
 		<h1 bind:this={article_title}>{store.article.title}</h1>
 	</div>
-	<div id="image_container" style="height: {store.article.image !== null ? 30 : store.edit_mode ? 10 : 0}%;">
+	<div id="image_container" style="height: {store.article.image !== null ? 30 : 0}%;">
 		<img
 		id="article_image"
 		src={image_source}
@@ -185,9 +190,9 @@
 		style="font-size: {store.text_size}%;"
 	>
 		{#if store.edit_mode}
-			<Editor />
+			<Editor bind:this={editor} original_content={store.article.content} text_size={store.text_size} on_destroy={editor_on_destroy}/>
 		{:else}
-			<SvelteMarkdown source={store.article.content} renderers={{link: KeyWordRenderer}}/>
+			<SvelteMarkdown source={original_article_content} renderers={{link: KeyWordRenderer}}/>
 		{/if}
 	</div>
 </div>
@@ -309,7 +314,7 @@
 		background-color: rgb(47, 47, 47);
 		color: var(--main_white);
 		white-space: normal;
-	}
+	}	
 
 	#informatic.editable {
 		background-color: white;
