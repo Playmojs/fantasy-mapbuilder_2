@@ -1,9 +1,18 @@
+<script module lang='ts'>
+	let editor = $state<Editor>();
+	export const get_updated_content: () => {id: number, content: string} = () => {
+		if(store.edit_mode && editor){return {id: store.article.id, content: editor.get_content()}}
+		else{return {id: store.article.id, content: store.article.content}}
+	}
+</script>
+
 <script lang="ts">
 	import SvelteMarkdown from 'svelte-markdown';
 	import { store } from '../store.svelte';
 	import Editor from './Editor.svelte';
 	import { fly } from 'svelte/transition';
-	import { get_article_options, push_modal } from '$lib/modal_manager.svelte';
+	import dtb from '$lib/dtb';
+	import {get_article_options, push_modal } from '$lib/modal_manager.svelte';
 	import KeyWordRenderer from './KeyWordRenderer.svelte';
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
 	import { theme_entities } from '$lib/data.svelte';
@@ -14,6 +23,8 @@
 	let initial_dim: number;
 	let initial_mouse_dim: number;
 	let window_dim: number;
+
+	let original_article_content = $derived<string>(store.article.content)
 
 	function updateTitle() {
 		const title: string = article_title.innerText;
@@ -75,21 +86,18 @@
 		push_modal(get_article_options(store.article.id))
 	}
 	
+	function editor_on_destroy(){
+		if(!editor){return}
+		dtb.update_article({...store.article, content: editor.get_content()})
+	}
 
-	let image_source = $state('');
-	$effect(() => {
-		if (store.article.image && store.image_public_urls[store.article.image]) {
-			image_source = URL.createObjectURL(store.image_public_urls[store.article.image]);
-		}
-	});
+	let image_source = $derived<string>((store.article.image && store.image_public_urls[store.article.image]) ? URL.createObjectURL(store.image_public_urls[store.article.image]) : '')
 
 	function change_text_size(factor: number) {
 		store.text_size = store.text_size * factor;
 	}
-
-	const test = KeyWordRenderer
-
 </script>
+
 
 <div
 	id="informatic_window"
@@ -170,24 +178,26 @@
 		>
 			<h1 bind:this={article_title}>{store.article.title}</h1>
 		</div>
-		<img
-			id="article_image"
-				src={image_source}
-				alt="Article image"
-			class:hidden={store.article.image === null}
-			style="height: {store.article.image !== null ? 200 : 0}px;"
-		/>
-		<article
-			id="article_content"
+		<div id="image_container" style="height: {store.article.image !== null ? 30 : 0}%;">
+			<img
+				id="article_image"
+					src={image_source}
+					alt="Article image"
+				class:hidden={store.article.image === null}
+				style="height: {store.article.image !== null ? 200 : 0}px;"
+			/>
+		</div>
+		<div
+			id="informatic"
 			class={store.edit_mode ? 'editable' : 'non-editable'}
 			style="font-size: {store.text_size}%;"
 		>
 			{#if store.edit_mode}
-				<Editor />
+				<Editor bind:this={editor} original_content={store.article.content} text_size={store.text_size} on_destroy={editor_on_destroy}/>
 			{:else}
-				<SvelteMarkdown source={store.article.content} renderers={{link: KeyWordRenderer}}/>
+				<SvelteMarkdown source={original_article_content} renderers={{link: KeyWordRenderer}}/>
 			{/if}
-		</article>
+		</div>
 	</div>
 </div>
 
@@ -250,7 +260,7 @@
 		border-radius: 10px;
 	}
 
-	#article_content {
+	#informatic {
 		touch-action: pan-y;
 		
 		flex: 1;
@@ -322,35 +332,52 @@
 	}
 
 
-	#article_content.editable {
+	#informatic {
+		touch-action: pan-y;
+		position: relative;
+		height: 90%;
+		left: 0;
+		right: 0;
+		background-color: inherit;
+		font-family: 'Garamond Regular';
+		text-align: justify;
+		overflow-y: scroll;
+		padding: 0px 10px;
+		border-radius: 10px;
+		background-color: rgb(47, 47, 47);
+		color: var(--main_white);
+		white-space: normal;
+	}	
+
+	#informatic.editable {
 		background-color: white;
 		color: black;
 		white-space: pre-wrap;
 		padding: 10px 0px 0px 5px;
 	}
 
-	#article_content::-webkit-scrollbar-track.editable {
+	#informatic::-webkit-scrollbar-track.editable {
 		background: white;
 	}
 
-	#article_content::-webkit-scrollbar {
+	#informatic::-webkit-scrollbar {
 		width: 12px;
 	}
 
-	#article_content::-webkit-scrollbar-track.non-editable {
+	#informatic::-webkit-scrollbar-track.non-editable {
 		background: rgb(47, 47, 47);
 		border-radius: 10px;
 	}
 
-	#article_content::-webkit-scrollbar-thumb {
+	#informatic::-webkit-scrollbar-thumb {
 		background-color: #555;
 	}
 
-	#article_content::-webkit-scrollbar-corner {
+	#informatic::-webkit-scrollbar-corner {
 		background-color: rgb(47, 47, 47);
 	}
 
-	#article_content::-webkit-scrollbar-thumb:hover {
+	#informatic::-webkit-scrollbar-thumb:hover {
 		background-color: #888;
 	}
 
