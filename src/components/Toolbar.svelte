@@ -289,7 +289,7 @@
 		</button>
 		<button
 			onclick={()=>{go_to_article_or_map_modal();}}
-			style="background-image: url('/assets/old_map.png');"
+			style="background-image: url('/assets/goto_map_article_icon.png');"
 			aria-label="Go to Map or Article"
 			title="Go to Map or Article"
 			>
@@ -298,14 +298,14 @@
 	<div class='button_group'>
 		<button
 			onclick={()=>{open_map_graph();}}
-			style="background-image: url('/assets/Map_icon (2).png');"
+			style="background-image: url('/assets/map_graph_icon_2.png');"
 			aria-label="Open Map Graph"
 			title="Open Map Graph"
 			>
 		</button>
 		<button
 			onclick={()=>{open_category_graph();}}
-			style="background-image: url('/assets/Article_icon (2).png');"
+			style="background-image: url('/assets/category_graph_icon_2.png');"
 			aria-label="Open Category Graph"
 			title="Open Category Graph"
 			>
@@ -332,7 +332,7 @@
 		></button>
 	</div>
 	
-	<div class="button_group" id='plus_and_minus' class:transparent={!store.edit_mode}>
+	<div class="button_group" id='edit_marker_group' class:transparent={!store.edit_mode}>
 		<button
 			onclick={() => {
 				changeMarkerTarget();
@@ -347,7 +347,7 @@
 			onclick={() => dtb.delete_marker(store.selected_marker)}
 			class:hidden={!store.edit_mode}
 			disabled={store.selected_marker === null}
-			style="background-image: url('/assets/+ and - -.png');"
+			style="background-image: url('/assets/minus_2.png');"
 			title="Delete selected marker"
 			aria-label="Delete Marker"
 		></button>
@@ -433,29 +433,30 @@
 		opacity: 0.8; /* Slight hover effect */
 	}
 
-	#plus_and_minus{
-		height: 80%;
-		width: 200px;
+	#edit_marker_group{
+		height: 90%;
+		width: 150px;
 		flex-shrink: 0;
-		background-image: url('/assets/+ and - both.png');
+		background-image: url('/assets/image_frame_test.png');
 		background-repeat: no-repeat;
 		background-size: 100% 100%;
 		background-position: center center;
-		z-index: 10;
+		gap: 5px;
 	}
 
-	#plus_and_minus.transparent{
+	#edit_marker_group.transparent{
 		background-image: none;
 	}
 
-	#plus_and_minus > button{
-		height: 60%;
+	#edit_marker_group > button{
+		height: 70%;
 	}
 
 	#toolbar button:disabled{
 		cursor: default;
 		box-shadow: none;
 		opacity: 1;
+		filter:brightness(30%);
 	}
 
 	#edit_content_button {
