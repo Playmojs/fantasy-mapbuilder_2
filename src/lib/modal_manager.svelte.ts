@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-=======
-import CategoryModal from '../components/modals/CategoryModal.svelte';
-import type Modal from '../components/modals/Modal.svelte';
->>>>>>> 2e38d7c (Improve add article functions)
+
 import { store } from '../store.svelte';
 import { get_modal_entity_themes, theme_entities, units } from './data.svelte';
 import dtb from './dtb';
@@ -373,7 +369,7 @@ export function get_article_options(article_id: number): CompositeModalType{
 export const get_filtered_choose_category_modal: (article_id: number, categories: Category[]) => Promise<void> = async (article_id, categories) => {
     // Consider making this not hardcoded to article-to-category?
     const add_category: ModalEntity = {image: null, title: 'New Category', on_click: async () => {
-        let value: {id: number | null} = {id: null};
+        const value: {id: number | null} = {id: null};
         await push_promise_modal(get_add_category_modal(value));
         if(value.id !== null){
             await dtb.insert_article_category_link(store.project_id, value.id, article_id)

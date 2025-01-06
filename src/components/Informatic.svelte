@@ -178,15 +178,13 @@
 		>
 			<h1 bind:this={article_title}>{store.article.title}</h1>
 		</div>
-		<div id="image_container" style="height: {store.article.image !== null ? 30 : 0}%;">
-			<img
-				id="article_image"
-					src={image_source}
-					alt="Article image"
-				class:hidden={store.article.image === null}
-				style="height: {store.article.image !== null ? 200 : 0}px;"
-			/>
-		</div>
+		<img
+			id="article_image"
+				src={image_source}
+				alt="Article image"
+			class:hidden={store.article.image === null}
+			style="height: {store.article.image !== null ? 200 : 0}px;"
+		/>
 		<div
 			id="informatic"
 			class={store.edit_mode ? 'editable' : 'non-editable'}
