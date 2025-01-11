@@ -4,20 +4,11 @@
 	import dtb from '$lib/dtb';
 	import { choose_article_by_id, choose_existing_map, push_promise_modal } from '$lib/modal_manager.svelte';
 	import { keywords } from '$lib/keyword_manager';
-	import type { Article } from '$lib/types';
-
-	let {original_content, text_size, on_destroy, on_change} : {original_content: string, text_size: number, on_destroy?: () => void, on_change?: () => void} = $props()
 
 	let editorElement = $state<HTMLDivElement>();
 	let editor = $state<any>();
 	let monaco: any;
-	let font_size = $derived(text_size / 7);
-
-	export const get_content: () => string = () => {
-		if(editor){
-			return editor.getValue()
-		}
-	}
+	let font_size = $derived(store.text_size / 7);
 
 	onMount(async () => {
 		monaco = await import('monaco-editor');
@@ -76,7 +67,7 @@
 				suggestions: {
 					enabled: false
 				},
-				value: original_content
+				value: store.article.content
 			});
 		}
 		
@@ -147,7 +138,7 @@
 		}
 
 		editor.onDidChangeModelContent(() => {
-			if(on_change){on_change()}
+			store.article.content = editor.getValue();
 			highlight_keywords();
 		});
 
@@ -175,17 +166,17 @@
 			editor.updateOptions({ fontSize: font_size });
 		}
 	});
-	
+
 	$effect(() => {
-		if (editor) {
-			editor.setValue(original_content);
-			console.log(editor.getValue())
+		if (editor && store.article.id !== null) {
+			editor.setValue(untrack(() => store.article.content));
 		}
 	});
 
 	onDestroy(async () => {
-		if(on_destroy)on_destroy();
+		monaco?.editor.getModels().forEach((model: any) => model.dispose());
 		editor?.dispose();
+		dtb.update_article(store.article);
 	});
 </script>
 
