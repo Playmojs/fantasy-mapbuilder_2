@@ -1,5 +1,4 @@
 import CategoryModal from '../components/modals/CategoryModal.svelte';
-import type Modal from '../components/modals/Modal.svelte';
 import { store } from '../store.svelte';
 import { get_modal_entity_themes, theme_entities, units } from './data.svelte';
 import dtb from './dtb';
@@ -52,20 +51,6 @@ export const choose_existing_map: (value: {id: number | null}) => Promise<ModalE
         };
     });
 };
-
-export const add_and_choose_article: (value: {id: number | null, title: string}) => ModalEntity = (value) =>
-{
-    return {
-        image: "/assets/plus.png",
-        title: "Add Article",
-        on_click: async () => {
-            const data = await dtb.create_article(store.project_id);
-            if(!data){return}
-            value.id = data.id;
-            value.title = data.title;
-        }
-    }
-}
 
 export const add_article_to_marker: ModalEntity =
 {
@@ -365,20 +350,4 @@ export function get_article_options(article_id: number): CompositeModalType{
             'Categories': {type: 'category_modal', data: get_article_to_category_modal(article_id)}
         }
     }
-}
-
-export const get_filtered_choose_category_modal: (article_id: number, categories: Category[]) => Promise<void> = async (article_id, categories) => {
-    // Consider making this not hardcoded to article-to-category?
-    const add_category: ModalEntity = {image: null, title: 'New Category', on_click: async () => {
-        let value: {id: number | null} = {id: null};
-        await push_promise_modal(get_add_category_modal(value));
-        if(value.id !== null){
-            await dtb.insert_article_category_link(store.project_id, value.id, article_id)
-        }
-    }}
-
-    const modal_entities: ModalEntity[] = [add_category].concat(Object.values(store.category_cache)
-        .filter((category) => {return !categories.includes(category)})
-        .map((category)=>{return {image: null, title: category.name, background_image: theme_entities[category.theme_id].image, on_click: async () => {await dtb.insert_article_category_link(store.project_id, category.id, article_id)}, optional_func: ()=>{push_modal(get_composite_category_modal({...category}))}}}))
-    push_promise_modal({type: 'choose_modal', data: {Categories: modal_entities}, use_search: true})
 }
