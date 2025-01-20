@@ -123,7 +123,7 @@
 	let offset_limit = $state({x: 0, y: 0, width: 1920, height: 1080})
 	function update_offset_limit(){
 		if (!window){return}
-		offset_limit = {x: 0, y: 0, width: window.innerWidth*(store.informatic_minimized ? 1 : 1 - store.informatic_width / 100), height: window.innerHeight - 50}
+		offset_limit = {x: 0, y: 0, width: window.innerWidth*(store.informatic_minimized ? 1 : 1 - store.informatic_dim / 100), height: window.innerHeight - 50}
 	}
 
 	function on_zoompan(transform: {x: number, y: number, scale: number}){
@@ -132,7 +132,7 @@
 
 	$effect(() => {
 		store.informatic_minimized;
-		store.informatic_width;
+		store.informatic_dim;
 		update_offset_limit();
 	})
 

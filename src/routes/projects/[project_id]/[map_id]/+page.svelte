@@ -38,12 +38,18 @@
 	});
 
 	let window_dims = $state<{height: number, width: number}>({height: 0, width: 0})
-	let on_mobile = $state<boolean>(false)
+	let scale_bar_left_position = $derived<{x: number, y: number}>(store.mobile_layout ? {x: window_dims.width - 150 , y: window_dims.height * (store.informatic_minimized ? 1 : 1 - store.informatic_dim / 100) - 10} : {x: window_dims.width * ((store.informatic_minimized ? 1 :  1 - store.informatic_dim / 100) - 0.15), y: window_dims.height - 30})
+	let scale_bar_righ_position = $derived<{x: number, y: number}>({x: scale_bar_left_position.x + 0.1*window_dims.width, y: scale_bar_left_position.y})
 		
-		const update_window_dims = () => {
+	const update_window_dims = () => {
+		const expanding: boolean = window_dims.width < window.innerWidth;	
 		window_dims.height = window.innerHeight;
 		window_dims.width = window.innerWidth;
-		on_mobile = window.innerWidth < 768;
+		store.mobile_layout = window.innerWidth < 768;
+		console.log(window.innerWidth)
+		if(!store.mobile_layout && !expanding){
+			store.informatic_dim = Math.max(store.informatic_dim, 450 * 100 / window.innerWidth)
+		}
 	}
 
 	onMount(()=>{
@@ -56,7 +62,7 @@
 <div id="layout_parent">
 	<Toolbar />
 	<div id="map_informatic_parent">
-		<div id="map_holder" style="width: {store.informatic_minimized ? 1 : 100 - store.informatic_width}%">		
+		<div id="map_holder" style="{store.mobile_layout? "height" : "width"}: {store.informatic_minimized ? 1 : 100 - store.informatic_dim}%">		
 			<Map />
 		</div>
 		{#if !store.informatic_minimized}
@@ -67,7 +73,7 @@
 
 <ParentMap />
 {#if store.map.scale !== null}
-	<ScaleBar path_nodes={[{x: window_dims.width * ((store.informatic_minimized ? 1 :  1 - store.informatic_width / 100) - 0.15), y: window_dims.height - 30},  {x: window_dims.width * ((store.informatic_minimized ? 1 : 1 - store.informatic_width / 100) - 0.05), y: window_dims.height - 30}]} scale={store.map.scale / store.map_transform.scale} unit_group={store.unit_group}/>
+	<ScaleBar path_nodes={[scale_bar_left_position, scale_bar_righ_position]} scale={store.map.scale / store.map_transform.scale} unit_group={store.unit_group}/>
 {/if}
 
 {#each store.modals as modal (modal)}

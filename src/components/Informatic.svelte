@@ -11,9 +11,10 @@
 	let informatic_window: HTMLDivElement;
 	let article_title: HTMLHeadElement;
 
-	let originalX: number;
-	let originalMouseX: number;
-	let windowWidth: number;
+	// Dim is used as replacement for width/height, because the resizing should flexibly work in both directions.
+	let initial_dim: number;
+	let initial_mouse_dim: number;
+	let window_dim: number;
 
 	function updateTitle() {
 		const title: string = article_title.innerText;
@@ -23,24 +24,38 @@
 	}
 	const resizerOnMouseDown = (e: MouseEvent) => {
 		e.preventDefault();
-		windowWidth = window.innerWidth / 100;
-		originalX = informatic_window.getBoundingClientRect().left / windowWidth;
-		originalMouseX = e.pageX;
+		if(store.mobile_layout){
+			window_dim = (window.innerHeight - 50) / 100;
+			initial_dim = informatic_window.getBoundingClientRect().top / window_dim;
+			initial_mouse_dim = e.pageY + 50;
+		}
+		else{
+			window_dim = window.innerWidth / 100;
+			initial_dim = informatic_window.getBoundingClientRect().left / window_dim;
+			initial_mouse_dim = e.pageX;
+		}
 		window.addEventListener('mousemove', resizeMouse);
 		window.addEventListener('mouseup', stopResize);
 	};
 
 	const resizerOnTouchDown = (e: TouchEvent) => {
 		e.preventDefault();
-		windowWidth = window.screen.availWidth / 100;
-		originalX = informatic_window.getBoundingClientRect().left / windowWidth;
-		originalMouseX = e.touches[0].pageX;
+		if(store.mobile_layout){
+			window_dim = window.screen.availHeight / 100;
+			initial_dim = informatic_window.getBoundingClientRect().top / window_dim;
+			initial_mouse_dim = e.touches[0].pageY;
+		}
+		else{
+			window_dim = window.screen.availWidth / 100;
+			initial_dim = informatic_window.getBoundingClientRect().left / window_dim;
+			initial_mouse_dim = e.touches[0].pageX;
+		}
 		window.addEventListener('touchmove', resizeTouch);
 		window.addEventListener('touchend', stopResize);
 	};
 
 	function resizeMouse(e: MouseEvent) {
-		resize(e.pageX);
+		store.mobile_layout ? resize(e.pageY) : resize(e.pageX);
 	}
 
 	function resizeTouch(e: TouchEvent) {
@@ -48,14 +63,15 @@
 		if (e.touches.length !== 1) {
 			return;
 		}
-		resize(e.touches[0].pageX);
+		store.mobile_layout ? resize(e.touches[0].pageY) : resize(e.touches[0].pageX);
 	}
 
 	function resize(page_x: number) {
-		let new_size_percentage = 100 - (originalX + (page_x - originalMouseX) / windowWidth);
+		let new_size_percentage = 100 - (initial_dim + (page_x - initial_mouse_dim) / window_dim);
+		let lower_size_limit = store.mobile_layout ? 20 /window_dim : 450 / window_dim;
 
-		new_size_percentage = new_size_percentage > 450 / windowWidth ? new_size_percentage > 95 ? 100 : new_size_percentage : 450 / windowWidth;
-		store.informatic_width = new_size_percentage;
+		new_size_percentage = new_size_percentage > lower_size_limit ? new_size_percentage > 95 ? 100 : new_size_percentage : lower_size_limit;
+		store.informatic_dim = new_size_percentage;
 	}
 
 	function stopResize() {
@@ -88,8 +104,9 @@
 <div
 	id="informatic_window"
 	bind:this={informatic_window}
-	transition:fly={{ x: 400, duration: 500 }}
-	style='background-image: url("{theme_entities[store.category_cache[store.article.main_category ?? 0]?.theme_id ?? 0].image}"); width: {store.informatic_width}%;'>
+	transition:fly={{x: 400, duration: 500 } }
+	class:mobile_layout={store.mobile_layout}
+	style='background-image: url("{theme_entities[store.category_cache[store.article.main_category ?? 0]?.theme_id ?? 0].image}"); {store.mobile_layout ? `height: ${store.informatic_dim}%; width: 100%` : `width: ${store.informatic_dim}%; height: 100%`}'>
 	
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 	<div id="informatic_content">
@@ -188,7 +205,6 @@
 	#informatic_window {
 		touch-action: none;
 		background-color: rgb(47, 47, 47);
-		height: 100%;
 		
 		z-index: 10;
 		display: flex;
@@ -196,6 +212,13 @@
 		background-position: top right;
 		background-size: 500px;
 		box-shadow: inset 5px 0px 5px rgb(20, 20, 20);
+	}
+
+	#informatic_window.mobile_layout{
+		flex-direction: column;
+		box-shadow: inset 0px 5px 5px rgb(20, 20, 20);
+		border-top-left-radius: 10px;
+		border-top-right-radius: 10px;
 	}
 	
 	#resizer {

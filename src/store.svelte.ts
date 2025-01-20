@@ -10,12 +10,13 @@ class Store {
     drawing_path = $state(false)
     is_panning = $state(false);
     selected_marker = $state<number | null>(null); // TODO: Could this be a MarkerData instead of an id?
-    informatic_width = $state(33);
+    informatic_dim = $state(33);
     text_size = $state(150);
     map_transform = $state({ x: 0, y: 0, scale: 1 });
     user = $state<User | null>(null);
     project_id: number = 0;
     write_access = $state<boolean>(false);
+    mobile_layout = $state<boolean>(false)
     modals = $state<ModalType[]>([])
     article_modal_articles = $state<number[]>([])
     unit_group = $state<string>('Metric')
