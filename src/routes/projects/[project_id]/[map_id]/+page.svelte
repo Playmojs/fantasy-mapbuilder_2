@@ -38,10 +38,12 @@
 	});
 
 	let window_dims = $state<{height: number, width: number}>({height: 0, width: 0})
-
-	const update_window_dims = () => {
+	let on_mobile = $state<boolean>(false)
+		
+		const update_window_dims = () => {
 		window_dims.height = window.innerHeight;
-		window_dims.width = window.innerWidth
+		window_dims.width = window.innerWidth;
+		on_mobile = window.innerWidth < 768;
 	}
 
 	onMount(()=>{
@@ -50,14 +52,22 @@
 	})
 </script>
 
-<Toolbar />
-<Map />
+
+<div id="layout_parent">
+	<Toolbar />
+	<div id="map_informatic_parent">
+		<div id="map_holder" style="width: {store.informatic_minimized ? 1 : 100 - store.informatic_width}%">		
+			<Map />
+		</div>
+		{#if !store.informatic_minimized}
+		<Informatic />
+		{/if}
+	</div>	
+</div>
+
 <ParentMap />
-{#if !store.informatic_minimized}
-	<Informatic />
-{/if}
 {#if store.map.scale !== null}
-	<ScaleBar path_nodes={[{x: window_dims.width * ((store.informatic_minimized ? 1 : store.informatic_width / 100) - 0.15), y: window_dims.height - 30},  {x: window_dims.width * ((store.informatic_minimized ? 1 : store.informatic_width / 100) - 0.05), y: window_dims.height - 30}]} scale={store.map.scale / store.map_transform.scale} unit_group={store.unit_group}/>
+	<ScaleBar path_nodes={[{x: window_dims.width * ((store.informatic_minimized ? 1 :  1 - store.informatic_width / 100) - 0.15), y: window_dims.height - 30},  {x: window_dims.width * ((store.informatic_minimized ? 1 : 1 - store.informatic_width / 100) - 0.05), y: window_dims.height - 30}]} scale={store.map.scale / store.map_transform.scale} unit_group={store.unit_group}/>
 {/if}
 
 {#each store.modals as modal (modal)}
@@ -67,5 +77,26 @@
 			}}
 			modal={modal}
 		/>
-	
 {/each}
+
+<style>
+#layout_parent {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	width: 100%;
+}
+
+#map_informatic_parent{
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	height: calc(100% - 50px);
+}
+
+@media (min-width: 768px) {
+	#map_informatic_parent{
+		flex-direction: row;
+	}
+}
+</style>

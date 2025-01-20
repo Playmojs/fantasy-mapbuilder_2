@@ -117,13 +117,13 @@
 	let zoompan_element: ZoomPan
 		
 	function update_scale(){
-			zoompan_element.set_transform({x: 0, y: 50, scale: (window.innerHeight-50) / map_.naturalHeight / window.innerWidth * map_.naturalWidth});
+			zoompan_element.set_transform({x: 0, y: 0, scale: (window.innerHeight - 50) / map_.naturalHeight / window.innerWidth * map_.naturalWidth});
 	}
 
-	let offset_limit = $state({x: 0, y: 50, width: 1920, height: 1080})
+	let offset_limit = $state({x: 0, y: 0, width: 1920, height: 1080})
 	function update_offset_limit(){
 		if (!window){return}
-		offset_limit = {x: 0, y: 50, width: window.innerWidth*(store.informatic_minimized ? 1 : store.informatic_width / 100), height: window.innerHeight - 50}
+		offset_limit = {x: 0, y: 0, width: window.innerWidth*(store.informatic_minimized ? 1 : 1 - store.informatic_width / 100), height: window.innerHeight - 50}
 	}
 
 	function on_zoompan(transform: {x: number, y: number, scale: number}){
@@ -138,8 +138,8 @@
 
 </script>
 
-<div id="map-container" bind:this={mapContainer}>
-	<img id="map" alt="Map" bind:this={map_} src={image_source} onload={()=>{update_scale(); lines = []; store.drawing_path = false;}} />
+<div id="map" bind:this={mapContainer}>
+	<img id="map_image" alt="Map" bind:this={map_} src={image_source} onload={()=>{update_scale(); lines = []; store.drawing_path = false;}} />
 	{#if !store.drawing_path}
 		{#each store.markers as marker}
 			<Marker marker_data={marker} {get_relative_movement} />
@@ -152,21 +152,18 @@
 		{/each}
 	{/if}
 
-	<ZoomPan bind:this={zoompan_element} parent_selector="#map-container" offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
+	<ZoomPan bind:this={zoompan_element} parent_selector="#map" offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
 </div>
 
 <style>
-	#map-container {
+	#map {
 		touch-action: none;
-		position: relative;
-		height: 100%;
-		width: 100%;
 		overflow: hidden;
+		position: absolute;
 	}
 
-	#map {
+	#map_image {
 		width: 100%;
 		height: 100%;
-		display: block;
 	}
 </style>

@@ -1,8 +1,5 @@
-import { theme_entities } from "$lib/data.svelte";
 import { type User } from "@supabase/supabase-js";
 import { type Article, type MapData, type MarkerData, type ModalType, type Project, type Category} from "$lib/types";
-import { untrack } from "svelte";
-import { readable, writable } from "svelte/store";
 
 class Store {
     // Client only
@@ -13,7 +10,7 @@ class Store {
     drawing_path = $state(false)
     is_panning = $state(false);
     selected_marker = $state<number | null>(null); // TODO: Could this be a MarkerData instead of an id?
-    informatic_width = $state(66);
+    informatic_width = $state(33);
     text_size = $state(150);
     map_transform = $state({ x: 0, y: 0, scale: 1 });
     user = $state<User | null>(null);

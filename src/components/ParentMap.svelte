@@ -23,11 +23,11 @@
 		image: '/assets/fantasy-plus.png',
 		title: 'Add Map',
 		on_click: async () => {
-			let map_info: {file: File | null, title: string, article_id: number | null} = {file: null, title: '', article_id: null};
+			let map_info: {file: File | null, title: string, article_id: number | null, scale: number | null} = {file: null, title: '', article_id: null, scale: null};
 			await get_new_map_data(map_info);
 			if (map_info === undefined || map_info.file === null || map_info.title === '') {return}
 							
-			let response = await dtb.create_new_map(store.project_id, map_info.file, map_info.title, map_info.article_id);
+			let response = await dtb.create_new_map(store.project_id, map_info.file, map_info.title, map_info.article_id, map_info.scale);
 			if (response !== null) {
 				value.id = response.id
 			}

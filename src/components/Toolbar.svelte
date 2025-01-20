@@ -395,11 +395,7 @@
 
 <style>
 	#toolbar {
-		touch-action: none;
-		position: fixed;
-		top: 0;
-		width: 100%;
-		height: 50px; /* TODO: Define once */
+		flex: 0 0 50px;
 		background-color: #333;
 		color: var(--main_white);
 		display: flex;
