@@ -1,16 +1,15 @@
 <script lang="ts">
 	import SvelteMarkdown from 'svelte-markdown';
-	import { store } from '../store.svelte';
-	import Editor from './Editor.svelte';
+	import { store } from '../../store.svelte';
 	import { fly } from 'svelte/transition';
-	import { get_article_options, push_modal } from '$lib/modal_manager.svelte';
-	import KeyWordRenderer from './KeyWordRenderer.svelte';
+	import KeyWordRenderer from '../KeyWordRenderer.svelte';
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
 	import { theme_entities } from '$lib/data.svelte';
 
 	let informatic_window: HTMLDivElement;
 	let article_title: HTMLHeadElement;
 
+	// Dim is used as replacement for width/height, because the resizing should flexibly work in both directions.
 	let initial_dim: number;
 	let initial_mouse_dim: number;
 	let window_dim: number;
@@ -23,29 +22,27 @@
 	}
 	const resizerOnMouseDown = (e: MouseEvent) => {
 		e.preventDefault();
-
-		window_dim = window.innerWidth / 100;
-		initial_dim = informatic_window.getBoundingClientRect().left / window_dim;
-		initial_mouse_dim = e.pageX;
+		window_dim = (window.innerHeight - 50) / 100;
+		initial_dim = informatic_window.getBoundingClientRect().top / window_dim;
+		initial_mouse_dim = e.pageY + 50;
 	
 		window.addEventListener('mousemove', resizeMouse);
-		window.addEventListener('mouseup', stopResize);
+		window.addEventListener('mouseup', stopResizeMouse);
 	};
 
 	const resizerOnTouchDown = (e: TouchEvent) => {
 		e.preventDefault();
-
-		
-		window_dim = window.screen.availWidth / 100;
-		initial_dim = informatic_window.getBoundingClientRect().left / window_dim;
-		initial_mouse_dim = e.touches[0].pageX;
+	
+		window_dim = window.screen.availHeight / 100;
+		initial_dim = informatic_window.getBoundingClientRect().top / window_dim;
+		initial_mouse_dim = e.touches[0].pageY;
 		
 		window.addEventListener('touchmove', resizeTouch);
-		window.addEventListener('touchend', stopResize);
+		window.addEventListener('touchend', stopResizeTouch);
 	};
 
 	function resizeMouse(e: MouseEvent) {
-		resize(e.pageX);
+		resize(e.pageY);
 	}
 
 	function resizeTouch(e: TouchEvent) {
@@ -53,28 +50,32 @@
 		if (e.touches.length !== 1) {
 			return;
 		}
-		resize(e.touches[0].pageX);
+		resize(e.touches[0].pageY);
 	}
 
-	function resize(page_x: number) {
+	function resize(page_x: number, round: boolean = false) {
 		let new_size_percentage = 100 - (initial_dim + (page_x - initial_mouse_dim) / window_dim);
-		let lower_size_limit =  450 / window_dim;
-
-		new_size_percentage = new_size_percentage > lower_size_limit ? new_size_percentage > 95 ? 100 : new_size_percentage : lower_size_limit;
+		let lower_size_limit = 30 /window_dim;
+		if(round){
+			new_size_percentage = new_size_percentage < 35 ? lower_size_limit : new_size_percentage < 65 ? 50 : 100;
+		}
 		store.informatic_dim = new_size_percentage;
 	}
 
-	function stopResize() {
-		window.removeEventListener('mousemove', resizeMouse);
-		window.removeEventListener('mouseup', stopResize);
+	function stopResizeTouch(e: TouchEvent) {
+		e.stopPropagation();
+		if(e.touches.length === 1){
+			resize(e.touches[0].pageY)
+		}
 		window.removeEventListener('touchmove', resizeTouch);
-		window.removeEventListener('touchend', stopResize);
+		window.removeEventListener('touchend', stopResizeTouch);
 	}
-	
-	function open_article_options(){
-		push_modal(get_article_options(store.article.id))
+
+	function stopResizeMouse(e: MouseEvent) {
+		resize(e.pageY, true)
+		window.removeEventListener('mousemove', resizeMouse);
+		window.removeEventListener('mouseup', stopResizeMouse);
 	}
-	
 
 	let image_source = $state('');
 	$effect(() => {
@@ -86,33 +87,27 @@
 	function change_text_size(factor: number) {
 		store.text_size = store.text_size * factor;
 	}
-
-	const test = KeyWordRenderer
-
 </script>
 
 <div
 	id="informatic_window"
 	bind:this={informatic_window}
-	transition:fly={{x: 400, duration: 500 } }
-	class:mobile_layout={store.mobile_layout}
-	style='background-image: url("{theme_entities[store.category_cache[store.article.main_category ?? 0]?.theme_id ?? 0].image}"); width: {store.informatic_dim}%;'>
+	style='background-image: url("{theme_entities[store.category_cache[store.article.main_category ?? 0]?.theme_id ?? 0].image}"); height: {store.informatic_dim}%;'>
 	
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
-	<div id="informatic_content">
-		<div id='button_bar'>
-			<button
-				id="undo_article_button"
-				onclick={() => {
-					pop_article();
-				}}
+	<div id='button_bar'>
+		<button
+		id="undo_article_button"
+		onclick={() => {
+			pop_article();
+		}}
 				style="background-image: url('/assets/arrow_left.png');"
 				title="Go to last Article"
 				aria-label='Undo Button'
 				disabled={store.article_history.length <= 1}
-			></button>	
-			
-			<button
+				></button>	
+				
+				<button
 				id="redo_article_button"
 				onclick={() => {
 					undo_article_pop();
@@ -121,9 +116,9 @@
 				style="background-image: url('/assets/arrow_right.png');"
 				title="Go to next Article"
 				aria-label='Redo Button'
-			></button>
-
-			<button
+				></button>
+				
+				<button
 				id="increment_text_size_button"
 				onclick={() => {
 					change_text_size(1.1);
@@ -131,9 +126,9 @@
 				style="background-image: url('/assets/fantasy-plus.png');"
 				title="Increase text size"
 				aria-label='Increase Text Size Button'
-			></button>
-
-			<button
+				></button>
+				
+				<button
 				id="decrement_text_size_button"
 				onclick={() => {
 					change_text_size(0.9);
@@ -141,29 +136,11 @@
 				style="background-image: url('/assets/fantasy_minus.png');"
 				title="Decrease text size"
 				aria-label='Decrease Text Size Button'
-			></button>
-
-			<button
-				id="open_article_modal_button"
-				onclick={()=>{push_modal({type:'article_modal', data: store.article.id})}}
-				style="background-image: url('/assets/Parchment.png');"
-				title="View Article in Article Viewer"
-				aria-label="View Article in Article Viewer"
-			></button>
-
-			<button 
-				id="edit_image_button" 
-				onclick={open_article_options}
-				style="background-image: url('/assets/fantasy_cog.png');"
-				class:hidden={!store.edit_mode}
-				title="Increase text size"
-				aria-label='Increase Text Size Button'
-			></button>
-		</div>
+				></button>
+			</div>
+		<div id="informatic_content">
 		<div
 			id="article_title"
-			contenteditable={store.edit_mode}
-			class:editable={store.edit_mode}
 			onblur={() => {
 				updateTitle();
 			}}
@@ -179,14 +156,9 @@
 		/>
 		<article
 			id="article_content"
-			class={store.edit_mode ? 'editable' : 'non-editable'}
 			style="font-size: {store.text_size}%;"
 		>
-			{#if store.edit_mode}
-				<Editor />
-			{:else}
-				<SvelteMarkdown source={store.article.content} renderers={{link: KeyWordRenderer}}/>
-			{/if}
+			<SvelteMarkdown source={store.article.content} renderers={{link: KeyWordRenderer}}/>
 		</article>
 	</div>
 </div>
@@ -195,20 +167,22 @@
 	#informatic_window {
 		touch-action: none;
 		background-color: rgb(47, 47, 47);
-		height: 100%;
 		
 		z-index: 10;
 		display: flex;
+		flex-direction: column;
+		box-shadow: inset 0px 5px 5px rgb(20, 20, 20);
+		border-top-left-radius: 10px;
+		border-top-right-radius: 10px;
 		
 		background-position: top right;
 		background-size: 500px;
-		box-shadow: inset 5px 0px 5px rgb(20, 20, 20);
 	}
-
+	
 	#resizer {
 		position: relative;
-		cursor: e-resize;
-		flex: 0 0 10px;
+		cursor: n-resize;
+		flex: 0 0 30px;
 		background-color: transparent;
 		z-index: 10;
 	}
@@ -221,6 +195,11 @@
 		flex-direction: column;
 		gap: 1%;
 		margin: 10px;
+		overflow-y: scroll;
+	}
+
+	#informatic_content::-webkit-scrollbar{
+		display: none;
 	}
 	
 	#button_bar{
@@ -253,7 +232,7 @@
 	#article_content {
 		touch-action: pan-y;
 		
-		flex: 1;
+		flex: 0 0 100%;
 	
 		font-family: 'Garamond Regular';
 		text-align: justify;
@@ -265,8 +244,6 @@
 		color: var(--main_white);
 		white-space: normal;
 	}
-
-
 
 	#button_bar button{
 		position: relative;
@@ -284,10 +261,6 @@
 
 	#button_bar button:active{
 		box-shadow: inset 3px 3px 3px rgb(50, 50, 50);
-	}
-
-	#edit_image_button.hidden{
-		display: none;
 	}
 	
 	#redo_article_button:disabled{
@@ -311,22 +284,8 @@
 		text-overflow: ellipsis;
 	}
 
-	#article_title.editable{
-		color: black;
-		background-color: rgba(220, 220, 220, 0.8);
-	}
-
-
 	h1 {
 		margin: 5px;
-	}
-
-
-	#article_content.editable {
-		background-color: white;
-		color: black;
-		white-space: pre-wrap;
-		padding: 10px 0px 0px 5px;
 	}
 
 	#article_content::-webkit-scrollbar-track.editable {
@@ -335,11 +294,6 @@
 
 	#article_content::-webkit-scrollbar {
 		width: 12px;
-	}
-
-	#article_content::-webkit-scrollbar-track.non-editable {
-		background: rgb(47, 47, 47);
-		border-radius: 10px;
 	}
 
 	#article_content::-webkit-scrollbar-thumb {
@@ -353,8 +307,6 @@
 	#article_content::-webkit-scrollbar-thumb:hover {
 		background-color: #888;
 	}
-
-
 
 	#article_image.hidden {
 		display: none;

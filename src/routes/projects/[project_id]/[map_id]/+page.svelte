@@ -12,6 +12,7 @@
 	import { push_article } from '$lib/article_stack';
 	import ModalWindow from '../../../../components/modals/ModalWindow.svelte';
 	import ScaleBar from '../../../../components/ScaleBar.svelte';
+	import MobileInformatic from '../../../../components/mobile/MobileInformatic.svelte';
 
 	function reset_modals() {
 		store.modals = [];
@@ -65,8 +66,12 @@
 		<div id="map_holder" style="{store.mobile_layout? "height" : "width"}: {store.informatic_minimized ? 1 : 100 - store.informatic_dim}%">		
 			<Map />
 		</div>
-		{#if !store.informatic_minimized}
-		<Informatic />
+		{#if store.mobile_layout}
+			<MobileInformatic/>
+		{:else}
+			{#if !store.informatic_minimized}
+			<Informatic />
+			{/if}
 		{/if}
 	</div>	
 </div>
