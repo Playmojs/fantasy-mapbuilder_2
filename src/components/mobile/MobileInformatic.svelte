@@ -3,8 +3,10 @@
 	import { store } from '../../store.svelte';
 	import { fly } from 'svelte/transition';
 	import KeyWordRenderer from '../KeyWordRenderer.svelte';
-	import { pop_article, undo_article_pop} from '$lib/article_stack';
+	import { pop_article, push_article, undo_article_pop} from '$lib/article_stack';
 	import { theme_entities } from '$lib/data.svelte';
+	import dtb from '$lib/dtb';
+	import { choose_article_by_id, push_promise_modal } from '$lib/modal_manager.svelte';
 
 	let informatic_window: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -14,37 +16,32 @@
 	let initial_mouse_dim: number;
 	let window_dim: number;
 
-	function updateTitle() {
-		const title: string = article_title.innerText;
-		if (store.article) {
-			store.article.title = title;
-		}
-	}
 	const resizerOnMouseDown = (e: MouseEvent) => {
 		e.preventDefault();
-		window_dim = (window.innerHeight - 50) / 100;
-		initial_dim = informatic_window.getBoundingClientRect().top / window_dim;
-		initial_mouse_dim = e.pageY + 50;
-	
+		window_dim = (window.screen.height - 50) / 100;
+		
+		initial_dim = store.informatic_dim
+		
+		initial_mouse_dim = e.pageY - 50;
+		
+		
 		window.addEventListener('mousemove', resizeMouse);
 		window.addEventListener('mouseup', stopResizeMouse);
 	};
-
-	const resizerOnTouchDown = (e: TouchEvent) => {
-		e.preventDefault();
 	
-		window_dim = window.screen.availHeight / 100;
-		initial_dim = informatic_window.getBoundingClientRect().top / window_dim;
+	const resizerOnTouchDown = (e: TouchEvent) => {
+		window_dim = (window.screen.availHeight - 50) / 100;
+		initial_dim = store.informatic_dim;
 		initial_mouse_dim = e.touches[0].pageY;
 		
 		window.addEventListener('touchmove', resizeTouch);
 		window.addEventListener('touchend', stopResizeTouch);
 	};
-
+	
 	function resizeMouse(e: MouseEvent) {
 		resize(e.pageY);
 	}
-
+	
 	function resizeTouch(e: TouchEvent) {
 		e.stopPropagation();
 		if (e.touches.length !== 1) {
@@ -52,29 +49,47 @@
 		}
 		resize(e.touches[0].pageY);
 	}
-
-	function resize(page_x: number, round: boolean = false) {
-		let new_size_percentage = 100 - (initial_dim + (page_x - initial_mouse_dim) / window_dim);
-		let lower_size_limit = 30 /window_dim;
-		if(round){
-			new_size_percentage = new_size_percentage < 35 ? lower_size_limit : new_size_percentage < 65 ? 50 : 100;
-		}
-		store.informatic_dim = new_size_percentage;
+	
+	function resize(page_y: number) {
+		store.informatic_dim = initial_dim + (initial_mouse_dim - page_y) / window_dim;
 	}
-
+	
 	function stopResizeTouch(e: TouchEvent) {
 		e.stopPropagation();
-		if(e.touches.length === 1){
-			resize(e.touches[0].pageY)
-		}
+		determine_and_move_to_target()
 		window.removeEventListener('touchmove', resizeTouch);
 		window.removeEventListener('touchend', stopResizeTouch);
 	}
-
+	
 	function stopResizeMouse(e: MouseEvent) {
-		resize(e.pageY, true)
+		determine_and_move_to_target()
 		window.removeEventListener('mousemove', resizeMouse);
 		window.removeEventListener('mouseup', stopResizeMouse);
+	}
+
+	function determine_and_move_to_target(){
+		
+		const no_change: boolean = Math.abs( store.informatic_dim - initial_dim) < 5;
+		if (no_change){glide_to_target(initial_dim); return}
+
+		const lower_size_limit = 100 / window_dim;
+		const ascending: boolean = store.informatic_dim > initial_dim;
+
+		glide_to_target(store.informatic_dim < 50 && !ascending ? lower_size_limit : !ascending || (store.informatic_dim < 50 && ascending) ? 50 : 100);
+	}
+	
+	async function glide_to_target(target: number){
+		const initial_width = store.informatic_dim
+		const diff_percentage = target-initial_width
+
+		const n_frames = Math.floor(Math.abs(diff_percentage));
+
+		const time_ms = diff_percentage * 10;
+		for (let i = 0; i < n_frames; i += 1){
+			store.informatic_dim = initial_width + i / n_frames * diff_percentage
+			await new Promise(r => {setTimeout (r, 10)})
+		}
+		store.informatic_dim = target
 	}
 
 	let image_source = $state('');
@@ -83,6 +98,17 @@
 			image_source = URL.createObjectURL(store.image_public_urls[store.article.image]);
 		}
 	});
+
+	const open_article_modal = async () => {
+		await dtb.fetch_all_from_project(store.project_id);
+		const value: {id: number | null, title: string} = {id: null, title: ""};
+		await push_promise_modal({type: "choose_modal", data: {Articles: choose_article_by_id(value)}, use_search: true})
+		if(value.id === null){return}
+		const article = await dtb.get_article(store.project_id, value.id)
+		if(article){
+			push_article(article.id, false);
+		}
+	}
 
 	function change_text_size(factor: number) {
 		store.text_size = store.text_size * factor;
@@ -117,6 +143,14 @@
 				title="Go to next Article"
 				aria-label='Redo Button'
 				></button>
+
+				<button
+				id="open_article_modal_button"
+				onclick={open_article_modal}
+				style="background-image: url('/assets/Parchment.png');"
+				title="View Article in Article Viewer"
+				aria-label="View Article in Article Viewer"
+				></button>
 				
 				<button
 				id="increment_text_size_button"
@@ -141,9 +175,6 @@
 		<div id="informatic_content">
 		<div
 			id="article_title"
-			onblur={() => {
-				updateTitle();
-			}}
 		>
 			<h1 bind:this={article_title}>{store.article.title}</h1>
 		</div>
@@ -203,9 +234,10 @@
 	}
 	
 	#button_bar{
-		display: flex;
-		gap: 20px;
 		flex: 0 0 50px;
+		display: flex;
+		justify-content: center;
+		gap: 20px;
 	}
 	
 	#article_title {

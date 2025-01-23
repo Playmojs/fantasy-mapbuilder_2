@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { type ChooseModalData, type ModalEntity } from '$lib/types';
+	import { store } from '../../store.svelte';
 	import SearchInput from '../SearchInput.svelte';
 	import Modal from './Modal.svelte';
 
@@ -11,6 +12,8 @@
 		else{on_close(true);}
 		close()
 	}
+
+	const min_width = store.mobile_layout ? 20 : 200;
 
 	let current_tab = $state<string>(Object.keys(modal_data)[0]);
 	
@@ -54,7 +57,7 @@
 					onclick={() => {
 						handle_entity_click(entity);
 					}}
-						style={entity.background_image ? `background-image: url("${entity.background_image}");`: ''}
+						style={entity.background_image ? `background-image: url("${entity.background_image}");`: '' + `grid-template-columns: repeat(auto-fill, minmax(${min_width}px, 1fr)`}
 					>
 
 					{#if entity.image !== null}
@@ -139,7 +142,7 @@
 	#grid {
 		display: grid;
 		justify-content: space-around;
-		grid-template-columns: repeat(auto-fill, minmax(200px, 100px));
+		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 		gap: 20px;
 	}
 

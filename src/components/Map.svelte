@@ -10,7 +10,9 @@
 	let mapContainer: HTMLDivElement;
 	let map_: HTMLImageElement;
 
-	let click_pos: { x: number; y: number } = { x: 0, y: 0 };
+	let {map_container_rect}: {map_container_rect: {x: number, y: number, width: number, height: number}} = $props()
+
+	let click_pos: { x: number; y: number } = { x: 0, y: 0 }; 
 
 	let lines = $state<{x: number, y: number}[][]>([])
 	let current_line_index = 0
@@ -93,7 +95,7 @@
 	}
 	
 	function get_relative_position(position: {x: number, y: number}){
-		return {x: (position.x - store.map_transform.x)/store.map_transform.scale, y: (position.y - store.map_transform.y)/store.map_transform.scale}
+		return {x: (position.x - store.map_transform.x - map_container_rect.x)/store.map_transform.scale, y: (position.y - store.map_transform.y - map_container_rect.y)/store.map_transform.scale}
 	}
 
 	function get_relative_movement(x: number, y: number) {
@@ -117,17 +119,14 @@
 	let zoompan_element: ZoomPan
 		
 	function update_scale(){
-			zoompan_element.set_transform({x: 0, y: 0, scale: (window.innerHeight - 50) / map_.naturalHeight / window.innerWidth * map_.naturalWidth});
+		const screen_width = store.mobile_layout ? window.screen.width : window.innerWidth
+		const map_height = map_container_rect.height === 0 ? store.mobile_layout ? window.screen.height : window.innerHeight : map_container_rect.height
+		zoompan_element.set_transform({x: 0, y: 0, scale: map_height / map_.naturalHeight / screen_width * map_.naturalWidth});
 	}
 
 	let offset_limit = $state({x: 0, y: 0, width: 1920, height: 1080})
 	function update_offset_limit(){
-		if (!window){return}
-		if(store.mobile_layout){
-			offset_limit = {x: 0, y: 0, width: window.innerWidth, height: (window.innerHeight - 50)*(1 - store.informatic_dim / 100)}
-		} else {
-			offset_limit = {x: 0, y: 0, width: window.innerWidth*(store.informatic_minimized ? 1 : 1 - store.informatic_dim / 100), height: window.innerHeight - 50}
-		}
+		offset_limit = {x: 0, y: 0, width: map_container_rect.width, height: map_container_rect.height}
 	}
 
 	function on_zoompan(transform: {x: number, y: number, scale: number}){
@@ -162,11 +161,13 @@
 <style>
 	#map {
 		touch-action: none;
-		overflow: hidden;
 		position: absolute;
+		width: 100%;
+		height: auto;
 	}
 
 	#map_image {
+		overflow: hidden;
 		width: 100%;
 		height: 100%;
 	}

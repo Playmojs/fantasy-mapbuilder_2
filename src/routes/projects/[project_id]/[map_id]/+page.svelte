@@ -13,6 +13,7 @@
 	import ModalWindow from '../../../../components/modals/ModalWindow.svelte';
 	import ScaleBar from '../../../../components/ScaleBar.svelte';
 	import MobileInformatic from '../../../../components/mobile/MobileInformatic.svelte';
+	import MobileToolbar from '../../../../components/mobile/MobileToolbar.svelte';
 
 	function reset_modals() {
 		store.modals = [];
@@ -38,20 +39,39 @@
 		unsubscribe();
 	});
 
+	let map_container = $state<HTMLDivElement>();
+	let map_container_rect = $state<{x: number, y: number, width: number, height: number}>({x: 0, y: 0, width: 0, height: 0});
+
 	let window_dims = $state<{height: number, width: number}>({height: 0, width: 0})
 	let scale_bar_left_position = $derived<{x: number, y: number}>(store.mobile_layout ? {x: window_dims.width - 150 , y: window_dims.height * (store.informatic_minimized ? 1 : 1 - store.informatic_dim / 100) - 10} : {x: window_dims.width * ((store.informatic_minimized ? 1 :  1 - store.informatic_dim / 100) - 0.15), y: window_dims.height - 30})
 	let scale_bar_righ_position = $derived<{x: number, y: number}>({x: scale_bar_left_position.x + 0.1*window_dims.width, y: scale_bar_left_position.y})
+	$effect(()=>{
+		if(!map_container){return}
+		store.informatic_dim;
+		store.informatic_minimized;
+		map_container_rect = map_container.getBoundingClientRect()
+	})
+
+	$effect(()=>{
+		if (store.mobile_layout) {
+			store.informatic_dim = 50;
+		} else {
+			store.informatic_dim = 35;
+		}
+	})
 		
 	const update_window_dims = () => {
 		const expanding: boolean = window_dims.width < window.innerWidth;	
+		const current_layout: boolean = store.mobile_layout;
 		window_dims.height = window.innerHeight;
 		window_dims.width = window.innerWidth;
-		store.mobile_layout = window.innerWidth < 768;
-		console.log(window.innerWidth)
+		store.mobile_layout = window.screen.width < 768;
+		
 		if(!store.mobile_layout && !expanding){
 			store.informatic_dim = Math.max(store.informatic_dim, 450 * 100 / window.innerWidth)
 		}
 	}
+
 
 	onMount(()=>{
 		window.addEventListener('resize', update_window_dims)
@@ -61,10 +81,14 @@
 
 
 <div id="layout_parent">
-	<Toolbar />
-	<div id="map_informatic_parent">
-		<div id="map_holder" style="{store.mobile_layout? "height" : "width"}: {store.informatic_minimized ? 1 : 100 - store.informatic_dim}%">		
-			<Map />
+	{#if store.mobile_layout}
+		<MobileToolbar />
+	{:else}
+		<Toolbar />
+	{/if}
+	<div id="map_informatic_parent" class:mobile_layout={store.mobile_layout} >
+		<div id="map_holder" bind:this={map_container} style="{store.mobile_layout? "height" : "width"}: {store.informatic_minimized ? 100 : 100 - store.informatic_dim}%">		
+			<Map map_container_rect={map_container_rect}/>
 		</div>
 		{#if store.mobile_layout}
 			<MobileInformatic/>
@@ -99,15 +123,14 @@
 }
 
 #map_informatic_parent{
+	touch-action: none;
 	flex: 1;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	height: calc(100% - 50px);
 }
 
-@media (min-width: 768px) {
-	#map_informatic_parent{
-		flex-direction: row;
-	}
+#map_informatic_parent.mobile_layout{
+	flex-direction: column;
 }
 </style>

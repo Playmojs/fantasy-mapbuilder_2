@@ -1,9 +1,8 @@
-import CategoryModal from '../components/modals/CategoryModal.svelte';
 import { store } from '../store.svelte';
 import { get_modal_entity_themes, theme_entities, units } from './data.svelte';
 import dtb from './dtb';
 import type { ChooseModalData, ModalType, ModalEntity, UploadModalType, CategoryModalData, Category, CompositeModalType, MapUpload, CategoryUpload, ChooseModalType, ImageUpload } from './types';
-import { assert_unreachable, invert_many_to_many } from './utils';
+import { assert_unreachable} from './utils';
 
 
 export function push_modal(modal: ModalType): void {store.modals = [...store.modals, modal]}
@@ -24,7 +23,7 @@ export function push_promise_modal(modal: ModalType): Promise<void> {
 };
 
 export const choose_article_by_id: (value: {id: number | null, title: string}) => ModalEntity[] = (value) => {
-    return Object.entries(store.article_cache).map(([id, article]) => {
+    return Object.values(store.article_cache).map((article) => {
         return {
             image:
                 article.image && store.image_public_urls[article.image]
@@ -41,7 +40,7 @@ export const choose_article_by_id: (value: {id: number | null, title: string}) =
 
 export const choose_existing_map: (value: {id: number | null}) => Promise<ModalEntity[]> = async (value) => {
     await dtb.fetch_all_from_project(store.project_id);
-    return Object.entries(store.map_cache).map(([_, map]) => {
+    return Object.values(store.map_cache).map((map) => {
         return {
             image: URL.createObjectURL(store.image_public_urls[map.image]),
             title: map.title,
@@ -98,13 +97,13 @@ export const link_article: (value: {id: number | null, title: string}) => Promis
 }
 
 export const get_new_map_data: (value: {file: File | null, title: string, article_id: number | null, scale: number | null}) => Promise<void> = (value) => {
-    let modal: UploadModalType<MapUpload> = {type: 'upload_modal',
+    const modal: UploadModalType<MapUpload> = {type: 'upload_modal',
         data: {
             inputs: [
                 {type: 'text', name: 'title', label: 'Title', required: true },
                 {type: 'file', name: 'file', label: 'Upload File', required: true},
                 {type: 'button', name: 'article_link', label: 'Link Article', on_click: async (state) => {
-                    let value: {id: number | null, title: string} = {id: null, title: ''};
+                    const value: {id: number | null, title: string} = {id: null, title: ''};
                     await link_article(value);
                     state.article_link = value;
                 },
@@ -145,7 +144,7 @@ export type map_or_article = {
 
 export const choose_map_or_article: (value: {map_id: number | null, article_id: number| null}) => ChooseModalData = (value) => {
     return{
-        Maps:  Object.entries(store.map_cache).map(([_, map]) => {
+        Maps:  Object.values(store.map_cache).map((map) => {
             return {
                 image: URL.createObjectURL(store.image_public_urls[map.image]),
                 title: map.title,
@@ -155,7 +154,7 @@ export const choose_map_or_article: (value: {map_id: number | null, article_id: 
                 }
             };
         }),
-        Articles: Object.entries(store.article_cache).map(([_, article]) => {
+        Articles: Object.values(store.article_cache).map((article) => {
             return {
                 image:
                     article.image && store.image_public_urls[article.image]
@@ -178,7 +177,7 @@ export const get_article_to_category_modal: (article_id: number) => CategoryModa
         add_child_to_parent: (category_id: number) => {return dtb.insert_article_category_link(store.project_id, category_id, article_id)},
         remove_child_from_parent: (category_id: number) => {return dtb.delete_article_category_link(store.project_id, category_id, article_id)},
         async toggle_main_func(parent_id) {
-            let article = await dtb.get_article(store.project_id, article_id);
+            const article = await dtb.get_article(store.project_id, article_id);
             if(!article){return;}
             const new_main_category_id: number | null = parent_id === article.main_category ? null : parent_id;
             article.main_category = new_main_category_id;
@@ -216,7 +215,7 @@ export const get_add_category_modal: (value: {id: number | null}) => UploadModal
             inputs: [
                 {type: 'text', name: 'title', label: 'Category Title', required: true},
                 {type: 'button', name: 'theme', label: 'Select Theme', on_click: async (state) => {
-                    let theme: {id: number, title: string} = {id: state.theme.id, title: state.theme.title}
+                    const theme: {id: number, title: string} = {id: state.theme.id, title: state.theme.title}
                     await push_promise_modal({type:'choose_modal', data: {Themes: get_modal_entity_themes(theme)}, use_search: true})
                     state.theme = theme;
                 },
@@ -247,7 +246,7 @@ export const edit_category_modal: (category: Category) => UploadModalType<Catego
             inputs: [
                 {type: 'text', name: 'title', label: 'Category Title', required: true},
                 {type: 'button', name: 'theme', label: 'Select Theme', on_click: async (state) => {
-                    let theme: {id: number, title: string} = {id: state.theme.id, title: state.theme.title}
+                    const theme: {id: number, title: string} = {id: state.theme.id, title: state.theme.title}
                     await push_promise_modal({type:'choose_modal', data: {Themes: get_modal_entity_themes(theme)}, use_search: true})
                     state.theme = theme;
                 },
@@ -303,7 +302,7 @@ export const edit_category_modal: (category: Category) => UploadModalType<Catego
  }
 
  export const get_article_image_modal: (article_id: number) => UploadModalType<ImageUpload> = (article_id: number) => {
-    let article = {...store.article_cache[article_id]};
+    const article = {...store.article_cache[article_id]};
     return {
         type: 'upload_modal',
         data: {	
@@ -323,7 +322,7 @@ export const edit_category_modal: (category: Category) => UploadModalType<Catego
                     article.image = null;
                 }
                 else{
-                    let image_id = await dtb.upload_image(store.project_id, state.file, 'articles', null)
+                    const image_id = await dtb.upload_image(store.project_id, state.file, 'articles', null)
                     if(!image_id){
                         console.error("Image upload failed");
                         return;
