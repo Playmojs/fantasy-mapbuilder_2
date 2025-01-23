@@ -228,4 +228,11 @@
 	#grid-container::-webkit-scrollbar-thumb:hover {
 		background-color: #888;
 	}
+
+	@media(max-width: 768px){
+		#grid{
+			grid-template-columns: repeat(auto-fill, minmax(120px, 0.5fr));
+			grid-auto-rows: 120px;
+		}
+	}
 </style>
