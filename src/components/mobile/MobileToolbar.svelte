@@ -9,8 +9,21 @@
 	import { push_promise_modal, push_modal, choose_existing_map} from '$lib/modal_manager.svelte';
 	import DropdownMapAndArticleSearch from '../DropdownMapAndArticleSearch.svelte';
 	import { generate_map_graph } from '$lib/graph_gen.svelte';
+	import { preventDefault } from 'svelte/legacy';
 
     let use_graph = $state<boolean>(false)
+	let display_button_option = $state<boolean>(false)
+	let button_hold: boolean = false;
+
+	async function toggle_display_options_button(e: Event){
+		e.preventDefault()
+		button_hold = true;
+		await new Promise((r) => {setTimeout(r, 400)})
+		if(button_hold){
+			display_button_option = true;
+			window.addEventListener('click', ()=>{display_button_option=false})
+		}
+	}
 
 	const go_to_article_or_map_modal = async () => {
 		let value: {id: number| null} = {id: null}
@@ -43,31 +56,57 @@
     <div id="search_bar">
         <DropdownMapAndArticleSearch/>
     </div>
-	<div class="button_group">
-        {#if use_graph}
-        <button
-            onclick={()=>{open_map_graph();}}
-            style="background-image: url('/assets/Map_icon (2).png');"
-            aria-label="Open Map Graph"
-            title="Open Map Graph"
-            >
-        </button>
-        {:else}
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div id="cycle_button" 
+		ontouchstart={toggle_display_options_button} 
+		ontouchend={()=>{button_hold=false}} 
+		oncontextmenu={(e) => e.preventDefault()}
+		aria-roledescription="Cycle button"
+		class:open={display_button_option}>
+		{#if use_graph}
 		<button
-			onclick={()=>{go_to_article_or_map_modal();}}
-			style="background-image: url('/assets/old_map.png');"
-			aria-label="Go to Map or Article"
-			title="Go to Map or Article"
+			class="toolbar_button"
+			onclick={()=>{
+				if(display_button_option){return}
+				open_map_graph();}}
+			style="background-image: url('/assets/Map_icon (2).png');"
+			aria-label="Open Map Graph"
+			title="Open Map Graph"
 			>
 		</button>
-        {/if }
+		{:else}
+		<button
+			class="toolbar_button"
+			onclick={()=>{
+				if(display_button_option){return}
+				go_to_article_or_map_modal();}}
+			style="background-image: url('/assets/old_map.png');"
+			aria-label="Go to Map"
+			title="Go to Map"
+			>
+		</button>
+		{/if }
+		{#if display_button_option}
+		<div id="cycle_button_bottom"
+			class=open>
+		<button
+			onclick={() => use_graph = !use_graph}
+			style="background-image: url('/assets/{use_graph ? "old_map.png" : "Map_icon (2).png"}');"
+			aria-label="Choose new button"
+			title="Choose new button"
+		></button>
+		</div>
+		{/if}
+	
+	
 	</div>
 </div>
 
 <style>
 	#toolbar {
-		flex: 0 0 50px;
-        padding: 0px 10px 0px 30px;
+		flex: 0 0 70px;
+        padding: 0px 10px 0px 20px;
+		gap: 10px;
 
 		display: flex;
 		justify-content: end;
@@ -77,26 +116,23 @@
 		z-index: 11;
 	}
 
-	.button_group {
-		flex: 0 1 80px;
-		 
-		display: flex;
-		justify-content: center;
-		gap: 10px;
-		align-items: center;
-		height: 100%;
-	}
-
-	#toolbar button {
+	button{
 		aspect-ratio: 4/3;
-		height: 80%;
+		height: 40px;
 		border: none;
 		cursor: pointer;
 		background-size: contain;
 		background-position: center center;
-        background-color: transparent;
 		background-repeat: no-repeat;
-        
+		background-color: transparent;
+	}
+	
+	#cycle_button{
+		align-content: center;
+		width: 54px;
+		border-top-left-radius: 10px;
+		border-top-right-radius: 10px;
+		padding: 5px;
 	}
 
 	#toolbar button:hover {
@@ -107,9 +143,24 @@
 		flex: 1 0 fit-content;
 	}
 
-	#toolbar button:disabled{
+	button:disabled{
 		cursor: default;
 		box-shadow: none;
 		opacity: 1;
+	}
+
+	#cycle_button_bottom{
+		position: absolute;
+        top: 60px;
+		width: 54px;
+		padding: 5px;
+		right: 10px;
+       
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
+	}
+
+	.open{
+		background-color: rgb(47, 47, 47);
 	}
 </style>

@@ -5,6 +5,7 @@
 	import ZoomPan from '../ZoomPan.svelte';
 	import Modal from './Modal.svelte';
 	import { store } from '../../store.svelte';
+	import { get_screen_height } from '$lib/utils';
 
 	let{close, modal_data, on_close, use_search, window_rect}:{close: any, modal_data: GraphModalData, on_close: ((success: boolean) => Promise<void> | void) | undefined, use_search: boolean, window_rect: DOMRect} = $props()
 
@@ -15,7 +16,15 @@
 	let head_node: GraphNode;
 
 	let zoompan_element: ZoomPan;
-	
+	let default_scale: number = 0.8;
+
+	function rescale(){
+		default_scale = get_screen_height() / 1024 * 0.8
+	}
+
+	rescale()
+	window.addEventListener('resize', rescale)
+
 	function on_zoompan(transf: {x: number, y: number, scale: number}){
 		current_transform_state = transf;
 	}
@@ -74,7 +83,7 @@
 					zoompan_element.set_transform({x: current_transform_state.x - current_position.x + previous_position.x, y: current_transform_state.y - current_position.y + previous_position.y})
 					const delta_x = current_transform_state.x - initial_transf.x;
 					const delta_y = current_transform_state.y - initial_transf.y;
-					move_to_center({...current_position, x: current_position.x + delta_x, y: current_position.y + delta_y}, 0.8, 500)
+					move_to_center({...current_position, x: current_position.x + delta_x, y: current_position.y + delta_y}, default_scale, 500)
 				}
 				head_node.propagate_position(current_transform_state.scale);
 				break;
@@ -84,7 +93,7 @@
 					move_to_center(current_position, current_transform_state.scale, 500)
 				}
 				else{
-					move_to_center(current_position, 0.8, 500)
+					move_to_center(current_position, default_scale, 500)
 				}
 				break;
 			}
