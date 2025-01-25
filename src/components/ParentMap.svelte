@@ -93,22 +93,25 @@
 			class:hidden={store.map.parent_id === null && !store.edit_mode}
 			title="Hide parent map"
 			style={`background-image: url(/assets/${minimized ? 'fantasy-plus' : 'fantasy_minus'}.png);`}
+			aria-label="Hide parent map"
 		></button>
 		<button
 			id="edit_map"
 			onclick={changeParentMap}
 			class:hidden={!store.edit_mode || store.map.parent_id === null || minimized}
 			title="Add parent map"
+			aria-label="Change parent map"
 		></button>
 	</div>
 </div>
 
 <style>
 	#parent_map_bundle {
-		position: fixed;
-		top: 50px;
+		position: absolute;
+		top: 0px;
 		left: 0px;
-		width: 15%;
+		width: 200px;
+		max-width: 30%;
 		display: flex;
 		justify-content: start;
 	}

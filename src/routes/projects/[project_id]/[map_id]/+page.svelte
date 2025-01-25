@@ -43,8 +43,13 @@
 	let map_container_rect = $state<{x: number, y: number, width: number, height: number}>({x: 0, y: 0, width: 0, height: 0});
 
 	let window_dims = $state<{height: number, width: number}>({height: 0, width: 0})
-	let scale_bar_left_position = $derived<{x: number, y: number}>(store.mobile_layout ? {x: window_dims.width - 150 , y: window_dims.height * (store.informatic_minimized ? 1 : 1 - store.informatic_dim / 100) - 10} : {x: window_dims.width * ((store.informatic_minimized ? 1 :  1 - store.informatic_dim / 100) - 0.15), y: window_dims.height - 30})
-	let scale_bar_righ_position = $derived<{x: number, y: number}>({x: scale_bar_left_position.x + 0.1*window_dims.width, y: scale_bar_left_position.y})
+	let scale_bar_left_position = $derived<{x: number, y: number}>
+		(store.mobile_layout ? 
+			{x: window_dims.width - 150 , y: (window_dims.height - 70) * (store.informatic_minimized ? 1 : 1 - store.informatic_dim / 100) - 10} : 
+			{x: window_dims.width * ((store.informatic_minimized ? 1 :  1 - store.informatic_dim / 100) - 0.15), y: window_dims.height - 80}
+		)
+
+	let scale_bar_righ_position = $derived<{x: number, y: number}>({x: scale_bar_left_position.x + Math.max(0.1*window_dims.width, 100), y: scale_bar_left_position.y})
 	$effect(()=>{
 		if(!map_container){return}
 		store.informatic_dim;
@@ -89,6 +94,10 @@
 	<div id="map_informatic_parent" class:mobile_layout={store.mobile_layout} >
 		<div id="map_holder" bind:this={map_container} style="{store.mobile_layout? "height" : "width"}: {store.informatic_minimized ? 100 : 100 - store.informatic_dim}%">		
 			<Map map_container_rect={map_container_rect}/>
+			<ParentMap />
+			{#if store.map.scale !== null}
+				<ScaleBar path_nodes={[scale_bar_left_position, scale_bar_righ_position]} scale={store.map.scale / store.map_transform.scale} unit_group={store.unit_group}/>
+			{/if}
 		</div>
 		{#if store.mobile_layout}
 			<MobileInformatic/>
@@ -100,10 +109,7 @@
 	</div>	
 </div>
 
-<ParentMap />
-{#if store.map.scale !== null}
-	<ScaleBar path_nodes={[scale_bar_left_position, scale_bar_righ_position]} scale={store.map.scale / store.map_transform.scale} unit_group={store.unit_group}/>
-{/if}
+
 
 {#each store.modals as modal (modal)}
 		<ModalWindow
@@ -123,6 +129,7 @@
 }
 
 #map_informatic_parent{
+	position: relative;
 	touch-action: none;
 	flex: 1;
 	display: flex;
