@@ -17,7 +17,6 @@
 	let button_hold: boolean = false;
 
 	async function toggle_display_options_button(e: Event){
-		e.preventDefault()
 		button_hold = true;
 		await new Promise((r) => {setTimeout(r, 400)})
 		if(button_hold){
@@ -28,7 +27,7 @@
 
 	const go_to_article_or_map_modal = async () => {
 		let value: {id: number| null} = {id: null}
-		await push_promise_modal({type: "choose_modal", data: {Map: await choose_existing_map(value)}, use_search: true})
+		await push_promise_modal({type: "choose_modal", data: {Maps: await choose_existing_map(value)}, use_search: true})
 		if(value.id !== null){
 			gotoMap(value.id)
         }

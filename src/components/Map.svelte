@@ -160,15 +160,16 @@
 
 <style>
 	#map {
-		touch-action: none;
 		position: absolute;
-		width: 100%;
+		transform-origin: 'top left';
+		touch-action: none;
 		height: auto;
+		width: 100%;
 	}
 
 	#map_image {
-		overflow: hidden;
-		width: 100%;
 		height: 100%;
+		width: 100%;
+		overflow: hidden;
 	}
 </style>
