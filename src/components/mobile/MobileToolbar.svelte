@@ -10,6 +10,7 @@
 	import DropdownMapAndArticleSearch from '../DropdownMapAndArticleSearch.svelte';
 	import { generate_map_graph } from '$lib/graph_gen.svelte';
 	import { preventDefault } from 'svelte/legacy';
+	import { goto } from '$app/navigation';
 
     let use_graph = $state<boolean>(false)
 	let display_button_option = $state<boolean>(false)
@@ -53,6 +54,15 @@
 </script>
 
 <div id="toolbar">
+	<button
+			onclick={() => {
+				goto('/projects');
+			}}
+			style="background-image: url('/assets/house.png');"
+			aria-label="Home Button"
+			title="Home"
+		>
+	</button>
     <div id="search_bar">
         <DropdownMapAndArticleSearch/>
     </div>
@@ -105,7 +115,7 @@
 <style>
 	#toolbar {
 		flex: 0 0 70px;
-        padding: 0px 10px 0px 20px;
+        padding: 0px 10px 0px 5px;
 		gap: 10px;
 
 		display: flex;
