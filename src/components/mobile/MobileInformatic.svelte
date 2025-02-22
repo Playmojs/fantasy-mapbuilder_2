@@ -121,7 +121,8 @@
 	style='background-image: url("{theme_entities[store.category_cache[store.article.main_category ?? 0]?.theme_id ?? 0].image}"); height: {store.informatic_dim}%;'>
 	
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
-	<div id='button_bar'>
+	<div id='button_bar'
+	onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}>
 		<button
 		id="undo_article_button"
 		onclick={() => {
@@ -226,6 +227,7 @@
 		flex-direction: column;
 		gap: 1%;
 		margin: 10px;
+		margin-bottom: 60px;
 		overflow-y: scroll;
 	}
 
@@ -263,12 +265,12 @@
 
 	#article_content {
 		touch-action: pan-y;
-		
 		flex: 0 0 100%;
+		overflow-y: auto;
+		
 	
 		font-family: 'Garamond Regular';
 		text-align: justify;
-		overflow-y: scroll;
 
 		padding: 0px 10px;
 		border-radius: 10px;
