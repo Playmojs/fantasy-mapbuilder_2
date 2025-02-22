@@ -62,13 +62,6 @@
 						<img class="entity-image" src={entity.image} alt={entity.title} />
 					</div>
 					<p>{entity.title}</p>
-					<button
-						id="edit_project"
-						onclick={(e: Event) => {
-							goto(`/projects/${id}/home`);
-							e.stopPropagation();
-						}}
-					></button>
 				</div>
 			{/each}
 		</div>
@@ -76,12 +69,13 @@
 </main>
 
 <style>
-	
 	main {
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
 		align-items: center;
+		width: 100%;
+		gap: 30px;
 	}
 	
 	#add_project_button {
@@ -102,12 +96,12 @@
 		z-index: 10;
 		box-shadow: 5px 5px 5px rgb(0, 0, 0);
 	}
-	
+
 	#title {
 		position: relative;
 		margin: auto;
-		color: var(--main_white);
 		font-size: 4rem;
+		color: var(--main_white);
 		margin: 40px 0px 30px 0px;
 		padding: 20px;
 		font-family: 'Cormorant Garamond';
@@ -119,26 +113,29 @@
 	#projects_container {
 		position: relative;
 		width: 90%;
-		top: 30px;
-		max-height: 80vh;
-
-		padding: 20px 50px;
-
+		/* max-height: 80vh; */
+		height: fit-content;
+		
 		border-radius: 15px;
 		background-color: rgb(90, 90, 90);
+		overflow-y: auto;
 		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
 		border: 5px ridge var(--main_gold);
-		overflow-y: auto;
 	}
-
+	
 	#grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 0.5fr));
+		grid-template-columns: repeat(auto-fill, minmax(250px, 0.5fr));
+		grid-template-rows: repeat(auto-fill, 250px);
 		gap: 50px;
+		
+		padding: 20px 50px;
 	}
 
+	
 	.entity-item {
 		position: relative;
+
 		cursor: pointer;
 		text-align: center;
 		background-color: rgb(65, 65, 65);
@@ -150,7 +147,7 @@
 		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 		
 	}
-
+	
 	.image-container {
 		position: relative;
 		width: 80%;
@@ -158,18 +155,18 @@
 		overflow: hidden;
 		margin: 10px;
 	}
-
+	
 	.entity-image {
 		position: relative;
 		padding-top: 5px;
-
+		
 		max-width: 100%;
 		max-height: 95%;
-
+		
 		border-radius: 15px;
 		box-shadow: 5px 5px 5px rgb(40, 40, 40);
 	}
-
+	
 	.entity-item p {
 		position: relative;
 		color: var(--main_white);
@@ -178,58 +175,62 @@
 		font-style: italic;
 		margin: 0px 0px 10px 0px;
 	}
-
-	#edit_project {
-		position: absolute;
-		top: 10px;
-		height: 20px;
-		right: 10px;
-		aspect-ratio: 1;
-		background-color: transparent;
-		background-image: url('/assets/fantasy_cog.png');
-		background-size: contain;
-		background-repeat: no-repeat;
-		border: none;
-	}
-
+	
+	
 	#projects_container::-webkit-scrollbar {
 		width: 12px;
 	}
-
+	
 	#projects_container::-webkit-scrollbar-thumb {
 		background-color: #555;
 	}
-
+	
 	#projects_container::-webkit-scrollbar-corner {
 		background-color: rgb(47, 47, 47);
 	}
-
+	
 	#projects_container::-webkit-scrollbar-thumb:hover {
 		background-color: #888;
 	}
 
-	@media (max-width: 1500px) {
-		#projects_container {
-			max-height: 50vh;
-			width: 87%;
-
-			padding: 20px 50px;
-		}
-		.image-container {
-			height: 150px;
+	@media(max-width: 1200px){
+		#grid{
+			grid-template-columns: repeat(auto-fill, minmax(180px, 0.5fr));
+			grid-template-rows: repeat(auto-fill, 180px);
 		}
 	}
-
-	@media (max-width: 1150px) {
-		#grid {
-			grid-template-columns: repeat(auto-fill, minmax(250px, 0.5fr));
-			gap: 25px;
+	
+	@media(max-width: 768px){
+		#grid{
+			grid-template-columns: repeat(auto-fill, minmax(120px, 0.5fr));
+			grid-template-rows: repeat(auto-fill, 120px);
+			gap: 20px;
+			padding: 20px 20px;
 		}
-		#projects_container {
-			max-height: 50vh;
-			width: 83%;
 
-			padding: 20px 50px;
+		#add_project_button {
+			left: 2.5%;
+			top: 8.7rem;
+			height: 6%;
+			aspect-ratio: 2;
+			border-radius: 10%;
+			color: var(--main_white);
+			text-shadow: 3px 3px 2px rgb(80, 80, 80);
+			background-color: var(--main_green);
+			border: none;
+			font-size: 1rem;
+			font-family: 'Cormorant Garamond';
+			font-weight: bold;
+			cursor: pointer;
+			z-index: 10;
+			box-shadow: 5px 5px 5px rgb(0, 0, 0);
+		}
+
+		.entity-item p {
+			font-size: 1rem;
+		}
+		#title{
+			font-size: 2rem;
 		}
 	}
 </style>
