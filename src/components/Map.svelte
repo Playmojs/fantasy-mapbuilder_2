@@ -10,7 +10,9 @@
 	let mapContainer: HTMLDivElement;
 	let map_: HTMLImageElement;
 
-	let click_pos: { x: number; y: number } = { x: 0, y: 0 };
+	let {map_container_rect}: {map_container_rect: {x: number, y: number, width: number, height: number}} = $props()
+
+	let click_pos: { x: number; y: number } = { x: 0, y: 0 }; 
 
 	let lines = $state<{x: number, y: number}[][]>([])
 	let current_line_index = 0
@@ -93,7 +95,7 @@
 	}
 	
 	function get_relative_position(position: {x: number, y: number}){
-		return {x: (position.x - store.map_transform.x)/store.map_transform.scale, y: (position.y - store.map_transform.y)/store.map_transform.scale}
+		return {x: (position.x - store.map_transform.x - map_container_rect.x)/store.map_transform.scale, y: (position.y - store.map_transform.y - map_container_rect.y)/store.map_transform.scale}
 	}
 
 	function get_relative_movement(x: number, y: number) {
@@ -117,13 +119,14 @@
 	let zoompan_element: ZoomPan
 		
 	function update_scale(){
-			zoompan_element.set_transform({x: 0, y: 50, scale: (window.innerHeight-50) / map_.naturalHeight / window.innerWidth * map_.naturalWidth});
+		const screen_width = store.mobile_layout ? window.screen.width : window.innerWidth
+		const map_height = map_container_rect.height === 0 ? store.mobile_layout ? window.screen.height : window.innerHeight : map_container_rect.height
+		zoompan_element.set_transform({x: 0, y: 0, scale: map_height / map_.naturalHeight / screen_width * map_.naturalWidth});
 	}
 
-	let offset_limit = $state({x: 0, y: 50, width: 1920, height: 1080})
+	let offset_limit = $state({x: 0, y: 0, width: 1920, height: 1080})
 	function update_offset_limit(){
-		if (!window){return}
-		offset_limit = {x: 0, y: 50, width: window.innerWidth*(store.informatic_minimized ? 1 : store.informatic_width / 100), height: window.innerHeight - 50}
+		offset_limit = {x: 0, y: 0, width: map_container_rect.width, height: map_container_rect.height}
 	}
 
 	function on_zoompan(transform: {x: number, y: number, scale: number}){
@@ -132,14 +135,14 @@
 
 	$effect(() => {
 		store.informatic_minimized;
-		store.informatic_width;
+		store.informatic_dim;
 		update_offset_limit();
 	})
 
 </script>
 
-<div id="map-container" bind:this={mapContainer}>
-	<img id="map" alt="Map" bind:this={map_} src={image_source} onload={()=>{update_scale(); lines = []; store.drawing_path = false;}} />
+<div id="map" bind:this={mapContainer}>
+	<img id="map_image" alt="Map" bind:this={map_} src={image_source} onload={()=>{update_scale(); lines = []; store.drawing_path = false;}} />
 	{#if !store.drawing_path}
 		{#each store.markers as marker}
 			<Marker marker_data={marker} {get_relative_movement} />
@@ -152,21 +155,21 @@
 		{/each}
 	{/if}
 
-	<ZoomPan bind:this={zoompan_element} parent_selector="#map-container" offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
+	<ZoomPan bind:this={zoompan_element} parent_selector="#map" offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
 </div>
 
 <style>
-	#map-container {
+	#map {
+		position: absolute;
+		transform-origin: 'top left';
 		touch-action: none;
-		position: relative;
+		height: auto;
+		width: 100%;
+	}
+
+	#map_image {
 		height: 100%;
 		width: 100%;
 		overflow: hidden;
-	}
-
-	#map {
-		width: 100%;
-		height: 100%;
-		display: block;
 	}
 </style>

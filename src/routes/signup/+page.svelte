@@ -35,24 +35,25 @@
 	}
 </script>
 
+
 <Homebar />
-<div id="background">
+<main>
 	<img id="image" src="/assets/map.jpg" alt="background" />
 	<div id="box">
 		<h1>Sign Up</h1>
 		{#if errorMessage}
 			<p class="error">{errorMessage}</p>
 		{/if}
-		<form on:submit|preventDefault={handleSignup}>
+		<form onsubmit={(e) => {e.preventDefault(); handleSignup()}}>
 			<label for="email">Email:</label>
-			<input type="email" id="email" bind:value={email} on:input={validateInputs} required />
+			<input type="email" id="email" bind:value={email} oninput={validateInputs} required />
 
 			<label for="password">Password:</label>
 			<input
 				type="password"
 				id="password"
 				bind:value={password}
-				on:input={validateInputs}
+				oninput={validateInputs}
 				required
 			/>
 
@@ -61,28 +62,30 @@
 				type="password"
 				id="confirm_password"
 				bind:value={confirm_password}
-				on:input={validateInputs}
+				oninput={validateInputs}
 				required
 			/>
 
 			<button type="submit" disabled={isDisabled}>Sign Up</button>
 		</form>
-		<p class="query">Already have an account? <a href="#" on:click={redirectToLogin}>Login</a></p>
+		<p class="query">Already have an account? <a href="/login" >Login</a></p>
 	</div>
-</div>
+</main>
+
 
 <style>
-	#background {
-		position: absolute;
+	main {
+		position: relative;
 		width: 100%;
-		height: 100%;
+		height: calc(100vh - 40px - 2rem);
 		overflow: hidden;
 		display: flex;
 		justify-content: center;
-		align-items: start;
+		align-items: center;
 	}
 
 	#image {
+		position: absolute;
 		width: 100%;
 		height: 100%;
 		display: block;
@@ -91,22 +94,23 @@
 	}
 
 	#box {
-		position: absolute;
-		width: 400px;
-		max-width: 50%;
+		position: relative;
+		width: 80%;
+		max-width: 400px;
+
+		display: flex;
+		flex-direction: column;
+		padding: 1rem 1rem 0rem 1rem;
+		gap: 30px;
+
 		background-color: rgb(60, 60, 60);
 		box-shadow: 10px 5px 5px rgb(40, 40, 40);
 		user-select: none;
-		border-radius: 20px;
-		padding: 1rem 1rem 0rem 1rem;
-		margin-top: 4rem;
-		gap: 30px;
 
+		border-radius: 20px;
 		border: 4px ridge var(--main_gold);
 
 		font-size: 100%;
-		display: flex;
-		flex-direction: column;
 	}
 
 	h1 {

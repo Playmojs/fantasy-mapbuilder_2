@@ -190,13 +190,14 @@
 </script>
 
 <div
-	style="height: 100%; width: 100%; font-size: {store.text_size}%;"
 	bind:this={editorElement}
 	id="editor"
 ></div>
 
 <style>
 	#editor {
+		height: 100%;
+		width: 97%;
 		background-color: var(--main_white);
 		color: black;
 	}

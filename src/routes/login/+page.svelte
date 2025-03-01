@@ -46,44 +46,45 @@
 </script>
 
 <Homebar />
-<div id="background">
+<main>
 	<img id="image" src="/assets/Invella.jpg" alt="background" />
 	<div id="box">
 		<h1>Login</h1>
 		{#if errorMessage}
 			<p class="error">{errorMessage}</p>
 		{/if}
-		<form on:submit|preventDefault={handleLogin}>
+		<form onsubmit={(e)=>{e.preventDefault(); handleLogin()}}>
 			<label for="email">Email:</label>
-			<input type="email" id="email" bind:value={email} on:input={validateInputs} required />
+			<input type="email" id="email" bind:value={email} oninput={validateInputs} required />
 
 			<label for="password">Password:</label>
 			<input
 				type="password"
 				id="password"
 				bind:value={password}
-				on:input={validateInputs}
+				oninput={validateInputs}
 				required
 			/>
 
 			<button type="submit" disabled={isDisabled}>Login</button>
 		</form>
-		<p class="query">Don't have an account? <a href="#" on:click={redirectToSignup}>Sign up</a></p>
+		<p class="query">Don't have an account? <a href="/signup" onclick={redirectToSignup}>Sign up</a></p>
 	</div>
-</div>
+</main>
 
 <style>
-	#background {
-		position: absolute;
+	main {
+		position: relative;
 		width: 100%;
-		height: 100%;
+		height: calc(100vh - 40px - 2rem);
 		overflow: hidden;
 		display: flex;
 		justify-content: center;
-		align-items: start;
+		align-items: center;
 	}
 
 	#image {
+		position: absolute;
 		width: 100%;
 		height: 100%;
 		display: block;
@@ -92,22 +93,23 @@
 	}
 
 	#box {
-		position: absolute;
-		width: 400px;
-		max-width: 50%;
+		position: relative;
+		width: 80%;
+		max-width: 400px;
+
+		display: flex;
+		flex-direction: column;
+		padding: 1rem 1rem 0rem 1rem;
+		gap: 30px;
+		font-size: 100%;
+
 		background-color: rgb(60, 60, 60);
 		box-shadow: 10px 5px 5px rgb(40, 40, 40);
 		user-select: none;
 		border-radius: 20px; 
-		padding: 1rem 1rem 0rem 1rem;
-		margin-top: 5rem;
-		gap: 30px;
 
 		border: 4px ridge var(--main_gold);
 
-		font-size: 100%;
-		display: flex;
-		flex-direction: column;
 	}
 
 	h1 {

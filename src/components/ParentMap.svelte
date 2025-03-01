@@ -23,11 +23,11 @@
 		image: '/assets/fantasy-plus.png',
 		title: 'Add Map',
 		on_click: async () => {
-			let map_info: {file: File | null, title: string, article_id: number | null} = {file: null, title: '', article_id: null};
+			let map_info: {file: File | null, title: string, article_id: number | null, scale: number | null} = {file: null, title: '', article_id: null, scale: null};
 			await get_new_map_data(map_info);
 			if (map_info === undefined || map_info.file === null || map_info.title === '') {return}
 							
-			let response = await dtb.create_new_map(store.project_id, map_info.file, map_info.title, map_info.article_id);
+			let response = await dtb.create_new_map(store.project_id, map_info.file, map_info.title, map_info.article_id, map_info.scale);
 			if (response !== null) {
 				value.id = response.id
 			}
@@ -93,22 +93,25 @@
 			class:hidden={store.map.parent_id === null && !store.edit_mode}
 			title="Hide parent map"
 			style={`background-image: url(/assets/${minimized ? 'fantasy-plus' : 'fantasy_minus'}.png);`}
+			aria-label="Hide parent map"
 		></button>
 		<button
 			id="edit_map"
 			onclick={changeParentMap}
 			class:hidden={!store.edit_mode || store.map.parent_id === null || minimized}
 			title="Add parent map"
+			aria-label="Change parent map"
 		></button>
 	</div>
 </div>
 
 <style>
 	#parent_map_bundle {
-		position: fixed;
-		top: 50px;
+		position: absolute;
+		top: 0px;
 		left: 0px;
-		width: 15%;
+		width: 200px;
+		max-width: 30%;
 		display: flex;
 		justify-content: start;
 	}

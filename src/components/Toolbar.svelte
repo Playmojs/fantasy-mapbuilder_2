@@ -4,21 +4,17 @@
 		type UploadModalType,
 		type GraphModalData,
 		type MapUpload,
-
-
 	} from '$lib/types';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
 	import { assert, assert_unreachable } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { gotoMap } from '$lib/goto_map';
-	import { choose_article_by_id, push_promise_modal, choose_no_article, add_article_to_marker, link_article, get_new_map_data, push_modal, choose_map_or_article, type map_or_article, edit_category_modal, get_composite_category_modal, get_choose_category_to_edit_modal, get_article_options, get_article_to_category_modal} from '$lib/modal_manager.svelte';
+	import { push_promise_modal, add_article_to_marker, link_article, get_new_map_data, push_modal, choose_map_or_article, get_composite_category_modal, get_choose_category_to_edit_modal, get_article_to_category_modal} from '$lib/modal_manager.svelte';
 	import { push_article } from '$lib/article_stack';
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen.svelte';
 	import { theme_entities, units } from '$lib/data.svelte';
-	import GraphModal from './modals/GraphModal.svelte';
-
 	const add_map: ModalEntity = {
 		image: '/assets/plus.png',
 		title: 'Add Map',
@@ -236,6 +232,8 @@
 	let category_graph_data = $state<GraphModalData>({graph_entities: {}, head_id: -1});
 
 	// This is quite a stupid setup, because one would think that a simple $derived.by could replace this $effect. Maybe it can, but I haven't been able to make it work.
+	// The idea is that category_graph_data should be deeply reactive, but with $derived it isn't. When I define it as state, and update with effect, it gets deeply reactive.
+
 	$effect(()=> {
 		store.category_links;
 		const category_graph: {[id: number]: number[]} = ({[-1]: generate_category_graph(), ...store.category_links})
@@ -311,7 +309,7 @@
 			>
 		</button>
 	</div>
-	<div>
+	<div id="search_bar">
 		<DropdownMapAndArticleSearch/>
 	</div>
 	<div class="button_group">
@@ -395,27 +393,26 @@
 
 <style>
 	#toolbar {
-		touch-action: none;
-		position: fixed;
-		top: 0;
-		width: 100%;
-		height: 50px; /* TODO: Define once */
-		background-color: #333;
-		color: var(--main_white);
+		flex: 0 0 50px;
+
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
+
+		background-color: #333;
+		color: var(--main_white);
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 		z-index: 11;
 	}
 
 	.button_group {
+		flex: 0 1 150px;
+		 
 		display: flex;
 		justify-content: center;
 		gap: 10px;
 		align-items: center;
 		height: 100%;
-		width: 10px;
 	}
 
 	#toolbar button {
@@ -433,9 +430,15 @@
 		opacity: 0.8; /* Slight hover effect */
 	}
 
+	#search_bar{
+		flex: 1 0 fit-content;
+	}
+	
 	#edit_marker_group{
 		height: 90%;
 		width: 150px;
+		height: 80%;
+		flex: 0 1 200px;
 		flex-shrink: 0;
 		background-image: url('/assets/image_frame_test.png');
 		background-repeat: no-repeat;

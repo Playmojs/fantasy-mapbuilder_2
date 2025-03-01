@@ -37,8 +37,7 @@
 <style>
 	nav {
 		position: relative;
-		left: 0;
-		right: 0;
+		width: calc(100% - 8rem);
 		background-color: #333;
 		height: 40px;
 		display: flex;
@@ -55,20 +54,14 @@
 		align-items: center;
 	}
 
-	.left-buttons a {
-		margin-right: 3rem;
-	}
-
-	.right-buttons a {
-		margin-left: 1.5rem;
-	}
-
 	a {
 		color: var(--main_white);
 		text-shadow: 5px 5px 5px rgb(10, 10, 10);
+		text-align: center;
 		text-decoration: none;
 		font-weight: bold;
 		font-size: 1.2rem;
+		padding: 0px 20px;
 	}
 
 	a:hover {
@@ -77,6 +70,7 @@
 
 	@media (max-width: 750px) {
 		nav {
+			width: calc(100% - 120px);
 			padding-left: 60px;
 			padding-right: 60px;
 		}
@@ -87,11 +81,14 @@
 
 	@media (max-width: 550px) {
 		nav {
+			width: calc(100% - 60px);
 			padding-left: 30px;
 			padding-right: 30px;
 		}
+
 		a {
 			font-size: 0.85rem;
+			padding: 0px 10px;
 		}
 	}
 </style>

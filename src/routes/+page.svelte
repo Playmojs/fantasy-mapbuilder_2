@@ -119,10 +119,12 @@
 	@media (max-width: 550px) {
 		h1 {
 			font-size: 3rem;
+			text-decoration: none;
 		}
 		h2 {
 			font-size: 2rem;
 		}
+
 		#description_box {
 			width: 200px;
 			margin-top: 10px;
