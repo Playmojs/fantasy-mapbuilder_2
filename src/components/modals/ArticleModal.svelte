@@ -1,5 +1,4 @@
 <script lang="ts">
-	import SvelteMarkdown from 'svelte-markdown';
 	import { store } from '../../store.svelte';
 	import Editor from '../Editor.svelte';
 	import dtb from '$lib/dtb';
@@ -8,6 +7,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type { Category } from '$lib/types';
 	import { theme_entities } from '$lib/data.svelte';
+	import SvelteMarkdown from 'svelte-markdown';
 
 	let {close, article_id, on_close} : {close: () => void, article_id: number, on_close?: (success: boolean) => void} = $props()
 	
@@ -94,29 +94,6 @@
 	class:edit_mode={store.edit_mode}
 >
 	<div id='button_bar'>
-
-		<!-- <button
-			id="undo_article_button"
-			onclick={() => {
-				set_article_id_from_stack(-1);
-			}}
-			style="background-image: url('/assets/arrow_left.png');"
-			title="Go to last Article"
-			aria-label='Undo Button'
-			disabled={stack_ix === -1 || stack_ix === 0}
-		></button>	
-		
-		<button
-			id="redo_article_button"
-			onclick={() => {
-				set_article_id_from_stack(1);
-			}}
-			disabled={stack_ix === -1 || stack_ix === article_stack.length - 1}
-			style="background-image: url('/assets/arrow_right.png');"
-			title="Go to next Article"
-			aria-label='Redo Button'
-		></button> -->
-
 		<div id="articles_tab">
 			{#each store.article_modal_articles as id}
 				<button class='tab_button' class:disabled={article_id === id} onclick={()=>{set_article_id(id)}}>
@@ -226,7 +203,7 @@
 				id="article_content"
 				style="font-size: {text_size}%;"
 			>
-				<SvelteMarkdown source={editor ? latest_editor_content : article.content} renderers={{link: KeyWordRenderer}}/>
+				<SvelteMarkdown source={editor ? latest_editor_content : article.content} renderers={{link: KeyWordRenderer as any}}/> 
 			</div>
 			{#if edit_mode}
 			<div id="article_editor">
@@ -373,12 +350,11 @@
 
     #article_title {
 		position: relative;
-        height: 20%;
         min-width: 400px;
         max-width: 800px;
         margin: 20px auto;
 		
-        font-size: 3rem;
+        font-size: 2rem;
         text-align: center;
         border-radius: 10px;
         font-family: 'Garamond Semibold Italic';
@@ -387,6 +363,8 @@
     }
 	
 	#image_container{
+		flex: 1;
+		
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -394,7 +372,8 @@
 	
     #article_image {
 		position: relative;
-        width: 60%;
+        max-width: 80%;
+		max-height: 100%;
         border-radius: 10px;
     }
 

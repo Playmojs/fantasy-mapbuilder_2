@@ -193,7 +193,7 @@
 			{#if store.edit_mode}
 				<Editor bind:this={editor} original_content={store.article.content} text_size={store.text_size} on_destroy={editor_on_destroy}/>
 			{:else}
-				<SvelteMarkdown source={original_article_content} renderers={{link: KeyWordRenderer}}/>
+				<SvelteMarkdown source={original_article_content} renderers={{link: KeyWordRenderer as any}}/>
 			{/if}
 		</div>
 	</div>

@@ -76,6 +76,9 @@
 				suggestions: {
 					enabled: false
 				},
+				suggest: {
+					showWords: false
+				},
 				value: original_content
 			});
 		}
