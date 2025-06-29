@@ -136,7 +136,7 @@
 				onclick={() => {
 					change_text_size(1.1);
 				}}
-				style="background-image: url('/assets/+ and - +.png');"
+				style="background-image: url('/assets/fantasy-plus.png');"
 				title="Increase text size"
 				aria-label='Increase Text Size Button'
 			></button>
