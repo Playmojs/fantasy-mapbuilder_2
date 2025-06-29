@@ -31,12 +31,9 @@
 		}
 	}
 
-	let image = $state<string>('');
-	$effect(() => {
-		image = store.image_public_urls[intermediate_image]
+	let image = $derived(store.image_public_urls[intermediate_image]
 			? URL.createObjectURL(store.image_public_urls[intermediate_image])
-			: default_img;
-	});
+			: default_img);
 
 	get_data();
 </script>

@@ -46,7 +46,7 @@
 	}
 
 	let remove_map: (value: {id: number | null}) => ModalEntity = (value) => {return {
-			image: '/assets/minus.png',
+			image: '/assets/minus_2.png',
 			title: 'Remove Map',
 			on_click: () => {
 				value.id = null
@@ -92,7 +92,7 @@
 			}}
 			class:hidden={store.map.parent_id === null && !store.edit_mode}
 			title="Hide parent map"
-			style={`background-image: url(/assets/${minimized ? 'fantasy-plus' : 'fantasy_minus'}.png);`}
+			style={`background-image: url(/assets/${minimized ? "fantasy-plus" : 'minus_2'}.png);`}
 			aria-label="Hide parent map"
 		></button>
 		<button

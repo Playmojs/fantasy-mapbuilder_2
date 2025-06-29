@@ -136,7 +136,7 @@
 				onclick={() => {
 					change_text_size(1.1);
 				}}
-				style="background-image: url('/assets/fantasy-plus.png');"
+				style="background-image: url('/assets/+ and - +.png');"
 				title="Increase text size"
 				aria-label='Increase Text Size Button'
 			></button>
@@ -146,7 +146,7 @@
 				onclick={() => {
 					change_text_size(0.9);
 				}}
-				style="background-image: url('/assets/fantasy_minus.png');"
+				style="background-image: url('/assets/minus_2.png');"
 				title="Decrease text size"
 				aria-label='Decrease Text Size Button'
 			></button>
@@ -427,6 +427,10 @@
 	:global(em) {
 		font-family: 'Cormorant Garamond', serif;
 		font-style: italic;
+	}
+
+	:global(li) {
+		font-family: 'Cormorant Garamond', serif;
 	}
 
 	h1 {

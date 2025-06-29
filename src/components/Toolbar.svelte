@@ -378,7 +378,7 @@
 			onclick={()=>{store.drawing_path = !store.drawing_path}} 
 			class:hidden={store.map.scale === null}
 			class:pressed={store.drawing_path}
-			style="background-image: url('/assets/Measure_line.png')">
+			style="background-image: url('/assets/MapDistanceIcon.png')">
 		</button>	
 		<button
 			id="minimize_button"
