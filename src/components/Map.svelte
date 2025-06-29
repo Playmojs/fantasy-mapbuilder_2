@@ -109,8 +109,7 @@
 	onMount(() => {
 		map_.addEventListener('mousedown', detect_click);
 		map_.addEventListener('touchstart', detect_touch);
-		window.addEventListener('keydown', detect_escape)
-		window.addEventListener('resize', update_offset_limit);
+		window.addEventListener('keydown', detect_escape);
 	});
 	
 
@@ -124,20 +123,9 @@
 		zoompan_element.set_transform({x: 0, y: 0, scale: map_height / map_.naturalHeight / screen_width * map_.naturalWidth});
 	}
 
-	let offset_limit = $state({x: 0, y: 0, width: 1920, height: 1080})
-	function update_offset_limit(){
-		offset_limit = {x: 0, y: 0, width: map_container_rect.width, height: map_container_rect.height}
-	}
-
 	function on_zoompan(transform: {x: number, y: number, scale: number}){
 		store.map_transform = transform;
 	}
-
-	$effect(() => {
-		store.informatic_minimized;
-		store.informatic_dim;
-		update_offset_limit();
-	})
 
 </script>
 
@@ -155,7 +143,7 @@
 		{/each}
 	{/if}
 
-	<ZoomPan bind:this={zoompan_element} parent_selector="#map" offset_limit={offset_limit} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
+	<ZoomPan bind:this={zoompan_element} parent_selector="#map" offset_limit={{x: 0, y: 0, width: map_container_rect.width, height: map_container_rect.height}} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
 </div>
 
 <style>

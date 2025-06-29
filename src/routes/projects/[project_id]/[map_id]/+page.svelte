@@ -7,7 +7,7 @@
 
 	import { page } from '$app/stores';
 	import dtb from '$lib/dtb';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, untrack } from 'svelte';
 	import { pop_modal } from '$lib/modal_manager.svelte';
 	import { push_article } from '$lib/article_stack';
 	import ModalWindow from '../../../../components/modals/ModalWindow.svelte';
@@ -41,6 +41,7 @@
 
 	let map_container = $state<HTMLDivElement>();
 	let map_container_rect = $state<{x: number, y: number, width: number, height: number}>({x: 0, y: 0, width: 0, height: 0});
+	let resizeObserver: ResizeObserver;
 
 	let window_dims = $state<{height: number, width: number}>({height: 0, width: 0})
 	let scale_bar_left_position = $derived<{x: number, y: number}>
@@ -50,12 +51,6 @@
 		)
 
 	let scale_bar_righ_position = $derived<{x: number, y: number}>({x: scale_bar_left_position.x + Math.max(0.1*window_dims.width, 100), y: scale_bar_left_position.y})
-	$effect(()=>{
-		if(!map_container){return}
-		store.informatic_dim;
-		store.informatic_minimized;
-		map_container_rect = map_container.getBoundingClientRect()
-	})
 
 	$effect(()=>{
 		if (store.mobile_layout) {
@@ -66,19 +61,27 @@
 	})
 		
 	const update_window_dims = () => {
-		const expanding: boolean = window_dims.width < window.innerWidth;	
+		const expanding: boolean = window_dims.width < window.innerWidth;
 		const current_layout: boolean = store.mobile_layout;
 		window_dims.height = window.innerHeight;
 		window_dims.width = window.innerWidth;
 		store.mobile_layout = window.screen.width < 768;
-		
+
 		if(!store.mobile_layout && !expanding){
 			store.informatic_dim = Math.max(store.informatic_dim, 450 * 100 / window.innerWidth)
 		}
 	}
 
-
 	onMount(()=>{
+		if (map_container) {
+			resizeObserver = new ResizeObserver((entries) => {
+				for (const entry of entries) {
+					map_container_rect = entry.target.getBoundingClientRect();
+				}
+			});
+			resizeObserver.observe(map_container);
+		}
+
 		window.addEventListener('resize', update_window_dims)
 		update_window_dims()
 	})
