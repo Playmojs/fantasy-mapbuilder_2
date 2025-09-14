@@ -21,7 +21,7 @@
 
 	let unsubscribe = page.subscribe(async (value) => {
 		reset_modals();
-		const map_id = +value.params.map_id;
+		const map_id = +(value.params.map_id ?? 0);
 		const map = await dtb.get_map(store.project_id, map_id);
 		if (map) {
 			store.map = map;

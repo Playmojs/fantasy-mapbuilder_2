@@ -15,6 +15,35 @@
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen.svelte';
 	import { theme_entities, units } from '$lib/data.svelte';
+	
+	// Setup keyboard shortcuts
+	$effect(
+	()=> {	
+		const handleKeydown = (event: KeyboardEvent) => 
+		{
+			if (!event.getModifierState('Control')) 
+			{
+				return
+			}
+			event.preventDefault();
+			// Control is pressed - activate keyboard shortcut
+			if(event.key === 'e' && store.write_access)
+			{
+				toggleEditable();
+				return;
+			}
+			if(event.key === 'm' && store.map.scale !== null)
+			{
+				store.drawing_path = !store.drawing_path;
+				return;
+			}
+		};
+
+		window.addEventListener('keydown', handleKeydown);
+    	return () => window.removeEventListener('keydown', handleKeydown);
+	})
+
+
 	const add_map: ModalEntity = {
 		image: '/assets/plus.png',
 		title: 'Add Map',
@@ -141,14 +170,18 @@
 	}
 
 	async function toggleEditable() {
+		// function that handles toggling edit mode 
+		if (!store.write_access || store.modals.length > 0)
+		{
+			// Toggling edit mode should not be possible.
+			return;
+		}
 		store.selected_marker = null;
 		store.edit_mode = !store.edit_mode;
 		if (store.edit_mode) {
 			await dtb.fetch_all_from_project(store.project_id);
 		}
 	}
-
-	
 
 	async function changeMarkerTarget() {
 		if (store.selected_marker === null) {
@@ -231,7 +264,7 @@
 
 	let category_graph_data = $state<GraphModalData>({graph_entities: {}, head_id: -1});
 
-	// This is quite a stupid setup, because one would think that a simple $derived.by could replace this $effect. Maybe it can, but I haven't been able to make it work.
+	// This is a quite stupid setup, because one would think that a simple $derived.by could replace this $effect. Maybe it can, but I haven't been able to make it work.
 	// The idea is that category_graph_data should be deeply reactive, but with $derived it isn't. When I define it as state, and update with effect, it gets deeply reactive.
 
 	$effect(()=> {

@@ -26,19 +26,6 @@
 
 	let current_categories = $derived<Category[]>(Object.entries(store.article_category_links).filter(([category_id, article_ids]) => {return article_ids.includes(article_id)}).map(([category_id, article_ids]) => {return store.category_cache[+category_id]}))
 
-	// let article_stack = $derived(Array.from(new Set(store.article_history.concat(store.undone_articles).concat(store.article_modal_articles))))
-	// let stack_ix = $derived(article_stack.indexOf(article_id))
-
-	// function set_article_id_from_stack(stack_change: number){
-	// 	if (stack_ix === -1){return}
-	// 	const new_ix = stack_ix + stack_change
-	// 	if (new_ix < 0 || new_ix >= article_stack.length){return}
-	// 	const current_tab = store.article_modal_articles.indexOf(article_id)
-	// 	article_id = article_stack[new_ix]
-	// 	store.article_modal_articles[current_tab] = article_id
-	// 	on_display = 'front-page'
-	// }
-
 	function close_article(id: number){
 		store.article_modal_articles = store.article_modal_articles.filter(val => {return id !== val})
 		if(store.article_modal_articles.length === 0){close()}
@@ -87,6 +74,37 @@
 		article_id = value.id
 	}
 
+	// Setup keyboard shortcuts
+	$effect(
+	()=> {	
+		const handleKeydown = (event: KeyboardEvent) => 
+		{
+			if (!event.getModifierState('Control')) 
+			{
+				return
+			}
+			event.preventDefault();
+			// Control is pressed - activate keyboard shortcut
+			if(event.key === 'e' && store.write_access)
+			{
+				edit_mode = !edit_mode;
+				return;
+			}
+			if(event.key === '+')
+			{
+				add_tab();
+			}
+			if(event.key === '-')
+			{
+				close_article(article_id);
+			}
+		};
+
+		window.addEventListener('keydown', handleKeydown);
+    	return () => window.removeEventListener('keydown', handleKeydown);
+	})
+
+
 </script>
 
 <div
@@ -101,7 +119,7 @@
 					<span class="close" onclick={(e: Event) => {close_article(id); e.stopPropagation()}}>&times;</span>
 				</button>
 			{/each}
-			<button id='add_tab_button' onclick={add_tab}>+
+			<button id='add_tab_button' onclick={add_tab}>
 			</button>
 		</div>
 

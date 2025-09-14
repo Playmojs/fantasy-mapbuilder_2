@@ -56,6 +56,7 @@
 			lines = [];
 			return;
 		}
+		
 		if (lines === undefined || current_line_index !== lines.length - 1)
 		{
 			current_line_index = lines.length
@@ -69,30 +70,54 @@
 		tracking_node = true
 	}
 	
-	
+
 	function track_latest_node(e: MouseEvent){
+		if(!store.drawing_path)
+		{
+			// TODO: Have better logic to display the drawn paths, but not draw new ones, when the path-drawing is disabled.
+			return;
+		}
 		lines[current_line_index][lines[current_line_index].length - 1] = get_relative_position({x: e.x, y: e.y})
 	}
 	
 	function detect_escape(e: KeyboardEvent){
 		if (e.key !== 'Escape'){return}
-		if (tracking_node){
-			tracking_node = false;
-			map_.removeEventListener('mousemove', track_latest_node);
-			if (lines[current_line_index].length > 2)
-			{
-				lines[current_line_index].pop();
-				current_line_index += 1;
-			}
-			else
-			{
-				lines[current_line_index] = [];
-			}
-			
+		
+		// If a node is tracked by the mouse cursor (ie a line segment is being drawn at this moment),
+		// stop drawing this linesegment. If not, remove all lines.
+		if(tracking_node)
+		{
+			cleanup_node_tracking();
+		}
+		else
+		{
+			lines = []
+		}
+	}
+
+	function cleanup_node_tracking()
+	{
+		if (!tracking_node)
+		{
 			return;
 		}
-		lines = []
+
+		tracking_node = false;
+		map_.removeEventListener('mousemove', track_latest_node);
+		
+		// If the line only has a single node, so no second point is placed, removet the entire line.
+		// If the line has at least two existing nodes, just keep the nodes as they are.
+		if (lines[current_line_index].length > 2)
+		{
+			lines[current_line_index].pop();
+			current_line_index += 1;
+		}
+		else
+		{
+			lines[current_line_index] = [];
+		}
 	}
+
 	
 	function get_relative_position(position: {x: number, y: number}){
 		return {x: (position.x - store.map_transform.x - map_container_rect.x)/store.map_transform.scale, y: (position.y - store.map_transform.y - map_container_rect.y)/store.map_transform.scale}
@@ -108,9 +133,23 @@
 
 	onMount(() => {
 		map_.addEventListener('mousedown', detect_click);
-		map_.addEventListener('touchstart', detect_touch);
-		window.addEventListener('keydown', detect_escape);
+		map_.addEventListener('touchstart', detect_touch); 
 	});
+
+	// Setup the effect event
+	$effect(()=>
+	{
+		window.addEventListener('keydown', detect_escape);
+    	return () => window.removeEventListener('keydown', detect_escape);
+	})
+
+	$effect(()=>
+	{
+		if(!store.drawing_path)
+		{
+			cleanup_node_tracking();
+		}
+	})
 	
 
 	let image_source = $derived<string>(store.map.image && store.image_public_urls[store.map.image] ? URL.createObjectURL(store.image_public_urls[store.map.image]) : '')
@@ -128,6 +167,10 @@
 	}
 
 </script>
+
+<svelte:head>
+  <title>{(store.edit_mode ? "*" : "") + store.map.title + " | Fantasy Mapbuilder"}</title>
+</svelte:head>
 
 <div id="map" bind:this={mapContainer}>
 	<img id="map_image" alt="Map" bind:this={map_} src={image_source} onload={()=>{update_scale(); lines = []; store.drawing_path = false;}} />
