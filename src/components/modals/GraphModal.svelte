@@ -128,7 +128,7 @@
 
 <div id="graph" bind:this={graph_element}>
 	<GraphNode id={modal_data.head_id} bind:this={head_node} graph_entities={modal_data.graph_entities} on_event={on_node_event} optional_event_prop={{display: !!modal_data.modal_event, images: modal_data.modal_event?.images ?? {}}}/>
-	<ZoomPan bind:this={zoompan_element} parent_selector='#graph' offset_limit={offset_limit} scale_limit={null} on_zoompan={on_zoompan}/>
+	<ZoomPan bind:this={zoompan_element} parent_selector='#graph' position_anchor={{x: window_rect.x, y: window_rect.y}} offset_limit={offset_limit} scale_limit={null} on_zoompan={on_zoompan}/>
 </div>
 
 

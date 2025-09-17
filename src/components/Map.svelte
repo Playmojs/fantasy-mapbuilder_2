@@ -166,6 +166,8 @@
 		store.map_transform = transform;
 	}
 
+	let mapPanLimitFactor: number = $derived(0.8 * store.map_transform.scale)
+
 </script>
 
 <svelte:head>
@@ -186,7 +188,7 @@
 		{/each}
 	{/if}
 
-	<ZoomPan bind:this={zoompan_element} parent_selector="#map" offset_limit={{x: 0, y: 0, width: map_container_rect.width, height: map_container_rect.height}} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
+	<ZoomPan bind:this={zoompan_element} parent_selector="#map" position_anchor={{x: 0, y: 50}} offset_limit={{x: -map_.naturalWidth * mapPanLimitFactor, y: -map_.naturalHeight * mapPanLimitFactor, width: map_container_rect.width + (2*mapPanLimitFactor*map_.naturalWidth), height: map_container_rect.height + (2* mapPanLimitFactor * map_.naturalHeight)}} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
 </div>
 
 <style>

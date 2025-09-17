@@ -3,7 +3,7 @@
 	import { store } from '../store.svelte';
 
 	
-	let {parent_selector, offset_limit, scale_limit, on_zoompan} : {parent_selector: string, offset_limit: {x: number, y: number, width: number, height: number}, scale_limit: {min: number, max: number} | null, on_zoompan?: (transform: {x: number, y: number, scale: number}) => void} = $props()
+	let {parent_selector, position_anchor, offset_limit, scale_limit, on_zoompan} : {parent_selector: string, position_anchor:{x: number, y:number}, offset_limit: {x: number, y: number, width: number, height: number}, scale_limit: {min: number, max: number} | null, on_zoompan?: (transform: {x: number, y: number, scale: number}) => void} = $props()
 	
 	export async function set_transform(transform: {x?: number, y?: number, scale?: number}, time_ms?: number){
 		if(!time_ms || time_ms === 0){
@@ -107,9 +107,12 @@
 
 	function handle_wheel(event: WheelEvent) {
 		event.preventDefault();
+
+		console.log(position_anchor.x + " and " + position_anchor.y)
+		
 		const delta = Math.sign(event.deltaY);
 		const new_scale = scale_limit ? clamp(scale * (1 + delta * -0.05), scale_limit.min, scale_limit.max) : scale * (1 + delta * -0.05);
-		zoom_at(event.clientX, event.clientY, new_scale);
+		zoom_at(event.clientX - position_anchor.x, event.clientY - position_anchor.y, new_scale);
 		update_transform();
 	}
 
