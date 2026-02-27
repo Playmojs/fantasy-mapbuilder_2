@@ -235,4 +235,9 @@
 			grid-auto-rows: 120px;
 		}
 	}
+
+	@media (max-height: 700px) {
+	#grid {
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	}}
 </style>

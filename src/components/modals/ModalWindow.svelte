@@ -68,4 +68,15 @@
 		border-radius: 5px;
 		border: 3px ridge var(--color-accent);
 	}
+
+	@media (max-height: 700px) {
+	.modal {
+		height: 95%;
+	}}
+	
+	@media (max-height: 550px) {
+	.modal {
+		height: 95%;
+	}
+	}
 </style>

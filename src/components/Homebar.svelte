@@ -91,4 +91,22 @@
 			padding: 0px 10px;
 		}
 	}
+
+	@media (max-height: 700px) {
+	nav {
+		height: 50px;
+		padding-top: var(--space-sm);
+		padding-bottom: var(--space-sm);
+	}
+	
+	a {
+		font-size: var(--text-base);
+	}
+	}
+
+	@media (max-height: 550px) {
+	nav {
+		height: 40px;
+	}
+	}
 </style>

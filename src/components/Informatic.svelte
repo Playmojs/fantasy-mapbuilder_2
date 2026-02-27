@@ -202,10 +202,6 @@
 			{:else}
 				<SvelteMarkdown source={original_article_content} renderers={{link: KeyWordRenderer as any}}/>
 			{/if}
- 
-			{#if store.informatic_marker_window !== null}
-				<MarkerWindow markerWindowData={store.informatic_marker_window} attach_bottom={false}/>
-			{/if}
 		</div>
 	</div>
 </div>

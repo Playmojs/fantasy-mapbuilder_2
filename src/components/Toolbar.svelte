@@ -520,4 +520,16 @@
 	.hidden {
 		display: none;
 	}
+
+	@media (max-height: 700px) {
+	#toolbar {
+		padding: var(--space-xs) var(--space-sm);
+		height: 50px;
+	}
+	
+	.btn-icon {
+		width: 32px;
+		height: 32px;
+	}
+	}
 </style>

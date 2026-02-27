@@ -133,4 +133,38 @@
 			font-size: 0.8rem;
 		}
 	}
+
+	@media (max-height: 700px) {
+	h1 {
+		font-size: clamp(2.5rem, 8vh, 4rem) !important;
+		margin: var(--space-sm) 0 !important;
+	}
+	
+	h2 {
+		font-size: clamp(1.5rem, 5vh, 2.5rem) !important;
+		padding-top: var(--space-md) !important;
+	}
+	
+	#description_box {
+		margin-top: var(--space-lg) !important;
+		padding: var(--space-sm) var(--space-md) !important;
+	}
+	
+	main {
+		margin-top: var(--space-md) !important;
+		max-height: calc(100vh - 60px);
+		overflow-y: auto;
+	}
+	}
+
+	@media (max-height: 550px) {
+	h1 {
+		font-size: clamp(2rem, 6vh, 3rem) !important;
+		text-decoration: none !important;
+	}
+	
+	#description_box {
+		margin-top: var(--space-sm) !important;
+	}
+	}
 </style>
