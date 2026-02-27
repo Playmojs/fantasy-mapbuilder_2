@@ -145,7 +145,7 @@
 		overflow-x: visible;
 		padding: 30% 50%;
 		user-select: none;
-		border-radius: 20px;
+		border-radius: var(--radius-xl);
 	}
 
 </style>

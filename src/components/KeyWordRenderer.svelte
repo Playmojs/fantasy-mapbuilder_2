@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import { keywords } from '$lib/keyword_manager';
+	import { store } from '../store.svelte';
 	import MarkerWindow from './MarkerWindow.svelte';
 
   const {href, title, text, raw, tokens}: {href: string, title: string | null, text: string, raw: string, tokens: any} = $props()
@@ -26,18 +27,18 @@
   <a
     onclick={()=>{if (id !== null){keywords[active_key].on_click(id)}}}
     onmouseenter={() => {
-      hover = true;
+      store.informatic_marker_window = {x: 0, y: 0, map_id: active_key == 'map' ? id: null, article_id: active_key == 'article' ? id: null}
     }}
     onmouseleave={() => {
-      hover = false;
+      store.informatic_marker_window = null;
     }}
     
     >{text}
-    {#if hover}
+    <!-- {#if hover}
      <div id="marker_wrapper">
 		  <MarkerWindow map_id={active_key == 'map' ? id: null} article_id={active_key == 'article' ? id: null} scale={1}/>
       </div>
-	  {/if}
+	  {/if} -->
   </a>
 {/if}
 

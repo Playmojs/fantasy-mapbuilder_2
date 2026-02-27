@@ -54,14 +54,14 @@
 		position: inherit;
 		left: 50%;
 		bottom: 100%;
-		background: var(--main_gold);
+		background: var(--color-accent);
 		width: 150px;
 		max-width: none;
 		color: var(--main_white);
-		border-radius: 10px;
+		border-radius: var(--radius-md);
 		transform-origin: bottom left;
 		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
-		padding-bottom: 20px;
+		padding-bottom: var(--space-lg);
 
 		z-index: 50;
 	}
@@ -69,13 +69,13 @@
 	#marker_window {
 		position: relative;
 
-		background: rgb(60, 60, 60);
+		background: var(--color-bg-secondary);
 		height: 95%;
 		padding-bottom: 20px;
 		color: var(--main_white);
-		margin: 0px 2.5%;
+		margin: 0 2.5%;
 		top: 10px;
-		border-radius: 10px;
+		border-radius: var(--radius-md);
 		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
 		text-overflow: ellipsis;
 	}
@@ -106,7 +106,8 @@
 		font-family: 'Cormorant Garamond', serif;
 		font-weight: bold;
 		font-style: italic;
-		margin-bottom: 5px;
-		margin-top: 5px;
+		color: var(--color-text-primary);
+		margin-bottom: var(--space-xs);
+		margin-top: var(--space-xs);
 	}
 </style>

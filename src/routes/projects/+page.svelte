@@ -62,13 +62,13 @@
 		position: relative;
 		margin: auto;
 		font-size: 4rem;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		margin: 40px 0px 30px 0px;
 		padding: 20px;
 		font-family: 'Cormorant Garamond';
-		text-decoration: underline solid rgba(67, 128, 41, 0.8);
+		text-decoration: underline solid var(--color-primary-dark);
 		text-underline-offset: 20px;
-		text-shadow: 5px 5px 5px rgb(10, 10, 10);
+		text-shadow: var(--text-shadow-base);
 	}
 
 	#projects_container {
@@ -78,10 +78,10 @@
 		height: fit-content;
 		
 		border-radius: 15px;
-		background-color: rgb(90, 90, 90);
+		background-color: var(--color-bg-tertiary);
 		overflow-y: auto;
-		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
-		border: 5px ridge var(--main_gold);
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+		border: 5px ridge var(--color-accent);
 	}
 	
 	#grid {
@@ -99,13 +99,13 @@
 
 		cursor: pointer;
 		text-align: center;
-		background-color: rgb(65, 65, 65);
+		background-color: var(--color-bg-secondary);
 		border-radius: 10px;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;
 		align-items: center;
-		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+		box-shadow: var(--shadow-md);
 		
 	}
 	
@@ -125,12 +125,12 @@
 		max-height: 95%;
 		
 		border-radius: 15px;
-		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+		box-shadow: var(--shadow-md);
 	}
 	
 	.entity-item p {
 		position: relative;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		font-size: 2rem;
 		font-family: 'Cormorant Garamond', serif;
 		font-style: italic;
@@ -143,15 +143,15 @@
 	}
 	
 	#projects_container::-webkit-scrollbar-thumb {
-		background-color: #555;
+		background-color: var(--color-panel);
 	}
 	
 	#projects_container::-webkit-scrollbar-corner {
-		background-color: rgb(47, 47, 47);
+		background-color: var(--color-panel-active);
 	}
 	
 	#projects_container::-webkit-scrollbar-thumb:hover {
-		background-color: #888;
+		background-color: var(--color-panel-hover);
 	}
 
 	@media(max-width: 1200px){

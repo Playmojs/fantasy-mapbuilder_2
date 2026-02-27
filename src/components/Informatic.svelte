@@ -16,6 +16,7 @@
 	import KeyWordRenderer from './KeyWordRenderer.svelte';
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
 	import { theme_entities } from '$lib/data.svelte';
+	import MarkerWindow from './MarkerWindow.svelte';
 
 	let informatic_window: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -110,6 +111,7 @@
 	<div id="informatic_content">
 		<div id='button_bar'>
 			<button
+				class="btn-icon"
 				id="undo_article_button"
 				onclick={() => {
 					pop_article();
@@ -121,6 +123,7 @@
 			></button>	
 			
 			<button
+				class="btn-icon"
 				id="redo_article_button"
 				onclick={() => {
 					undo_article_pop();
@@ -132,6 +135,7 @@
 			></button>
 
 			<button
+				class="btn-icon"
 				id="increment_text_size_button"
 				onclick={() => {
 					change_text_size(1.1);
@@ -142,6 +146,7 @@
 			></button>
 
 			<button
+				class="btn-icon"
 				id="decrement_text_size_button"
 				onclick={() => {
 					change_text_size(0.9);
@@ -152,6 +157,7 @@
 			></button>
 
 			<button
+				class="btn-icon"
 				id="open_article_modal_button"
 				onclick={()=>{push_modal({type:'article_modal', data: store.article.id})}}
 				style="background-image: url('/assets/Parchment.png');"
@@ -159,7 +165,8 @@
 				aria-label="View Article in Article Viewer"
 			></button>
 
-			<button 
+			<button
+				class="btn-icon"
 				id="edit_image_button" 
 				onclick={open_article_options}
 				style="background-image: url('/assets/fantasy_cog.png');"
@@ -195,6 +202,10 @@
 			{:else}
 				<SvelteMarkdown source={original_article_content} renderers={{link: KeyWordRenderer as any}}/>
 			{/if}
+ 
+			{#if store.informatic_marker_window !== null}
+				<MarkerWindow markerWindowData={store.informatic_marker_window} attach_bottom={false}/>
+			{/if}
 		</div>
 	</div>
 </div>
@@ -202,7 +213,7 @@
 <style>
 	#informatic_window {
 		touch-action: none;
-		background-color: rgb(47, 47, 47);
+		background-color: var(--color-bg-primary);
 		height: 100%;
 		
 		z-index: 10;
@@ -228,12 +239,12 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1%;
-		margin: 10px;
+		margin: var(--space-sm);
 	}
 	
 	#button_bar{
 		display: flex;
-		gap: 20px;
+		gap: var(--space-lg);
 		flex: 0 0 50px;
 	}
 	
@@ -245,17 +256,17 @@
 		
 		font-size: 150%;
 		text-align: center;
-		border-radius: 10px;
+		border-radius: var(--radius-md);
 		font-family: 'Garamond Semibold Italic';
 		white-space: nowrap;
 		background-color: rgba(50, 50, 50, 0.8);
-		color: var(--main_white);
+		color: var(--color-text-primary);
 	}
 	
 	#article_image {
 		position: relative;
 		margin: 0 auto;
-		border-radius: 10px;
+		border-radius: var(--radius-md);
 	}
 
 	#informatic {
@@ -267,10 +278,10 @@
 		text-align: justify;
 		overflow-y: scroll;
 
-		padding: 0px 10px;
-		border-radius: 10px;
-		background-color: rgb(47, 47, 47);
-		color: var(--main_white);
+		padding: 0 var(--spacing-sm);
+		border-radius: var(--radius-md);
+		background-color: var(--color-panel);
+		color: var(--color-text-primary);
 		white-space: normal;
 	}
 
@@ -284,14 +295,14 @@
 		cursor: pointer;
 		background-size: contain;
 		background-position: center center;
-		background-color: rgb(60, 60, 60);
-		border-radius: 10px;
+		background-color: var(--color-panel);
+		border-radius: var(--radius-md);
 		background-repeat: no-repeat;
-		box-shadow: 3px 3px 5px rgb(30, 30, 30);
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
 	}
 
 	#button_bar button:active{
-		box-shadow: inset 3px 3px 3px rgb(50, 50, 50);
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
 	}
 
 	#edit_image_button.hidden{
@@ -326,7 +337,7 @@
 
 
 	h1 {
-		margin: 5px;
+		margin: var(--spacing-xs);
 	}
 
 
@@ -340,10 +351,10 @@
 		font-family: 'Garamond Regular';
 		text-align: justify;
 		overflow-y: scroll;
-		padding: 0px 10px;
-		border-radius: 10px;
-		background-color: rgb(47, 47, 47);
-		color: var(--main_white);
+		padding: 0 var(--spacing-sm);
+		border-radius: var(--radius-md);
+		background-color: var(--color-bg-primary);
+		color: var(--color-text-primary);
 		white-space: normal;
 	}	
 
@@ -351,7 +362,7 @@
 		background-color: white;
 		color: black;
 		white-space: pre-wrap;
-		padding: 10px 0px 0px 5px;
+		padding: var(--spacing-sm) 0 0 var(--spacing-xs);
 	}
 
 	#informatic::-webkit-scrollbar-track.editable {
@@ -363,23 +374,21 @@
 	}
 
 	#informatic::-webkit-scrollbar-track.non-editable {
-		background: rgb(47, 47, 47);
-		border-radius: 10px;
+		background: var(--color-bg-primary);
+		border-radius: var(--radius-md);
 	}
 
 	#informatic::-webkit-scrollbar-thumb {
-		background-color: #555;
+		background-color: var(--color-bg-secondary);
 	}
 
 	#informatic::-webkit-scrollbar-corner {
-		background-color: rgb(47, 47, 47);
+		background-color: var(--color-bg-primary);
 	}
 
 	#informatic::-webkit-scrollbar-thumb:hover {
-		background-color: #888;
+		background-color: var(--color-bg-tertiary);
 	}
-
-
 
 	#article_image.hidden {
 		display: none;

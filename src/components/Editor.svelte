@@ -201,7 +201,7 @@
 	#editor {
 		height: 100%;
 		width: 97%;
-		background-color: var(--main_white);
+		background-color: var(--color-text-primary);
 		color: black;
 	}
 

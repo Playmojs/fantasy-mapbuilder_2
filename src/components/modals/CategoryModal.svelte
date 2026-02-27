@@ -57,22 +57,22 @@
         justify-content: space-between;
         align-items: center;
         width: 96%;
-        margin: 0px 2%;
+        margin: 0 2%;
     }
 
     #add_article_category_link{
-        color: var(--main_white);
+        color: var(--color-text-primary);
         font-size: large;
-        padding: 10px;
-        border-radius: 10px;
+        padding: var(--space-sm);
+        border-radius: var(--radius-md);
         background-color: var(--main_green);
         border: none;
-        box-shadow: 5px 5px 5px rgb(10, 10, 10);
+        box-shadow: var(--shadow-md);
         cursor:pointer;
     }
 
     #add_article_category_link:active{
-        box-shadow: inset 1px 1px 1px rgb(40, 40, 40);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.4);
     }
 
     #category_grid{
@@ -84,24 +84,24 @@
         height: 90%;
 
         padding: 2% 2%;
-        gap: 15px;
-        background-color: rgb(120, 120, 120);
-        border-radius: 20px;
-        box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
+        gap: var(--space-md);
+        background-color: var(--color-border-hover);
+        border-radius: var(--radius-xl);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
     }
 
     .category_display{
         position: relative;
         display: flex;
         justify-content: end;
-        padding-right: 10px;
+        padding-right: var(--space-sm);
         align-items: center;
-        background-color: rgb(70, 70, 70);
+        background-color: var(--color-panel-hover);
         background-position: top right;
         background-size: 100%;
-        color: var(--main_white);
-        border-radius: 10px;
-        box-shadow: 3px 3px 3px rgb(40, 40, 40);
+        color: var(--color-text-primary);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
     }
 
     .category_display input[type="checkbox"]{
@@ -117,7 +117,7 @@
         font-family: 'Cormorant Garamond';
         font-size: x-large;
         font-weight: bold;
-        margin: 5px;
+        margin: var(--space-xs);
         width: 60%;
     }
 
@@ -148,7 +148,7 @@
 	}
 
     h1{
-        color: var(--main_white);
-		text-shadow: 3px 3px 3px rgb(10, 10, 10);
+        color: var(--color-text-primary);
+		text-shadow: var(--text-shadow-base);
     }
 </style>

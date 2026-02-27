@@ -27,23 +27,23 @@
         align-items: center;
         width: 100%;
         height: 40%;
-		margin: 20px 0px;
+		margin: var(--space-lg) 0;
     }
 
     button{
         position: relative;
-		background-color: rgb(80, 80, 80);
+		background-color: var(--color-border);
 		cursor:pointer;
         width: 30%;
 		font-size: large;
-		color: var(--main_white);
-		border-radius: 10%;
-		padding: 7px 0px;
-		box-shadow: 3px 3px 3px rgb(10, 10, 10);
+		color: var(--color-text-primary);
+		border-radius: var(--radius-md);
+		padding: var(--space-xs) 0;
+		box-shadow: var(--shadow-sm);
     }
 
     h1{
-        color: var(--main_white);
-		text-shadow: 3px 3px 3px rgb(10, 10, 10);
+        color: var(--color-text-primary);
+		text-shadow: var(--text-shadow-base);
     }
 </style>

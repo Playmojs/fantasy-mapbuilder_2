@@ -31,36 +31,36 @@
 	h1 {
 		font-size: 7rem;
 		margin: auto;
-		color: var(--main_gold);
+		color: var(--color-accent);
 		font-family: 'Cormorant Garamond', serif;
 		font-weight: bold;
 		font-style: italic;
-		text-shadow: 10px 10px 10px rgb(5, 5, 5);
-		text-decoration: underline solid rgba(67, 128, 41, 0.6);
+		text-shadow: var(--text-shadow-strong);
+		text-decoration: underline solid var(--color-primary);
 		text-decoration-thickness: 6px;
 		text-underline-offset: 35px;
 	}
 
 	h2 {
-		padding-top: 50px;
+		padding-top: var(--space-3xl);
 		font-size: 4rem;
 		margin: auto;
-		color: var(--main_gold);
-		text-shadow: 5px 5px 5px rgb(10, 10, 10);
+		color: var(--color-accent);
+		text-shadow: var(--text-shadow-base);
 		font-family: 'Cormorant Garamond', serif;
 	}
 
 	#description_box {
 		width: 500px;
 		margin: auto;
-		margin-top: 100px;
-		padding: 10px 40px;
-		text-shadow: 5px 5px 5px rgb(10, 10, 10);
+		margin-top: var(--space-4xl);
+		padding: var(--space-sm) var(--space-2xl);
+		text-shadow: var(--text-shadow-base);
 	}
 
 	h3 {
 		font-size: 2rem;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		font-family: 'Cormorant Garamond', serif;
 	}
 
@@ -99,7 +99,7 @@
 
 	@media (max-width: 700px) {
 		main {
-			margin-top: 100px;
+			margin-top: var(--space-4xl);
 		}
 		h1 {
 			font-size: 4rem;

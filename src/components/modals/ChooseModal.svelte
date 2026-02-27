@@ -95,29 +95,29 @@
 		justify-content: space-around;
 		gap: 10%;
 		flex: 0 0 auto;
-		margin-bottom: 2%;
+		margin-bottom: var(--space-xs);
 	}
 
 	.tab_row {
 		display: flex;
 		justify-content: start;
 		align-items: center;
-		gap: 1px;
+		gap: var(--space-xs);
 		flex: 1;
 	}
 
 	.tab {
 		height: 40px;
 		width: fit-content;
-		border-radius: 5px;
-		background-color: rgb(80, 80, 80);
-		color: var(--main_white);
+		border-radius: var(--radius-md);
+		background-color: var(--color-border);
+		color: var(--color-text-primary);
 		font-size: x-large;
-		box-shadow: 5px 5px 5px rgb(40, 40, 40)
+		box-shadow: var(--shadow-md);
 	}
 
 	.current_tab {
-		background-color: rgb(55, 55, 55);
+		background-color: var(--color-panel);
 		box-shadow: none;
 	}
 
@@ -133,27 +133,27 @@
 	#grid-container {
 		flex: 1 1 65vh;
 		overflow-y: auto;
-		padding: 15px 15px 30px;
-		background-color: rgb(100, 100, 100);
-		border-radius: 15px;
-		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
+		padding: var(--space-md) var(--space-md) var(--space-xl);
+		background-color: var(--color-border-light);
+		border-radius: var(--radius-xl);
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
 	}
 	
 	#grid {
 		display: grid;
 		justify-content: space-around;
 		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-		gap: 20px;
+		gap: var(--space-md);
 	}
 
 	.entity-item {
 		position: relative;
 		cursor: pointer;
 		text-align: center;
-		background-color: rgb(50, 50, 50);
-		box-shadow: 5px 5px 5px rgb(40, 40, 40);
-		padding: 10px 10px;
-		border-radius: 10px;
+		background-color: var(--color-panel);
+		box-shadow: var(--shadow-md);
+		padding: var(--space-sm) var(--space-sm);
+		border-radius: var(--radius-md);
 		display: flex;
 		flex-direction: column;
 		background-position: top right;
@@ -165,7 +165,7 @@
 		width: 100%;
 		height: 150px;
 		overflow: hidden;
-		margin-bottom: 10px;
+		margin-bottom: var(--space-sm);
 	}
 	
 	.entity-image {
@@ -184,7 +184,7 @@
 	}
 
 	.title_row p {
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		font-family: 'Cormorant Garamond';
 		font-size: x-large;
 		text-align: left;
@@ -217,16 +217,16 @@
 	}
 
 	#grid-container::-webkit-scrollbar-track {
-		background: rgb(47, 47, 47);
-		border-radius: 10px;
+		background: var(--color-bg-primary);
+		border-radius: var(--radius-md);
 	}
 
 	#grid-container::-webkit-scrollbar-thumb {
-		background-color: #555;
+		background-color: var(--color-bg-secondary);
 	}
 
 	#grid-container::-webkit-scrollbar-thumb:hover {
-		background-color: #888;
+		background-color: var(--color-bg-tertiary);
 	}
 
 	@media(max-width: 768px){

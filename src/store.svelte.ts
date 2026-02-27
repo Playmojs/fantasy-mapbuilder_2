@@ -21,6 +21,9 @@ class Store {
     article_modal_articles = $state<number[]>([])
     unit_group = $state<string>('Metric')
 
+    map_marker_window = $state<{x: number, y: number, map_id: number | null, article_id: number | null} | null>(null)
+    informatic_marker_window = $state<{x: number, y: number, map_id: number | null, article_id: number | null} | null>(null)
+
     map_article_link=$state<number | null>()
 
     // From database

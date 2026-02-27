@@ -53,19 +53,19 @@
 		top: 5px;
 		right: 10px;
 		cursor: pointer;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 	}
 
 	.modal-content {
 		position: relative;
 		margin: 5% auto;
-		padding: 20px;
-		background: rgb(60, 60, 60);
+		padding: var(--space-lg);
+		background: var(--color-panel);
 		width: 80%;
 		max-height: 80%;
 		overflow-y: hidden;
 		overflow-x: hidden;
 		border-radius: 5px;
-		border: 3px ridge var(--main_gold);
+		border: 3px ridge var(--color-accent);
 	}
 </style>

@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { store } from '../../store.svelte';
 	import { page } from '$app/stores';
+	import "../../lib/styles/button.css"
 
 	let email = $state('');
 	let password = $state('');
@@ -66,7 +67,7 @@
 				required
 			/>
 
-			<button type="submit" disabled={isDisabled}>Login</button>
+			<button class="btn-primary" type="submit" disabled={isDisabled}>Login</button>
 		</form>
 		<p class="query">Don't have an account? <a href="/signup" onclick={redirectToSignup}>Sign up</a></p>
 	</div>
@@ -101,24 +102,22 @@
 		flex-direction: column;
 		padding: 1rem 1rem 0rem 1rem;
 		gap: 30px;
-		font-size: 100%;
-
-		background-color: rgb(60, 60, 60);
-		box-shadow: 10px 5px 5px rgb(40, 40, 40);
+		
+		background-color: var(--color-panel);
+		box-shadow: var(--shadow-lg);
 		user-select: none;
+		
 		border-radius: 20px; 
-
-		border: 4px ridge var(--main_gold);
-
+		border: 4px ridge var(--color-accent);
+		
+		font-size: 100%;
 	}
 
 	h1 {
 		position: relative;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		text-align: center;
-		padding: 5px 0px;
-		border-radius: 10px;
-		text-shadow: 5px 5px 5px rgb(10, 10, 10)
+		text-shadow: var(--text-shadow-base);
 	}
 
 	.error {
@@ -129,17 +128,17 @@
 	form {
 		display: flex;
 		flex-direction: column;
-		background-color: rgb(90, 90, 90);
+		background-color: var(--color-bg-tertiary);
 		padding: 5px 0px;
 		border-radius: 10px;
-		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
 	}
 
 	label {
 		position: relative;
 		left: 10%;
 		margin-top: 1rem;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		font-size: large;
 	}
 
@@ -151,18 +150,16 @@
 		margin-top: 0.5rem;
 		font-size: large;
 		font-weight: bold;
-		background-color: rgb(80, 80, 80);
+		background-color: var(--color-border);
 		border-radius: 10px;
-		box-shadow: inset 3px 3px 5px rgb(40, 40, 40);
+		box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 	}
 
 	button {
 		position: relative;
 		margin: 1.5rem auto 0.5rem auto;
 		padding: 0.75rem 4rem;
-		background-color: rgb(80, 80, 80);
-		box-shadow: 5px 5px 5px rgb(40, 40, 40);
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		font-weight: bold;
 		font-size: large;
 		border: none;
@@ -175,20 +172,20 @@
 		font-weight: normal;
 		opacity: 0.4;
 		cursor: not-allowed;
-		background-color: rgb(60, 60, 60);
+		background-color: var(--color-panel);
 		box-shadow: none;
 	}
 
 	.query {
 		position: relative;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		bottom: 5px;
 		font-size: large;
 		margin-left: 20px;
 	}
 
 	a {
-		color: rgb(200, 200, 200);
+		color:  var(--color-text-secondary);
 		font-weight: bold;
 	}
 

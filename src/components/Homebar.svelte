@@ -38,13 +38,13 @@
 	nav {
 		position: relative;
 		width: calc(100% - 8rem);
-		background-color: #333;
+		background-color: var(--color-bg-secondary);
 		height: 40px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 1rem 4rem 1rem 4rem;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+		padding:  var(--space-md) var(--space-3xl);
+		box-shadow: var(--shadow-lg);
 		z-index: 1000;
 	}
 
@@ -55,13 +55,13 @@
 	}
 
 	a {
-		color: var(--main_white);
-		text-shadow: 5px 5px 5px rgb(10, 10, 10);
+		color: var(--color-text-primary);
+		text-shadow:var(--text-shadow-base);
 		text-align: center;
 		text-decoration: none;
 		font-weight: bold;
 		font-size: 1.2rem;
-		padding: 0px 20px;
+		padding: 0 var(--space-lg);
 	}
 
 	a:hover {

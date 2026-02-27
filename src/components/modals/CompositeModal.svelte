@@ -58,21 +58,21 @@
 		display: flex;
 		justify-content: start;
 		align-items: center;
-		gap: 5px;
+		gap: var(--space-xs);
 	}
 
 	.tab {
 		height: 40px;
 		width: fit-content;
-		border-radius: 5px;
-		background-color: rgb(80, 80, 80);
-		color: var(--main_white);
+		border-radius: var(--radius-xs);
+		background-color: var(--color-border);
+		color: var(--color-text-primary);
 		font-size: x-large;
-		box-shadow: 5px 5px 5px rgb(40, 40, 40)
+		box-shadow: var(--shadow-md);
 	}
 
 	.current_tab {
-		background-color: rgb(55, 55, 55);
+		background-color: var(--color-panel);
 		box-shadow: none;
 	}
 </style>

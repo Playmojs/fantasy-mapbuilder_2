@@ -5,6 +5,7 @@
 	import Homebar from '../../components/Homebar.svelte';
 	import dtb from '../../lib/dtb';
 	import { store } from '../../store.svelte';
+	import "../../lib/styles/button.css"
 
 	const get_projects = async () => {
 		await dtb.get_my_project_ids();
@@ -47,7 +48,7 @@
 
 <Homebar />
 <main>
-	<button id="add_project_button" onclick={()=>{goto(`/projects/new_project`);}}>New Project</button>
+	<button class="btn-primary" id="add_project_button" onclick={()=>{goto(`/projects/new_project`);}}>New Project</button>
 	<h1 id="title">My Projects</h1>
 	<div id="projects_container">
 		<div id="grid">
@@ -85,8 +86,8 @@
 		height: 70px;
 		aspect-ratio: 3;
 		border-radius: 10%;
-		color: var(--main_white);
-		text-shadow: 3px 3px 2px rgb(80, 80, 80);
+		color: var(--color-text-primary);
+		text-shadow: var(--text-shadow-base);
 		background-color: var(--main_green);
 		border: none;
 		font-size: 2rem;
@@ -94,20 +95,20 @@
 		font-weight: bold;
 		cursor: pointer;
 		z-index: 10;
-		box-shadow: 5px 5px 5px rgb(0, 0, 0);
+		box-shadow: var(--shadow-md);
 	}
 
 	#title {
 		position: relative;
 		margin: auto;
 		font-size: 4rem;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		margin: 40px 0px 30px 0px;
 		padding: 20px;
 		font-family: 'Cormorant Garamond';
-		text-decoration: underline solid rgba(67, 128, 41, 0.8);
+		text-decoration: underline solid var(--color-primary-dark);
 		text-underline-offset: 20px;
-		text-shadow: 5px 5px 5px rgb(10, 10, 10);
+		text-shadow: var(--text-shadow-base);
 	}
 
 	#projects_container {
@@ -117,10 +118,10 @@
 		height: fit-content;
 		
 		border-radius: 15px;
-		background-color: rgb(90, 90, 90);
+		background-color: var(--color-bg-tertiary);
 		overflow-y: auto;
-		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
-		border: 5px ridge var(--main_gold);
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+		border: 5px ridge var(--color-accent);
 	}
 	
 	#grid {
@@ -138,13 +139,13 @@
 
 		cursor: pointer;
 		text-align: center;
-		background-color: rgb(65, 65, 65);
+		background-color: var(--color-bg-secondary);
 		border-radius: 10px;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;
 		align-items: center;
-		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+		box-shadow: var(--shadow-md);
 		
 	}
 	
@@ -164,12 +165,12 @@
 		max-height: 95%;
 		
 		border-radius: 15px;
-		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+		box-shadow: var(--shadow-md);
 	}
 	
 	.entity-item p {
 		position: relative;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		font-size: 2rem;
 		font-family: 'Cormorant Garamond', serif;
 		font-style: italic;
@@ -214,7 +215,7 @@
 			height: 6%;
 			aspect-ratio: 2;
 			border-radius: 10%;
-			color: var(--main_white);
+			color: var(--color-text-primary);
 			text-shadow: 3px 3px 2px rgb(80, 80, 80);
 			background-color: var(--main_green);
 			border: none;

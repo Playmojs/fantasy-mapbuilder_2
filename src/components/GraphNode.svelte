@@ -163,15 +163,15 @@
         flex-direction: column;
         justify-content: start;
         align-items: center;
-        gap: 20px;
-        margin: 10px 0px;
-        padding: 10px;
-        background-color: rgb(50, 50, 50);
+        gap: var(--space-lg);
+        margin: var(--space-sm) 0;
+        padding: var(--space-sm);
+        background-color: var(--color-bg-secondary);
         background-position: top right;
         background-size: 100%;
         
-        border-radius: 10px;
-        box-shadow: 5px 5px 5px rgb(10, 10, 10);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
         width: 250px;
         font-size: x-large;
     }
@@ -216,7 +216,7 @@
 		border: none;
 		cursor: pointer;
 
-        margin-right: 10px;
+        margin-right: var(--space-sm);
 	}
 
 	.optional_func_button:hover{
@@ -229,10 +229,10 @@
         font-weight: bold;
         margin: 0;
         flex: 0 0 30px;
-        color: var(--main_white);
+        color: var(--color-text-primary);
         font-family: 'Cormorant Garamond';
         text-align: center;
-        margin-right: 10px;
+        margin-right: var(--space-sm);
     }
 
     .toggle_children:hover{
@@ -244,7 +244,7 @@
         cursor: pointer;
         font-weight: bold;
         margin: 0;
-        color: var(--main_white);
+        color: var(--color-text-primary);
         font-family: 'Cormorant Garamond';
         flex: 1;
         max-width: 70%;
@@ -286,12 +286,12 @@
         left: 0;
         width: 100%;
         height: 60px;
-        padding: 0px;
+        padding: 0;
         z-index: 0;
     }
     
     path {
-        stroke: var(--bright_gold);
+        stroke: var(--color-accent-light);
         filter: drop-shadow(5px 5px 2px rgb(10, 10, 10));
         stroke-width: 4;
     }

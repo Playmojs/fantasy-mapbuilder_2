@@ -114,14 +114,14 @@
 <style>
 	#toolbar {
 		flex: 0 0 70px;
-        padding: 0px 10px 0px 5px;
-		gap: 10px;
+        padding: 0 var(--space-sm) 0 var(--space-xs);
+		gap: var(--space-sm);
 
 		display: flex;
 		justify-content: end;
 		align-items: center;
 
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		z-index: 11;
 	}
 
@@ -139,9 +139,9 @@
 	#cycle_button{
 		align-content: center;
 		width: 54px;
-		border-top-left-radius: 10px;
-		border-top-right-radius: 10px;
-		padding: 5px;
+		border-top-left-radius: var(--radius-md);
+		border-top-right-radius: var(--radius-md);
+		padding: var(--space-xs);
 	}
 
 	#toolbar button:hover {
@@ -162,14 +162,14 @@
 		position: absolute;
         top: 60px;
 		width: 54px;
-		padding: 5px;
+		padding: var(--space-xs);
 		right: 10px;
        
-		border-bottom-left-radius: 10px;
-		border-bottom-right-radius: 10px;
+		border-bottom-left-radius: var(--radius-md);
+		border-bottom-right-radius: var(--radius-md);
 	}
 
 	.open{
-		background-color: rgb(47, 47, 47);
+		background-color: var(--color-bg-primary);
 	}
 </style>

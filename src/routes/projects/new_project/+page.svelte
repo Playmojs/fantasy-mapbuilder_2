@@ -8,6 +8,7 @@
 	import ModalWindow from "../../../components/modals/ModalWindow.svelte";
 	import UploadModal from "../../../components/modals/UploadModal.svelte";
 	import { store } from "../../../store.svelte";
+    import "../../../lib/styles/button.css"
 
     let project_title = $state<string>('')
     let title_input: HTMLInputElement;
@@ -88,10 +89,10 @@
             </div>
             <div id="head_map">
                 <p id="head_map_label"> {`Main Map: ${main_map.title ?? 'Not added'}`}</p>
-                <button id='set_main_map_button' onclick={open_map_option}>{main_map.file ? 'Change' : 'Choose'}</button>
+                <button class="btn" id='set_main_map_button' onclick={open_map_option}>{main_map.file ? 'Change' : 'Choose'}</button>
             </div>
 
-            <button id="add_project_button" onclick={add_project} disabled={valid_project()}>Add Project</button>
+            <button class="btn-primary" id="add_project_button" onclick={add_project} disabled={valid_project()}>Add Project</button>
         </div>
     </div>
 </main>
@@ -105,6 +106,11 @@
 {/each}
 
 <style>
+    main
+    {
+        height: calc(100vh - 72px); 
+    }
+
     #project_display{
         position: relative;
         display: flex;
@@ -121,22 +127,22 @@
         flex-direction: column;
         justify-content: space-around;
         align-items: center;
-        color: var(--main_white);
-        text-shadow: 3px 3px 3px rgb(40, 40, 40);
-        background-color: rgb(80, 80, 80);
+        color: var(--color-text-primary);
+        text-shadow: var(--text-shadow-base);
+        background-color: var(--color-border);
 		padding: 50px 0px;
 		border-radius: 5%;
 		gap: 30px;
-		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
-        border: 5px ridge var(--main_gold);
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+        border: 5px ridge var(--color-accent);
     }
 
     #project_form > div{
 		width: 80%;
-		background-color: rgb(70, 70, 70);
+		background-color: var(--color-panel-hover);
 		padding: 0px 5%;
 		border-radius: 10px;
-		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+		box-shadow: var(--shadow-md);
 	}
 
     #header{
@@ -161,8 +167,8 @@
         height: fit-content;
         font-weight: bold;
         height: 30px;
-		background-color: rgb(150, 150, 150);
-        box-shadow: inset 2px 2px 2px rgb(40, 40, 40);
+		background-color: var(--color-border-hover);
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
 		border-radius: 5px;
         width: 50%;
     }
@@ -179,9 +185,9 @@
     #set_main_map_button{
         height: fit-content;
         padding: 5px 10px;
-        color: var(--main_white);
+        color: var(--color-text-primary);
         font-size: large;
-        background-color: rgb(100, 100, 100);
+        background-color: var(--color-panel);
         border-radius: 10%;
         cursor: pointer;
         margin-left: 100px;
@@ -189,7 +195,7 @@
     }
 
     #add_project_button{
-        background-color: rgb(20, 150, 20);
+        background-color: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-dark) 100%);
         padding: 20px 30px;
         border-radius: 10%;
         margin: 10px 20px;
@@ -198,7 +204,7 @@
     }
 
     #add_project_button:disabled{
-        background-color: rgb(30, 100, 30);
+        opacity: 0.5;
         border: none;
         cursor:not-allowed;
     }

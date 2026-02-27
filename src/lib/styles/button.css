@@ -1,0 +1,179 @@
+/* === BASE BUTTON === */
+
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-panel) 0%, var(--color-bg-tertiary) 100%);
+  color: var(--color-text-primary);
+  font-weight: 600;
+  font-size: var(--text-base);
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  text-decoration: none;
+  user-select: none;
+}
+
+/* Shine effect on hover */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left var(--transition-slow);
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 4px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, var(--color-panel-hover) 0%, var(--color-bg-tertiary) 100%);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  pointer-events: none;
+}
+
+/* === PRIMARY BUTTON === */
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border: 1px solid var(--color-primary-light);
+  color: white;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 0 1px var(--color-primary-dark),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+  box-shadow: 
+    0 4px 12px rgba(13, 148, 136, 0.4),
+    0 0 0 1px var(--color-primary-dark),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* === ACCENT BUTTON === */
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
+  border: 1px solid var(--color-accent-light);
+  color: white;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 0 1px var(--color-accent-dark),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-accent:hover {
+  background: linear-gradient(135deg, var(--color-accent-light) 0%, var(--color-accent) 100%);
+  box-shadow: 
+    0 4px 12px rgba(217, 119, 6, 0.4),
+    0 0 0 1px var(--color-accent-dark),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* === ICON BUTTON === */
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.btn-icon:hover {
+  background: var(--color-panel-hover);
+  border-color: var(--color-primary);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 0 2px rgba(13, 148, 136, 0.2);
+}
+
+.btn-icon:active {
+  background: var(--color-panel-active);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* For background-image icons */
+.btn-icon[style*="background-image"] {
+  background-size: 60%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* === BUTTON SIZES === */
+
+.btn-sm {
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--text-sm);
+}
+
+.btn-lg {
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--text-lg);
+}
+
+.btn-icon-sm {
+  width: 32px;
+  height: 32px;
+}
+
+.btn-icon-lg {
+  width: 48px;
+  height: 48px;
+}
+
+/* === BUTTON GROUP === */
+
+.button_group {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}

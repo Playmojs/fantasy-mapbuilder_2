@@ -254,7 +254,7 @@
 		font-family: 'Garamond Semibold Italic';
 		white-space: nowrap;
 		background-color: rgba(50, 50, 50, 0.8);
-		color: var(--main_white);
+		color: var(--color-text-primary);
 	}
 	
 	#article_image {
@@ -275,7 +275,7 @@
 		padding: 0px 10px;
 		border-radius: 10px;
 		background-color: rgb(47, 47, 47);
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		white-space: normal;
 	}
 
@@ -287,7 +287,7 @@
 		cursor: pointer;
 		background-size: contain;
 		background-position: center center;
-		background-color: rgb(60, 60, 60);
+		background-color: var(--color-panel);
 		border-radius: 10px;
 		background-repeat: no-repeat;
 		box-shadow: 3px 3px 5px rgb(30, 30, 30);
@@ -388,6 +388,10 @@
 	:global(em) {
 		font-family: 'Cormorant Garamond', serif;
 		font-style: italic;
+	}
+
+	:global(label) {
+		font-family: 'Cormorant Garamond', serif;
 	}
 
 	h1 {

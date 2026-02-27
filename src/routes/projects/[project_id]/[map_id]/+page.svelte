@@ -14,6 +14,8 @@
 	import ScaleBar from '../../../../components/ScaleBar.svelte';
 	import MobileInformatic from '../../../../components/mobile/MobileInformatic.svelte';
 	import MobileToolbar from '../../../../components/mobile/MobileToolbar.svelte';
+	import MarkerWindow from '../../../../components/MarkerWindow.svelte';
+	import { type MarkerWindowData } from '$lib/types';
 
 	function reset_modals() {
 		store.modals = [];
@@ -33,6 +35,7 @@
 		if (article) {
 			push_article(article.id, false);
 		}
+		store.map_marker_window = null;
 	});
 
 	onDestroy(() => {
@@ -51,6 +54,8 @@
 		)
 
 	let scale_bar_righ_position = $derived<{x: number, y: number}>({x: scale_bar_left_position.x + Math.max(0.1*window_dims.width, 100), y: scale_bar_left_position.y})
+
+	let map_marker_window = $derived<MarkerWindowData | null>(store.map_marker_window !== null ? {x: map_container_rect.width - 85, y: 10, map_id: store.map_marker_window.map_id, article_id: store.map_marker_window.article_id} : null)
 
 	$effect(()=>{
 		if (store.mobile_layout) {
@@ -101,6 +106,9 @@
 			{#if store.map.scale !== null}
 				<ScaleBar path_nodes={[scale_bar_left_position, scale_bar_righ_position]} scale={store.map.scale / store.map_transform.scale} unit_group={store.unit_group}/>
 			{/if}
+			{#if map_marker_window !== null}
+				<MarkerWindow markerWindowData={map_marker_window} attach_bottom={false}/>
+			{/if}
 		</div>
 		{#if store.mobile_layout}
 			<MobileInformatic/>
@@ -139,6 +147,7 @@
 	flex-direction: row;
 	height: calc(100% - 50px);
 }
+
 
 #map_informatic_parent.mobile_layout{
 	flex-direction: column;

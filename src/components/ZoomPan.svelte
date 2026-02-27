@@ -107,8 +107,6 @@
 
 	function handle_wheel(event: WheelEvent) {
 		event.preventDefault();
-
-		console.log(position_anchor.x + " and " + position_anchor.y)
 		
 		const delta = Math.sign(event.deltaY);
 		const new_scale = scale_limit ? clamp(scale * (1 + delta * -0.05), scale_limit.min, scale_limit.max) : scale * (1 + delta * -0.05);

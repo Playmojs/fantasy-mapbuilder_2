@@ -60,16 +60,16 @@
 <style>
 	.search-input {
 		width: 100%;
-		padding: 8px 12px;
+		padding: var(--space-sm) var(--space-md);
 		border: 1px solid #ddd;
-		border-radius: 4px;
+		border-radius: var(--radius-sm);
 		font-size: 16px;
 		outline: none;
 		box-sizing: border-box;
 	}
 
 	.search-input:focus {
-		border-color: #4299e1;
-		box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
+		border-color: var(--color-primary-dark);
+		box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.2);
 	}
 </style>

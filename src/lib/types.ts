@@ -1,6 +1,4 @@
-import { store } from "../store.svelte";
 import type { Database } from "./database.types";
-import dtb from "$lib/dtb"
 
 export enum SearchParam {
 	informatic_id = 'informatic'

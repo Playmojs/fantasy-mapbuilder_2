@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { type ChooseModalData, type FilterModalData, type ModalEntity} from '$lib/types';
-	import { onMount } from 'svelte';
-	import SearchInput from '../SearchInput.svelte';
 	import ChooseModal from './ChooseModal.svelte';
 	import GraphModal from './GraphModal.svelte';
-	import Modal from './Modal.svelte';
 
 	let{close, modal_data, on_close, use_search}:{close: any, modal_data: FilterModalData, on_close: ((success: boolean) => Promise<void> | void) | undefined, use_search: boolean} = $props()
         
@@ -132,8 +129,8 @@
         top: -10px;
         width: 25%;
         height: 100%;
-        padding: 10px 30px 0px 10px;
-        border-right: 1px solid var(--main_white)
+        padding: var(--space-sm) var(--space-xl) 0 var(--space-sm);
+        border-right: 1px solid var(--color-text-primary)
     }
 
     #filter_box{
@@ -141,20 +138,20 @@
         width: 100%;
         flex: 0 0 20vh;
         overflow-y: auto;
-        margin-bottom: 10px;
+        margin-bottom: var(--space-sm);
         background-color: rgb(100, 100, 100);
-        border-radius: 15px;
-        box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
+        border-radius: var(--radius-xl);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
     }
 
     #filter_box_content{
         display: flex;
         flex-direction: column;
         align-items: start;
-        row-gap: 10px;
-        padding: 15px 15px 15px;
+        row-gap: var(--space-sm);
+        padding: var(--space-md) var(--space-md) var(--space-md);
 
-        color: var(--main_white);
+        color: var(--color-text-primary);
     }
     
     #selected_entity{
@@ -166,11 +163,11 @@
         
         width: 80%;
         cursor: default;
-        padding: 10px 0px 10px 10px;
-		border-radius: 10px;
+        padding: var(--space-sm) 0 var(--space-sm) var(--space-sm);
+		border-radius: var(--radius-md);
         
-		background-color: rgb(50, 50, 50);
-		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+		background-color: var(--color-bg-primary);
+		box-shadow: var(--shadow-md);
 		background-position: top right;
         background-size: 100%;
     }
@@ -185,31 +182,31 @@
         text-align: left;
         width: 100%;
         flex: 1;
-        margin: 0px;
-        padding-right: 10px;
+        margin: 0;
+        padding-right: var(--space-sm);
     }
 
     .deselect{
         position: relative;
         cursor: pointer;
         flex: 0 0 20%;
-        margin: 0px;
+        margin: 0;
     }
 
     #button_row{
         width: 90%;
         display: flex;
-        margin-bottom: 10px;
-        gap: 5px;
+        margin-bottom: var(--space-sm);
+        gap: var(--space-xs);
     }
 
     #button_row > button{
         width: 30px;
         aspect-ratio: 1;
-        background-color: rgb(80, 80, 80);
-        border-radius: 5px;
+        background-color: var(--color-border);
+        border-radius: var(--radius-sm);
         border: none;
-        box-shadow: 3px 3px 5px rgb(10, 10, 10);
+        box-shadow: var(--shadow-sm);
 
         background-size: contain;
 		background-position: center center;
@@ -217,8 +214,8 @@
     }
 
     #button_row > button.selected, #button_row > button:active{
-        background-color: rgb(40, 40, 40);
-        box-shadow: inset 3px 3px 3px rgb(10, 10, 10);
+        background-color: var(--color-bg-primary);
+        box-shadow: var(--shadow-sm);
     }
 
     #graph_modal{
@@ -231,15 +228,15 @@
 	}
 
 	#filter_box::-webkit-scrollbar-track {
-		background: rgb(47, 47, 47);
-		border-radius: 10px;
+		background: var(--color-bg-primary);
+		border-radius: var(--radius-md);
 	}
 
 	#filter_box::-webkit-scrollbar-thumb {
-		background-color: #555;
+		background-color: var(--color-bg-secondary);
 	}
 
 	#filter_box::-webkit-scrollbar-thumb:hover {
-		background-color: #888;
+		background-color: var(--color-bg-tertiary);
 	}
 </style>

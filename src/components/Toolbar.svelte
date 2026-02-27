@@ -310,6 +310,7 @@
 <div id="toolbar">
 	<div class="button_group">
 		<button
+			class="btn-icon"
 			onclick={() => {
 				goto('/projects');
 			}}
@@ -319,6 +320,7 @@
 		>
 		</button>
 		<button
+			class="btn-icon"
 			onclick={()=>{go_to_article_or_map_modal();}}
 			style="background-image: url('/assets/goto_map_article_icon.png');"
 			aria-label="Go to Map or Article"
@@ -328,6 +330,7 @@
 	</div>
 	<div class='button_group'>
 		<button
+			class="btn-icon"
 			onclick={()=>{open_map_graph();}}
 			style="background-image: url('/assets/map_graph_icon_2.png');"
 			aria-label="Open Map Graph"
@@ -335,6 +338,7 @@
 			>
 		</button>
 		<button
+			class="btn-icon"
 			onclick={()=>{open_category_graph();}}
 			style="background-image: url('/assets/category_graph_icon_2.png');"
 			aria-label="Open Category Graph"
@@ -347,6 +351,7 @@
 	</div>
 	<div class="button_group">
 		<button
+			class="btn-icon"
 			onclick={confirm_delete_map}
 			class:hidden={!store.edit_mode}
 			style="background-image: url('/assets/old_trashcan.png');"
@@ -355,6 +360,7 @@
 		></button>
 
 		<button
+			class="btn-icon"
 			onclick={open_edit_map_modal}
 			class:hidden={!store.edit_mode}
 			style="background-image: url('/assets/old_map.png');"
@@ -365,6 +371,7 @@
 	
 	<div class="button_group" id='edit_marker_group' class:transparent={!store.edit_mode}>
 		<button
+			class="btn-icon"
 			onclick={() => {
 				changeMarkerTarget();
 			}}
@@ -375,6 +382,7 @@
 			aria-label="Set Marker Target"
 		></button>
 		<button
+			class="btn-icon"
 			onclick={() => dtb.delete_marker(store.selected_marker)}
 			class:hidden={!store.edit_mode}
 			disabled={store.selected_marker === null}
@@ -384,6 +392,7 @@
 		></button>
 
 		<button
+			class="btn-icon"
 			onclick={(_event: MouseEvent) => dtb.create_and_select_marker_in_current_map()}
 			class:hidden={!store.edit_mode}
 			style="background-image: url('/assets/+ and - +.png');"
@@ -394,6 +403,7 @@
 
 	<div class="button_group">
 		<button
+			class="btn-icon"
 			id="edit_content_button"
 			class:pressed={store.edit_mode}
 			onclick={toggleEditable}
@@ -404,16 +414,21 @@
 
 	<div class="button_group">
 		<button
+			class="btn-icon"
 			onclick={()=>{store.unit_group === 'Metric' ? store.unit_group = 'Imperial' : store.unit_group = 'Metric'}}
-			style="background-image: url('/assets/Measure_edit.png')">
-		</button>
-		<button 
+			style="background-image: url('/assets/Measure_edit.png')"
+			aria-label="Change Measurement Unit"	
+		></button>
+		<button
+			class="btn-icon" 
 			onclick={()=>{store.drawing_path = !store.drawing_path}} 
 			class:hidden={store.map.scale === null}
 			class:pressed={store.drawing_path}
-			style="background-image: url('/assets/MapDistanceIcon.png')">
-		</button>	
+			style="background-image: url('/assets/MapDistanceIcon.png')"
+			aria-label="Measure Distances"	
+		></button>	
 		<button
+			class="btn-icon"
 			id="minimize_button"
 			onclick={toggleMinimize}
 			style="background-image: url('/assets/{store.informatic_minimized
@@ -426,14 +441,14 @@
 
 <style>
 	#toolbar {
-		flex: 0 0 50px;
+		flex: 0 0 var(--space-2xl);
 
 		display: flex;
 		justify-content: space-around;
 		align-items: center;
 
-		background-color: #333;
-		color: var(--main_white);
+		background-color: var(--color-bg-primary);
+		color: var(--color-text-primary);
 		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 		z-index: 11;
 	}
@@ -443,14 +458,12 @@
 		 
 		display: flex;
 		justify-content: center;
-		gap: 10px;
+		gap: var(--radius-lg);
 		align-items: center;
 		height: 100%;
 	}
 
 	#toolbar button {
-		aspect-ratio: 4/3; /* Adjust the size as needed */
-		height: 80%; /* Adjust the size as needed */
 		border: none;
 		cursor: pointer;
 		background-size: contain;
@@ -477,7 +490,7 @@
 		background-repeat: no-repeat;
 		background-size: 100% 100%;
 		background-position: center center;
-		gap: 5px;
+		gap: var(--radius-md);
 	}
 
 	#edit_marker_group.transparent{
@@ -492,7 +505,7 @@
 		cursor: default;
 		box-shadow: none;
 		opacity: 1;
-		filter:brightness(30%);
+		filter: brightness(30%);
 	}
 
 	#edit_content_button {

@@ -153,13 +153,13 @@
 		flex-direction: column;
 		justify-content: space-around;
 		align-items: center;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		background-color: rgb(80, 80, 80);
 		padding: 50px 0px;
 		border-radius: 5%;
 		gap: 30px;
 		box-shadow: inset 5px 5px 5px rgb(40, 40, 40);
-		border: 5px ridge var(--main_gold);
+		border: 5px ridge var(--color-accent);
 	}
 
 	#project_form > div{
@@ -167,7 +167,7 @@
 		background-color: rgb(70, 70, 70);
 		padding: 0px 5%;
 		border-radius: 10px;
-		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+		box-shadow: var(--shadow-md);
 	}
 
 	#title {
@@ -208,7 +208,7 @@
 		height: fit-content;
 		padding: 5px 10px;
 		margin-left: 100px;
-		color: var(--main_white);
+		color: var(--color-text-primary);
 		font-size: large;
 		background-color: rgb(100, 100, 100);
 		border-radius: 10%;
@@ -253,7 +253,7 @@
 		border-radius: 10%;
 		margin: 0px 20px;
 		height: fit-content;
-		box-shadow: 5px 5px 5px rgb(40, 40, 40);
+		box-shadow: var(--shadow-md);
 	}
 
 	#update_button {
