@@ -8,6 +8,7 @@
 	import type { Category } from '$lib/types';
 	import { theme_entities } from '$lib/data.svelte';
 	import SvelteMarkdown from 'svelte-markdown';
+	import {Pen, Plus, Minus, Cog} from "@lucide/svelte"
 
 	let {close, article_id, on_close} : {close: () => void, article_id: number, on_close?: (success: boolean) => void} = $props()
 	
@@ -120,6 +121,7 @@
 				</button>
 			{/each}
 			<button id='add_tab_button' onclick={add_tab}>
+				<Plus />
 			</button>
 		</div>
 
@@ -131,10 +133,11 @@
 				edit_mode = !edit_mode;
 			}}
 			class:pressed={edit_mode}
-			style="background-image: url('/assets/quill.png');"
 			title="Toggle Edit Mode"
 			aria-label='Toggle Edit Mode'
-		></button>
+		>
+			<Pen />
+		</button>
 		{/if}
 
 		<button
@@ -142,29 +145,32 @@
 			onclick={() => {
 				change_text_size(1.1);
 			}}
-			style="background-image: url('/assets/fantasy-plus.png');"
 			title="Increase text size"
 			aria-label='Increase Text Size Button'
-		></button>
+		>
+			<Plus />
+		</button>
 
 		<button
 			id="decrement_text_size_button"
 			onclick={() => {
 				change_text_size(0.9);
 			}}
-			style="background-image: url('/assets/fantasy_minus.png');"
 			title="Decrease text size"
 			aria-label='Decrease Text Size Button'
-			></button>
+			>
+				<Minus />
+		</button>
 
-			<button 
+		<button 
 			id="edit_image_button" 
 			onclick={open_article_options}
-			style="background-image: url('/assets/fantasy_cog.png');"
 			class:hidden={!store.edit_mode}
 			title="Increase text size"
 			aria-label='Increase Text Size Button'
-		></button>
+		>
+			<Cog />
+		</button>
 	</div>
 
 	<div id='display_window'>

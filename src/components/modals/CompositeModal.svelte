@@ -22,57 +22,87 @@
 
 </script>
 
-{#if modal_data}
-	<div id=modal_head>
-		<div class="tab_row">
-			{#each Object.keys(modal_data) as tab}
-				<button
-					class="tab"
-					class:current_tab={tab === current_tab}
-					disabled={tab === current_tab}
-					on:click={() => {
-						current_tab = tab;
-					}}><strong>{tab}</strong></button
-				>
-			{/each}
-		</div>
-	</div>	
-{/if}
-<div id='current_modal'>
-    <Modal close={close} modal={current_modal} window_rect={modal_rect}/>
+
+<div id=composite_modal>
+	{#if modal_data}
+		<div id=modal_head>
+			<div id="tab_row">
+				{#each Object.keys(modal_data) as tab}
+					<button
+						class="tab"
+						disabled={tab === current_tab}
+						onclick={() => {
+							current_tab = tab;
+						}}><p class="tab_text">{tab}</p></button>
+				{/each}
+			</div>
+		</div>	
+	{/if}
+	<div id='current_modal'>
+		<Modal close={close} modal={current_modal} window_rect={modal_rect}/>
+	</div>
 </div>
 
 
-
 <style>
+	#composite_modal{
+		display: flex;
+		flex-direction: column;
+	}
+
 	#modal_head{
+	 	position: relative;
 		display: flex;
-		justify-content: start;
-		gap: 50%;
-		height: 40px;
-		margin-bottom: 15px;
-		margin-right: 25px;
+		gap: var(--space-sm);
+		height: 50px;
+		flex-shrink: 0;
 	}
 
-	.tab_row {
+	#tab_row {
 		display: flex;
-		justify-content: start;
-		align-items: center;
-		gap: var(--space-xs);
+		flex: 1;
+		overflow-x: auto;
+		overflow-y: hidden;
+		gap: var(--space-sm);
 	}
 
-	.tab {
-		height: 40px;
-		width: fit-content;
-		border-radius: var(--radius-xs);
-		background-color: var(--color-border);
+	#tab_row button{
+		position: relative;
+		aspect-ratio: 4/3; 
+		height: 80%;
+		border: none;
+		cursor: pointer;
 		color: var(--color-text-primary);
-		font-size: x-large;
-		box-shadow: var(--shadow-md);
+
+		background-size: contain;
+		background-position: center center;
+		background-color: var(--color-panel);
+		border-radius: var(--radius-d);
+		background-repeat: no-repeat;
+		box-shadow: var(--shadow-sm);
 	}
 
-	.current_tab {
+	#tab_row button:active{
+		box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+	}
+
+	.tab{
+		width: 150px;
+		flex-shrink: 1;
+		min-width: 100px;
+		display: flex;
+		align-items: center;
+		font-size: large;
+
 		background-color: var(--color-panel);
+		border-radius: var(--radius-md);
+		box-shadow: var(--shadow-sm);
+		border: none;
+	}
+
+	#tab_row button:disabled{
+		background-color: var(--color-bg-primary);
+		cursor: default;
 		box-shadow: none;
 	}
 </style>

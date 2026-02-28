@@ -15,6 +15,7 @@
 	import DropdownMapAndArticleSearch from './DropdownMapAndArticleSearch.svelte';
 	import { generate_category_graph, generate_map_graph } from '$lib/graph_gen.svelte';
 	import { theme_entities, units } from '$lib/data.svelte';
+	import { Home, Navigation, Network, Workflow, Trash2, Map, MapPinPlusInside, MapPinOff, MapPinPen, Feather, Ruler, Scale, ChevronsLeft, ChevronsRight } from '@lucide/svelte'
 	
 	// Setup keyboard shortcuts
 	$effect(
@@ -314,36 +315,36 @@
 			onclick={() => {
 				goto('/projects');
 			}}
-			style="background-image: url('/assets/house.png');"
 			aria-label="Home Button"
 			title="Home"
 		>
+		<Home />
 		</button>
 		<button
 			class="btn-icon"
 			onclick={()=>{go_to_article_or_map_modal();}}
-			style="background-image: url('/assets/goto_map_article_icon.png');"
 			aria-label="Go to Map or Article"
 			title="Go to Map or Article"
 			>
+			<Navigation />
 		</button>
 	</div>
 	<div class='button_group'>
 		<button
 			class="btn-icon"
 			onclick={()=>{open_map_graph();}}
-			style="background-image: url('/assets/map_graph_icon_2.png');"
 			aria-label="Open Map Graph"
 			title="Open Map Graph"
 			>
+			<Network />
 		</button>
 		<button
 			class="btn-icon"
 			onclick={()=>{open_category_graph();}}
-			style="background-image: url('/assets/category_graph_icon_2.png');"
 			aria-label="Open Category Graph"
 			title="Open Category Graph"
 			>
+			<Workflow />
 		</button>
 	</div>
 	<div id="search_bar">
@@ -354,88 +355,99 @@
 			class="btn-icon"
 			onclick={confirm_delete_map}
 			class:hidden={!store.edit_mode}
-			style="background-image: url('/assets/old_trashcan.png');"
 			title="Delete map"
 			aria-label="Delete Map"
-		></button>
-
+		>
+			<Trash2/>
+		</button>
+		
 		<button
 			class="btn-icon"
 			onclick={open_edit_map_modal}
 			class:hidden={!store.edit_mode}
-			style="background-image: url('/assets/old_map.png');"
 			title="Edit map"
 			aria-label="Edit Map"
-		></button>
+		>
+			<Map />	
+	</button>
 	</div>
 	
-	<div class="button_group" id='edit_marker_group' class:transparent={!store.edit_mode}>
+	<div class="button_group" class:transparent={!store.edit_mode}>
 		<button
 			class="btn-icon"
 			onclick={() => {
 				changeMarkerTarget();
 			}}
 			disabled={store.selected_marker === null}
-			style="background-image: url('/assets/quill and scroll.png');"
 			title="Set target of selected marker"
 			class:hidden={!store.edit_mode}
 			aria-label="Set Marker Target"
-		></button>
+		>
+			<MapPinPen />
+		</button>
 		<button
 			class="btn-icon"
 			onclick={() => dtb.delete_marker(store.selected_marker)}
 			class:hidden={!store.edit_mode}
 			disabled={store.selected_marker === null}
-			style="background-image: url('/assets/minus_2.png');"
 			title="Delete selected marker"
 			aria-label="Delete Marker"
-		></button>
+		>
+			<MapPinOff />
+		</button>
 
 		<button
 			class="btn-icon"
 			onclick={(_event: MouseEvent) => dtb.create_and_select_marker_in_current_map()}
 			class:hidden={!store.edit_mode}
-			style="background-image: url('/assets/+ and - +.png');"
 			title="Add new marker to map"
 			aria-label="Add New Marker"
-		></button>
+		>
+			<MapPinPlusInside />	
+		</button>
 	</div>
 
 	<div class="button_group">
 		<button
 			class="btn-icon"
-			id="edit_content_button"
 			class:pressed={store.edit_mode}
 			onclick={toggleEditable}
 			class:hidden={!edit_visible}
 			aria-label="Edit Project"
-		></button>
+		>
+			<Feather />
+		</button>
 	</div>
 
 	<div class="button_group">
 		<button
 			class="btn-icon"
 			onclick={()=>{store.unit_group === 'Metric' ? store.unit_group = 'Imperial' : store.unit_group = 'Metric'}}
-			style="background-image: url('/assets/Measure_edit.png')"
-			aria-label="Change Measurement Unit"	
-		></button>
+			aria-label="Change Measurement Unit"
+		>
+			<Scale />
+		</button>
 		<button
 			class="btn-icon" 
 			onclick={()=>{store.drawing_path = !store.drawing_path}} 
 			class:hidden={store.map.scale === null}
 			class:pressed={store.drawing_path}
-			style="background-image: url('/assets/MapDistanceIcon.png')"
 			aria-label="Measure Distances"	
-		></button>	
+		>
+			<Ruler />
+		</button>	
 		<button
 			class="btn-icon"
 			id="minimize_button"
 			onclick={toggleMinimize}
-			style="background-image: url('/assets/{store.informatic_minimized
-				? 'Arrows_left'
-				: 'Arrows_right'}.png');"
 			aria-label="Toggle Informatic"
-		></button>
+		>
+		{#if store.informatic_minimized}
+			<ChevronsLeft />
+		{:else}
+			<ChevronsRight />
+		{/if}
+		</button>
 	</div>
 </div>
 
@@ -506,10 +518,6 @@
 		box-shadow: none;
 		opacity: 1;
 		filter: brightness(30%);
-	}
-
-	#edit_content_button {
-		background: url('/assets/quill.png');
 	}
 
 	#toolbar button.pressed {

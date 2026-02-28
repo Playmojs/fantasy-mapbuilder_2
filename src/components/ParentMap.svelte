@@ -1,17 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let parentMap: HTMLImageElement;
-
 	import { store } from '../store.svelte';
 	import { gotoMap } from '$lib/goto_map';
 	import { type ModalEntity, type ChooseModalType, type ChooseModalData } from '$lib/types';
 	import dtb from '$lib/dtb';
 	import { choose_existing_map, get_new_map_data, push_modal, push_promise_modal } from '$lib/modal_manager.svelte';
-	
-	onMount(() => {
-		parentMap.addEventListener('click', (event) => parent_func(event, store.map.parent_id));
-	});
+	import {Cog, Plus, Minus} from "@lucide/svelte";
+
 
 	const choose_parent_map_wrapper = async (value: {id: number | null}, entities: ModalEntity[]) => {
 		await push_promise_modal({type: 'choose_modal', data: {Maps: entities}, use_search: true})
@@ -47,7 +43,7 @@
 
 	let remove_map: (value: {id: number | null}) => ModalEntity = (value) => {return {
 			image: '/assets/minus_2.png',
-			title: 'Remove Map',
+			title: 'Remove This Map As Parent',
 			on_click: () => {
 				value.id = null
 			}
@@ -59,7 +55,7 @@
 		choose_parent_map_wrapper(value, [remove_map(value), add_map(value)].concat(await choose_existing_map(value)));
 	}
 
-	let image_source = $state('/assets/parent_plus.png');
+	let image_source = $state<string>('/assets/map_icon.png');
 	$effect(() => {
 		if (store.map.parent_id !== null) {
 			dtb.get_map(store.project_id, store.map.parent_id);
@@ -67,8 +63,9 @@
 			image_source = store.image_public_urls[store.map_cache[store.map.parent_id]?.image]
 				? URL.createObjectURL(store.image_public_urls[store.map_cache[store.map.parent_id].image])
 				: '/assets/map_icon.png';
-		} else {
-			image_source = '/assets/parent_plus.png';
+		} 
+		else {
+			image_source = '/assets/map_icon.png';
 		}
 	});
 
@@ -76,14 +73,21 @@
 </script>
 
 <div id="parent_map_bundle">
-	<img
-		src={image_source}
-		id="parent_map"
-		class:edit_mode={store.edit_mode}
-		class:hidden={(store.map.parent_id === null && !store.edit_mode) || minimized}
-		bind:this={parentMap}
-		alt="Parent Map"
-	/>
+	{#if (store.map.parent_id !== null || store.edit_mode) && !minimized}
+		<div id="parent_map"
+			onclick={(event) => parent_func(event, store.map.parent_id)}
+			>
+		{#if store.map.parent_id === null}
+			<Plus size=100%/>
+		{:else}
+			<img
+				src={image_source}
+				id="parent_map"
+				alt="Parent Map"
+			/>
+		{/if}
+		</div>
+	{/if}
 	<div id="parent_map_buttons">
 		<button
 			id="hide_map"
@@ -92,16 +96,22 @@
 			}}
 			class:hidden={store.map.parent_id === null && !store.edit_mode}
 			title="Hide parent map"
-			style={`background-image: url(/assets/${minimized ? "fantasy-plus" : 'minus_2'}.png);`}
 			aria-label="Hide parent map"
-		></button>
+		>
+			{#if minimized}
+				<Plus />
+			{:else}
+				<Minus />
+			{/if}
+		</button>
 		<button
-			id="edit_map"
 			onclick={changeParentMap}
 			class:hidden={!store.edit_mode || store.map.parent_id === null || minimized}
 			title="Add parent map"
 			aria-label="Change parent map"
-		></button>
+		>
+			<Cog />
+		</button>
 	</div>
 </div>
 
@@ -110,7 +120,7 @@
 		position: absolute;
 		top: 0px;
 		left: 0px;
-		width: 200px;
+		width: 250px;
 		max-width: 30%;
 		display: flex;
 		justify-content: start;
@@ -133,17 +143,11 @@
 		position: relative;
 		width: 30px;
 		aspect-ratio: 1;
-		background-size: contain;
 		background-color: transparent;
-		background-repeat: no-repeat;
-		background-position: center center;
 		border-color: transparent;
 		cursor: pointer;
 	}
 
-	#edit_map {
-		background-image: url('/assets/fantasy_cog.png');
-	}
 
 	.hidden {
 		display: none;

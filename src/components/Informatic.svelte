@@ -17,6 +17,7 @@
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
 	import { theme_entities } from '$lib/data.svelte';
 	import MarkerWindow from './MarkerWindow.svelte';
+	import {ArrowLeft, ArrowRight, Plus, Minus, ScrollText, Cog} from "@lucide/svelte"
 
 	let informatic_window: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -116,11 +117,12 @@
 				onclick={() => {
 					pop_article();
 				}}
-				style="background-image: url('/assets/arrow_left.png');"
 				title="Go to last Article"
 				aria-label='Undo Button'
 				disabled={store.article_history.length <= 1}
-			></button>	
+			>
+				<ArrowLeft />
+			</button>	
 			
 			<button
 				class="btn-icon"
@@ -129,10 +131,11 @@
 					undo_article_pop();
 				}}
 				disabled={store.undone_articles.length === 0}
-				style="background-image: url('/assets/arrow_right.png');"
 				title="Go to next Article"
 				aria-label='Redo Button'
-			></button>
+			>
+				<ArrowRight />
+			</button>
 
 			<button
 				class="btn-icon"
@@ -140,10 +143,11 @@
 				onclick={() => {
 					change_text_size(1.1);
 				}}
-				style="background-image: url('/assets/fantasy-plus.png');"
 				title="Increase text size"
 				aria-label='Increase Text Size Button'
-			></button>
+			>
+				<Plus />
+			</button>
 
 			<button
 				class="btn-icon"
@@ -151,29 +155,32 @@
 				onclick={() => {
 					change_text_size(0.9);
 				}}
-				style="background-image: url('/assets/minus_2.png');"
 				title="Decrease text size"
 				aria-label='Decrease Text Size Button'
-			></button>
+			>
+				<Minus />
+			</button>
 
 			<button
 				class="btn-icon"
 				id="open_article_modal_button"
 				onclick={()=>{push_modal({type:'article_modal', data: store.article.id})}}
-				style="background-image: url('/assets/Parchment.png');"
 				title="View Article in Article Viewer"
 				aria-label="View Article in Article Viewer"
-			></button>
+			>
+				<ScrollText />
+			</button>
 
 			<button
 				class="btn-icon"
 				id="edit_image_button" 
 				onclick={open_article_options}
-				style="background-image: url('/assets/fantasy_cog.png');"
 				class:hidden={!store.edit_mode}
 				title="Increase text size"
 				aria-label='Increase Text Size Button'
-			></button>
+			>
+				<Cog />
+			</button>
 		</div>
 		<div
 			id="article_title"
