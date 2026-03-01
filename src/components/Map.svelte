@@ -12,6 +12,8 @@
 
 	let {map_container_rect}: {map_container_rect: {x: number, y: number, width: number, height: number}} = $props()
 
+	let mapSize = $state<{height: number, width: number}>({ height: 0, width: 0})
+
 	let click_pos: { x: number; y: number } = { x: 0, y: 0 }; 
 
 	let lines = $state<{x: number, y: number}[][]>([])
@@ -21,7 +23,7 @@
 	function detect_click(e: MouseEvent) {
 		click_pos.x = e.x;
 		click_pos.y = e.y;
-		map_.addEventListener('mouseup', click_release);
+		map_?.addEventListener('mouseup', click_release);
 	}
 
 	function detect_touch(e: TouchEvent) {
@@ -66,7 +68,7 @@
 		lines[current_line_index].push(relative_position)
 		if(lines[current_line_index].length === 1){lines[current_line_index].push(relative_position)}
 
-		map_.addEventListener('mousemove', track_latest_node)
+		map_?.addEventListener('mousemove', track_latest_node)
 		tracking_node = true
 	}
 	
@@ -133,7 +135,7 @@
 
 	onMount(() => {
 		map_.addEventListener('mousedown', detect_click);
-		map_.addEventListener('touchstart', detect_touch); 
+		map_.addEventListener('touchstart', detect_touch);
 	});
 
 	// Setup the effect event
@@ -157,6 +159,7 @@
 	let zoompan_element: ZoomPan
 		
 	function update_scale(){
+		mapSize = {height: map_.naturalHeight, width: map_.naturalWidth}
 		const screen_width = store.mobile_layout ? window.screen.width : window.innerWidth
 		const map_height = map_container_rect.height === 0 ? store.mobile_layout ? window.screen.height : window.innerHeight : map_container_rect.height
 		zoompan_element.set_transform({x: 0, y: 0, scale: map_height / map_.naturalHeight / screen_width * map_.naturalWidth});
@@ -188,7 +191,7 @@
 		{/each}
 	{/if}
 
-	<ZoomPan bind:this={zoompan_element} parent_selector="#map" position_anchor={{x: 0, y: 50}} offset_limit={{x: -map_.naturalWidth * mapPanLimitFactor, y: -map_.naturalHeight * mapPanLimitFactor, width: map_container_rect.width + (2*mapPanLimitFactor*map_.naturalWidth), height: map_container_rect.height + (2* mapPanLimitFactor * map_.naturalHeight)}} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
+	<ZoomPan bind:this={zoompan_element} parent_selector="#map" position_anchor={{x: 0, y: 50}} offset_limit={{x: -mapSize.width * mapPanLimitFactor, y: -mapSize.height * mapPanLimitFactor, width: map_container_rect.width + (2*mapPanLimitFactor*mapSize.width), height: map_container_rect.height + (2* mapPanLimitFactor * mapSize.height)}} scale_limit={{min: 0.3, max: 5}} on_zoompan={on_zoompan}/>
 </div>
 
 <style>

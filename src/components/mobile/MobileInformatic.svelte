@@ -1,12 +1,11 @@
 <script lang="ts">
-	import SvelteMarkdown from 'svelte-markdown';
 	import { store } from '../../store.svelte';
 	import { fly } from 'svelte/transition';
-	import KeyWordRenderer from '../KeyWordRenderer.svelte';
 	import { pop_article, push_article, undo_article_pop} from '$lib/article_stack';
 	import { theme_entities } from '$lib/data.svelte';
 	import dtb from '$lib/dtb';
 	import { choose_article_by_id, push_promise_modal } from '$lib/modal_manager.svelte';
+	import Markdown from '../Markdown.svelte';
 
 	let informatic_window: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -190,7 +189,7 @@
 			id="article_content"
 			style="font-size: {store.text_size}%;"
 		>
-			<SvelteMarkdown source={store.article.content} renderers={{link: KeyWordRenderer}}/>
+			<Markdown source={store.article.content} /> 
 		</article>
 	</div>
 </div>

@@ -3,12 +3,11 @@
 	import Editor from '../Editor.svelte';
 	import dtb from '$lib/dtb';
 	import { add_and_choose_article, choose_article_by_id, get_article_options, get_composite_category_modal, get_filtered_choose_category_modal, push_modal, push_promise_modal } from '$lib/modal_manager.svelte';
-	import KeyWordRenderer from '../KeyWordRenderer.svelte';
 	import { onDestroy, onMount } from 'svelte';
 	import type { Category } from '$lib/types';
 	import { theme_entities } from '$lib/data.svelte';
-	import SvelteMarkdown from 'svelte-markdown';
 	import {Pen, Plus, Minus, Cog} from "@lucide/svelte"
+	import Markdown from '../Markdown.svelte';
 
 	let {close, article_id, on_close} : {close: () => void, article_id: number, on_close?: (success: boolean) => void} = $props()
 	
@@ -227,7 +226,7 @@
 				id="article_content"
 				style="font-size: {text_size}%;"
 			>
-				<SvelteMarkdown source={editor ? latest_editor_content : article.content} renderers={{link: KeyWordRenderer as any}}/> 
+				<Markdown source={editor ? latest_editor_content : article.content} /> 
 			</div>
 			{#if edit_mode}
 			<div id="article_editor">

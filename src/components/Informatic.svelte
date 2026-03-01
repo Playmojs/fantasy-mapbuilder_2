@@ -7,17 +7,16 @@
 </script>
 
 <script lang="ts">
-	import SvelteMarkdown from 'svelte-markdown';
 	import { store } from '../store.svelte';
 	import Editor from './Editor.svelte';
 	import { fly } from 'svelte/transition';
 	import dtb from '$lib/dtb';
 	import {get_article_options, push_modal } from '$lib/modal_manager.svelte';
-	import KeyWordRenderer from './KeyWordRenderer.svelte';
 	import { pop_article, undo_article_pop} from '$lib/article_stack';
 	import { theme_entities } from '$lib/data.svelte';
 	import MarkerWindow from './MarkerWindow.svelte';
 	import {ArrowLeft, ArrowRight, Plus, Minus, ScrollText, Cog} from "@lucide/svelte"
+	import Markdown from './Markdown.svelte';
 
 	let informatic_window: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -207,7 +206,7 @@
 			{#if store.edit_mode}
 				<Editor bind:this={editor} original_content={store.article.content} text_size={store.text_size} on_destroy={editor_on_destroy}/>
 			{:else}
-				<SvelteMarkdown source={original_article_content} renderers={{link: KeyWordRenderer as any}}/>
+				<Markdown source={original_article_content}/>
 			{/if}
 		</div>
 	</div>
