@@ -17,6 +17,7 @@
 	import MarkerWindow from './MarkerWindow.svelte';
 	import {ArrowLeft, ArrowRight, Plus, Minus, ScrollText, Cog} from "@lucide/svelte"
 	import Markdown from './Markdown.svelte';
+	import type { MarkerWindowData } from '$lib/types';
 
 	let informatic_window: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -97,6 +98,14 @@
 	function change_text_size(factor: number) {
 		store.text_size = store.text_size * factor;
 	}
+
+	const getInformaticMarkerData = (markerWindowData : MarkerWindowData) : MarkerWindowData => 
+	{
+		const boundingRect = informatic_window.getBoundingClientRect();
+		return {x: boundingRect.x + boundingRect.width - 95, y: boundingRect.y + boundingRect.height - 300, map_id: markerWindowData.map_id, article_id: markerWindowData.article_id, attach_bottom: false}
+	}
+
+	let informatic_marker_window = $derived<MarkerWindowData | null> (store.informatic_marker_window === null ? null : getInformaticMarkerData(store.informatic_marker_window))
 </script>
 
 
@@ -208,7 +217,11 @@
 			{:else}
 				<Markdown source={original_article_content}/>
 			{/if}
+
 		</div>
+		{#if informatic_marker_window !== null}
+			<MarkerWindow markerWindowData={informatic_marker_window}/>
+		{/if}
 	</div>
 </div>
 

@@ -55,7 +55,18 @@
 
 	let scale_bar_righ_position = $derived<{x: number, y: number}>({x: scale_bar_left_position.x + Math.max(0.1*window_dims.width, 100), y: scale_bar_left_position.y})
 
-	let map_marker_window = $derived<MarkerWindowData | null>(store.map_marker_window !== null ? {x: map_container_rect.width - 85, y: 10, map_id: store.map_marker_window.map_id, article_id: store.map_marker_window.article_id} : null)
+	let determineMarkerWindowPosition = (markerWindowData : MarkerWindowData, defaultPosition : {x: number, y: number}) : MarkerWindowData => 
+	{
+		const markerWindowFitsOnScreen: boolean = markerWindowData.y > 200;
+
+		if(!markerWindowFitsOnScreen)
+		{
+			return {x: defaultPosition.x, y: defaultPosition.y, map_id: markerWindowData.map_id, article_id: markerWindowData.article_id, attach_bottom: false}
+		}
+		return markerWindowData
+	}
+
+	let map_marker_window = $derived<MarkerWindowData | null>(store.map_marker_window !== null ? determineMarkerWindowPosition(store.map_marker_window, {x: map_container_rect.width - 85, y: 10}) : null)
 
 	$effect(()=>{
 		if (store.mobile_layout) {
@@ -105,6 +116,9 @@
 			<ParentMap />
 			{#if store.map.scale !== null}
 				<ScaleBar path_nodes={[scale_bar_left_position, scale_bar_righ_position]} scale={store.map.scale / store.map_transform.scale} unit_group={store.unit_group}/>
+			{/if}
+			{#if map_marker_window !== null}
+				<MarkerWindow markerWindowData={map_marker_window}/>
 			{/if}
 		</div>
 		{#if store.mobile_layout}

@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { gotoMap } from '$lib/goto_map';
 	import { type MarkerData } from '$lib/types';
-	import { get, writable } from 'svelte/store';
 	import { store } from '../store.svelte';
 	import dtb from '$lib/dtb';
-	import MarkerWindow from './MarkerWindow.svelte';
 	import { assert } from '$lib/utils';
 	import MarkerResizers from './MarkerResizers.svelte';
 	import { push_article } from '$lib/article_stack';
@@ -13,7 +11,6 @@
 
 	let marker: HTMLButtonElement;
 	let in_movement: boolean = false;
-	let hover = $state<boolean>(false);
 
 	let initial_marker_pos: {x: number, y: number};
 	let initial_click_pos: {x: number, y: number};
@@ -119,10 +116,14 @@
 		}
 	}}
 	onmouseenter={() => {
-		hover = true;
+		if (marker_data?.target_map_id !== null || marker_data?.target_article_id !== null)
+		{
+			const boundingBox = marker.getBoundingClientRect();
+			store.map_marker_window = {x: boundingBox.x + boundingBox.width / 2, y: boundingBox.y, map_id: marker_data.target_map_id, article_id: marker_data.target_article_id, attach_bottom: true}
+		}
 	}}
 	onmouseleave={() => {
-		hover = false;
+		store.map_marker_window = null;
 	}}
 	class:edit_mode={store.edit_mode}
 	class:selected={store.selected_marker === marker_data?.id}
@@ -133,9 +134,6 @@
 		alt="Marker"
 		class:hidden={marker_data?.image === null}
 	/>
-	{#if hover && (marker_data?.target_map_id !== null || marker_data?.target_article_id !== null)}
-		<MarkerWindow map_id={marker_data.target_map_id} article_id={marker_data.target_article_id} scale={store.map_transform.scale} />
-	{/if}
 </button>
 {#if store.edit_mode && store.selected_marker === marker_data?.id}
 		<MarkerResizers marker_data={marker_data} get_relative_movement={get_relative_movement}/>

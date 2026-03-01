@@ -1,5 +1,5 @@
 import { type User } from "@supabase/supabase-js";
-import { type Article, type MapData, type MarkerData, type ModalType, type Project, type Category} from "$lib/types";
+import { type Article, type MapData, type MarkerData, type ModalType, type Project, type Category, type MarkerWindowData} from "$lib/types";
 
 class Store {
     // Client only
@@ -21,8 +21,8 @@ class Store {
     article_modal_articles = $state<number[]>([])
     unit_group = $state<string>('Metric')
 
-    map_marker_window = $state<{x: number, y: number, map_id: number | null, article_id: number | null} | null>(null)
-    informatic_marker_window = $state<{x: number, y: number, map_id: number | null, article_id: number | null} | null>(null)
+    map_marker_window = $state<MarkerWindowData | null>(null)
+    informatic_marker_window = $state<MarkerWindowData | null>(null)
 
     map_article_link=$state<number | null>()
 

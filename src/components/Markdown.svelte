@@ -30,27 +30,26 @@
 
   function handleMouseenter(e: MouseEvent) {
     const a = (e.target as HTMLElement).closest('a[data-keyword-key]');
-    if (!a) return;
+    if (!a)
+    {
+      store.informatic_marker_window = null;
+      return;
+    } 
+    
     const key = a.getAttribute('data-keyword-key')!;
     const id = Number(a.getAttribute('data-keyword-id'));
     store.informatic_marker_window = {
       x: 0, y: 0,
       map_id: key === 'map' ? id : null,
-      article_id: key === 'article' ? id : null
+      article_id: key === 'article' ? id : null,
+      attach_bottom: false
     };
-  }
-
-  function handleMouseleave(e: MouseEvent) {
-    const a = (e.target as HTMLElement).closest('a[data-keyword-key]');
-    if (!a) return;
-    store.informatic_marker_window = null;
   }
 </script>
 
 <div
   onclick={handleClick}
   onmouseover={handleMouseenter}
-  onmouseleave={handleMouseleave}
   class="markdown-body"
   aria-label="Clickable Text"
 >

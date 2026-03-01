@@ -163,3 +163,5 @@ export type UnitModalType = {
 
 export type Folder = "maps" | "articles"
 export type ModalType = ChooseModalType | UploadModalType<any> | ConfirmModalType | CompositeModalType | CategoryModalType | GraphModalType | FilterModalType | ArticleModalType | UnitModalType
+
+export type MarkerWindowData = {x: number, y: number, map_id: number | null, article_id: number | null, attach_bottom: boolean}

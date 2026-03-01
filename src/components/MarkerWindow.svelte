@@ -1,13 +1,11 @@
 <script lang="ts">
 	import dtb from '$lib/dtb';
-	import type { Article, MapData } from '$lib/types';
-	import { get } from 'svelte/store';
+	import type { MarkerWindowData } from '$lib/types';
 	import { store } from '../store.svelte';
 	import { fade } from 'svelte/transition';
-	import { assert, assert_unreachable } from '$lib/utils';
-	import { untrack } from 'svelte';
+	import { assert} from '$lib/utils';
 
-	let { map_id = null, article_id = null, scale }: { map_id: number | null; article_id: number | null, scale: number } =
+	let { markerWindowData}: { markerWindowData: MarkerWindowData} =
 		$props();
 
 	let intermediate_image = $state<string>('');
@@ -15,13 +13,13 @@
 	let default_img: string = '';
 
 	async function get_data() {
-		assert(map_id === null || article_id === null, 'Both map id and article id are not null');
+		assert(markerWindowData.map_id === null || markerWindowData.article_id === null, 'Both map id and article id are not null');
 		let response;
-		if (map_id !== null) {
-			response = await dtb.get_map(store.project_id, map_id);
+		if (markerWindowData.map_id !== null) {
+			response = await dtb.get_map(store.project_id, markerWindowData.map_id);
 			default_img = '/assets/old_map.png';
-		} else if (article_id !== null) {
-			response = await dtb.get_article(store.project_id, article_id);
+		} else if (markerWindowData.article_id !== null) {
+			response = await dtb.get_article(store.project_id, markerWindowData.article_id);
 			default_img = '/assets/Parchment.png';
 		}
 
@@ -35,14 +33,25 @@
 			? URL.createObjectURL(store.image_public_urls[intermediate_image])
 			: default_img);
 
-	get_data();
+	$effect(()=>
+	{
+		markerWindowData;
+		get_data();
+	})
 </script>
 
 <div id='border'
 	transition:fade={{ duration: 300 }}
-	style="transform: scale({1 / scale}) translateX(-50%);">
-	<div id="marker_window">
-		<div id="window_content">
+	class:attach_bottom={markerWindowData.attach_bottom}
+	style="
+		top: {markerWindowData.y}px; 
+		left: {markerWindowData.x}px;
+		transform: translateX(-50%) {markerWindowData.attach_bottom ? "translateY(-100%)": ""};
+	">
+	<div id="marker_window"
+		class:attach_bottom={markerWindowData.attach_bottom}>
+		<div id="window_content"
+			class:attach_bottom={markerWindowData.attach_bottom}>
 			<h1>{title}</h1>
 			<img src={image} alt="MarkerWindow" />
 		</div>
@@ -51,32 +60,34 @@
 
 <style>
 	#border {
-		position: inherit;
-		left: 50%;
-		bottom: 100%;
+		position: absolute;
 		background: var(--color-accent);
 		width: 150px;
 		max-width: none;
-		color: var(--main_white);
-		border-radius: var(--radius-md);
+		color: var(--color-text-primary);
+		border-radius: 10px;
 		transform-origin: bottom left;
-		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
-		padding-bottom: var(--space-lg);
-
+		padding-bottom: 20px;
+		pointer-events: none;
+		
 		z-index: 50;
+	}
+
+	.attach_bottom
+	{
+		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
 	}
 
 	#marker_window {
 		position: relative;
 
-		background: var(--color-bg-secondary);
+		background: var(--color-panel);
 		height: 95%;
 		padding-bottom: 20px;
-		color: var(--main_white);
-		margin: 0 2.5%;
+		color: var(--color-text-primary);
+		margin: 0px 2.5%;
 		top: 10px;
-		border-radius: var(--radius-md);
-		clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 50% 100%, 0% 90%);
+		border-radius: 10px;
 		text-overflow: ellipsis;
 	}
 
