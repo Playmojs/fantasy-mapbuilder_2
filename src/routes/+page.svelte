@@ -1,10 +1,5 @@
 <script lang="ts">
 	import Homebar from '../components/Homebar.svelte';
-	import { supabase } from '$lib/dtb';
-	import { v4 as uuidv4 } from 'uuid';
-	import { store } from '../store.svelte';
-
-	let file: File | null = null;
 </script>
 
 <Homebar />

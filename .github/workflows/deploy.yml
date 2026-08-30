@@ -1,0 +1,41 @@
+name: Build and Deploy Frontend locally
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: svelte-frontend
+  NETWORK_NAME: proxy-network
+  CONTAINER_NAME: frontend-app
+
+jobs:
+  deploy:
+    # Target your Raspberry Pi's self-hosted runner
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image with Supabase Secrets
+        run: |
+          docker build \
+            --build-arg PUBLIC_SUPABASE_URL="${{ secrets.PUBLIC_SUPABASE_URL }}" \
+            --build-arg PUBLIC_SUPABASE_ANON_KEY="${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}" \
+            -t ${{ env.IMAGE_NAME }}:latest .
+
+      - name: Deploy container to proxy-network
+        run: |
+          docker stop ${{ env.CONTAINER_NAME }} || true
+          docker rm ${{ env.CONTAINER_NAME }} || true
+
+          docker run -d \
+            --name ${{ env.CONTAINER_NAME }} \
+            --restart unless-stopped \
+            --network ${{ env.NETWORK_NAME }} \
+            ${{ env.IMAGE_NAME }}:latest
+
+      - name: Cleanup unused Docker build layers
+        run: docker image prune -f

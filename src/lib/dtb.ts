@@ -6,10 +6,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { push_article } from './article_stack';
 import { assert } from './utils';
 
-const supabaseUrl = "https://ybazluanarelyccrfuuc.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InliYXpsdWFuYXJlbHljY3JmdXVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjM1NDgyMTYsImV4cCI6MjAzOTEyNDIxNn0.hUbetjxp4zUMXS4C7wosekpD8CtJwpPU0jOOLyAxzt8";
+import {PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY} from '$env/static/public'
 
-if (!supabaseUrl || !supabaseKey) {
+if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
     throw new Error('Missing Supabase environment variables');
 }
 
@@ -20,7 +19,7 @@ let my_project_ids_fetched: boolean = false;
 
 let requested_images: string[] = [];
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+export const supabase = createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
 
 
 supabase.auth.getSession().then(({ data }) => {
@@ -159,7 +158,7 @@ export default {
             if(unfetched_categories.length > 0){await this.get_categories(unfetched_categories)}
             response.data.forEach(category_link =>{
                 if(!store.article_category_links[category_link.category_id]){store.article_category_links[category_link.category_id] = []}
-                let existing_links = store.article_category_links[category_link.category_id];
+                const existing_links = store.article_category_links[category_link.category_id];
                 if(!existing_links.includes(article_id)){existing_links.push(article_id)}
             })
         }
@@ -209,8 +208,8 @@ export default {
     },
 
     async get_projects(project_ids: number[]) {
-        let uncached_projects = project_ids.filter((id) => { return !(id in store.project_cache) })
-        if (uncached_projects.length === 0) { return Object.values(store.project_cache).filter((project) => { project.id in project_ids }); }
+        const uncached_projects = project_ids.filter((id) => { return !(id in store.project_cache) })
+        if (uncached_projects.length === 0) { return Object.values(store.project_cache).filter((project) => {return project.id in project_ids }); }
         const response = await supabase.from('project').select('*').in('id', uncached_projects)
         if (response.error) {
             console.error("Error fetching user projects: ", response.error.message)
@@ -366,7 +365,7 @@ export default {
 
     async insert_new_map(project_id: number, image: string, title: string, article_id: number | null, scale: number | null) {
         if (article_id === null){
-            let article = await this.create_and_show_article(project_id, title);
+            const article = await this.create_and_show_article(project_id, title);
             if(!article){
                 console.error('Failed to create article, could not produce map'); 
                 return}
@@ -392,9 +391,9 @@ export default {
     },
 
     async create_new_map(project_id: number, image_file: File, title: string, article_id: number | null, scale: number | null) {
-        let image_id = await this.upload_image(project_id, image_file, 'maps', null);
+        const image_id = await this.upload_image(project_id, image_file, 'maps', null);
         if (!image_id) { return null; }
-        let data = await this.insert_new_map(project_id, image_id, title, article_id, scale);
+        const data = await this.insert_new_map(project_id, image_id, title, article_id, scale);
         if (!data) { return null; }
         return data
     },
@@ -402,7 +401,7 @@ export default {
     async create_new_project(project_title: string, head_map_title: string, head_map_file: File)
     {
         const image_id = uuidv4();
-        let{error, data} = await supabase.rpc('insert_project_map_article', {project_title: project_title, map_title: head_map_title, map_image: image_id, article_title: head_map_title}).single()
+        const {error, data} = await supabase.rpc('insert_project_map_article', {project_title: project_title, map_title: head_map_title, map_image: image_id, article_title: head_map_title}).single()
 
         if(error){
             console.error(`Failed to upload project, error: ${error.message}`)
@@ -414,7 +413,7 @@ export default {
     },
 
     async create_category(project_id: number, category_title: string, theme_id: number){
-        let{error, data} = await supabase.from('category').insert({name: category_title, project_id: project_id, theme_id: theme_id}).select().single();
+        const {error, data} = await supabase.from('category').insert({name: category_title, project_id: project_id, theme_id: theme_id}).select().single();
         if(error){console.error(`Failed to create category, error: ${error}`)}
         else if(data){
             store.category_cache[data.id] = data;

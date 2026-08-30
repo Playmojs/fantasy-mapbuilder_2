@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import type { ModalEntity, Project } from '$lib/types';
-	import { assert_unreachable } from '$lib/utils';
+	import type { ModalEntity } from '$lib/types';
 	import Homebar from '../../components/Homebar.svelte';
 	import dtb from '../../lib/dtb';
 	import { store } from '../../store.svelte';
