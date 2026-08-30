@@ -5,7 +5,7 @@
 <Homebar />
 <main>
 	<h2>Welcome to</h2>
-	<h1>Fantasy Mapbuilder</h1>
+	<h1>Igdrasil</h1>
 	<div id="description_box">
 		<h3>
 			Our vision is to create a tool that can help you organize your fantasy world. Upload your maps
