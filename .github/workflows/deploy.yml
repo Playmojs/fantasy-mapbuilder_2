@@ -22,6 +22,7 @@ jobs:
       - name: Build Docker image with Supabase Secrets
         run: |
           docker build \
+            --cpuset-cpus="0,1" \
             --build-arg PUBLIC_SUPABASE_URL="${{ secrets.PUBLIC_SUPABASE_URL }}" \
             --build-arg PUBLIC_SUPABASE_ANON_KEY="${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}" \
             -t ${{ env.IMAGE_NAME }}:latest .
