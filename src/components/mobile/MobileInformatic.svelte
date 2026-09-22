@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { store } from '../../store.svelte';
-	import { fly } from 'svelte/transition';
 	import { pop_article, push_article, undo_article_pop} from '$lib/article_stack';
 	import { theme_entities } from '$lib/data.svelte';
 	import dtb from '$lib/dtb';
 	import { choose_article_by_id, push_promise_modal } from '$lib/modal_manager.svelte';
 	import Markdown from '../Markdown.svelte';
+	import { ArrowLeft, ArrowRight, Minus, Plus, ScrollText } from '@lucide/svelte';
 
 	let informatic_window: HTMLDivElement;
 	let article_title: HTMLHeadElement;
@@ -60,7 +60,7 @@
 		window.removeEventListener('touchend', stopResizeTouch);
 	}
 	
-	function stopResizeMouse(e: MouseEvent) {
+	function stopResizeMouse() {
 		determine_and_move_to_target()
 		window.removeEventListener('mousemove', resizeMouse);
 		window.removeEventListener('mouseup', stopResizeMouse);
@@ -83,7 +83,6 @@
 
 		const n_frames = Math.floor(Math.abs(diff_percentage));
 
-		const time_ms = diff_percentage * 10;
 		for (let i = 0; i < n_frames; i += 1){
 			store.informatic_dim = initial_width + i / n_frames * diff_percentage
 			await new Promise(r => {setTimeout (r, 10)})
@@ -121,76 +120,85 @@
 	
 	<div id="resizer" onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}></div>
 	<div id='button_bar'
+	role="row"
+	tabindex="0"
 	onmousedown={resizerOnMouseDown} ontouchstart={resizerOnTouchDown}>
 		<button
 		id="undo_article_button"
+		class="btn-icon"
 		onclick={() => {
 			pop_article();
 		}}
-				style="background-image: url('/assets/arrow_left.png');"
-				title="Go to last Article"
-				aria-label='Undo Button'
-				disabled={store.article_history.length <= 1}
-				></button>	
-				
-				<button
-				id="redo_article_button"
-				onclick={() => {
-					undo_article_pop();
-				}}
-				disabled={store.undone_articles.length === 0}
-				style="background-image: url('/assets/arrow_right.png');"
-				title="Go to next Article"
-				aria-label='Redo Button'
-				></button>
-
-				<button
-				id="open_article_modal_button"
-				onclick={open_article_modal}
-				style="background-image: url('/assets/Parchment.png');"
-				title="View Article in Article Viewer"
-				aria-label="View Article in Article Viewer"
-				></button>
-				
-				<button
-				id="increment_text_size_button"
-				onclick={() => {
-					change_text_size(1.1);
-				}}
-				style="background-image: url('/assets/fantasy-plus.png');"
-				title="Increase text size"
-				aria-label='Increase Text Size Button'
-				></button>
-				
-				<button
-				id="decrement_text_size_button"
-				onclick={() => {
-					change_text_size(0.9);
-				}}
-				style="background-image: url('/assets/fantasy_minus.png');"
-				title="Decrease text size"
-				aria-label='Decrease Text Size Button'
-				></button>
-			</div>
-		<div id="informatic_content">
-		<div
-			id="article_title"
+		title="Go to last Article"
+		aria-label='Undo Button'
+		disabled={store.article_history.length <= 1}
 		>
+			<ArrowLeft />
+		</button>	
+		
+		<button
+		id="redo_article_button"
+		class="btn-icon"
+		onclick={() => {
+			undo_article_pop();
+		}}
+		disabled={store.undone_articles.length === 0}
+		title="Go to next Article"
+		aria-label='Redo Button'
+		>
+			<ArrowRight />
+		</button>
+
+		<button
+		id="open_article_modal_button"
+		class="btn-icon"
+		onclick={open_article_modal}
+		title="View Article in Article Viewer"
+		aria-label="View Article in Article Viewer"
+		>
+			<ScrollText />
+		</button>
+		
+		<button
+		id="increment_text_size_button"
+		class="btn-icon"
+		onclick={() => {
+			change_text_size(1.1);
+		}}
+		title="Increase text size"
+		aria-label='Increase Text Size Button'
+		>
+			<Plus />
+		</button>
+		
+		<button
+		id="decrement_text_size_button"
+		onclick={() => {
+			change_text_size(0.9);
+		}}
+		title="Decrease text size"
+		aria-label='Decrease Text Size Button'
+		>
+			<Minus />
+		</button>
+	</div>
+	<div id="informatic_content">
+		<div
+			id="article_title">
 			<h1 bind:this={article_title}>{store.article.title}</h1>
 		</div>
 		<img
 			id="article_image"
 				src={image_source}
-				alt="Article image"
+				alt={store.article.title}
 			class:hidden={store.article.image === null}
 			style="height: {store.article.image !== null ? 200 : 0}px;"
 		/>
 		<article
 			id="article_content"
-			style="font-size: {store.text_size}%;"
-		>
-			<Markdown source={store.article.content} /> 
-		</article>
+			style="font-size: {store.text_size}%;">
+		<Markdown source={store.article.content} /> 
+	</article>
 	</div>
 </div>
 

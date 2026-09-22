@@ -9,14 +9,14 @@
 	import { push_promise_modal, push_modal, choose_existing_map} from '$lib/modal_manager.svelte';
 	import DropdownMapAndArticleSearch from '../DropdownMapAndArticleSearch.svelte';
 	import { generate_map_graph } from '$lib/graph_gen.svelte';
-	import { preventDefault } from 'svelte/legacy';
 	import { goto } from '$app/navigation';
+	import { Home, Map, Network } from '@lucide/svelte';
 
     let use_graph = $state<boolean>(false)
 	let display_button_option = $state<boolean>(false)
 	let button_hold: boolean = false;
 
-	async function toggle_display_options_button(e: Event){
+	async function toggle_display_options_button(){
 		button_hold = true;
 		await new Promise((r) => {setTimeout(r, 400)})
 		if(button_hold){
@@ -57,10 +57,10 @@
 			onclick={() => {
 				goto('/projects');
 			}}
-			style="background-image: url('/assets/house.png');"
 			aria-label="Home Button"
 			title="Home"
-		>
+			class="btn-icon">
+		<Home />
 	</button>
     <div id="search_bar">
         <DropdownMapAndArticleSearch/>
@@ -74,25 +74,25 @@
 		class:open={display_button_option}>
 		{#if use_graph}
 		<button
-			class="toolbar_button"
+			class="btn-icon"
 			onclick={()=>{
 				if(display_button_option){return}
 				open_map_graph();}}
-			style="background-image: url('/assets/Map_icon (2).png');"
 			aria-label="Open Map Graph"
 			title="Open Map Graph"
 			>
+			<Network />
 		</button>
 		{:else}
 		<button
-			class="toolbar_button"
+			class="btn-icon"
 			onclick={()=>{
 				if(display_button_option){return}
 				go_to_article_or_map_modal();}}
-			style="background-image: url('/assets/old_map.png');"
 			aria-label="Go to Map"
 			title="Go to Map"
 			>
+			<Map />
 		</button>
 		{/if }
 		{#if display_button_option}
@@ -100,10 +100,15 @@
 			class=open>
 		<button
 			onclick={() => use_graph = !use_graph}
-			style="background-image: url('/assets/{use_graph ? "old_map.png" : "Map_icon (2).png"}');"
 			aria-label="Choose new button"
 			title="Choose new button"
-		></button>
+		>
+		{#if use_graph}
+			<Map />
+		{:else}
+			<Network />
+		{/if}
+		</button>
 		</div>
 		{/if}
 	
